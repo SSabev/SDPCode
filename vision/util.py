@@ -1,6 +1,6 @@
 import sys
 import os
-import cPickle
+import cPickle as pickle
 
 def dumpToFile(obj, path):
     """
@@ -15,7 +15,7 @@ def dumpToFile(obj, path):
 
     f = open(path, 'w')
     try:
-        cPickle.dump(obj, f)
+        pickle.dump(obj, f, protocol=pickle.HIGHEST_PROTOCOL)
 
     except Exception, e:
         raise e
@@ -29,7 +29,7 @@ def loadFromFile(path):
 
     f = open(getRealPath(path), 'r')
     try:
-        return cPickle.load(f)
+        return pickle.load(f)
     except Exception, e:
         return None
     finally:
