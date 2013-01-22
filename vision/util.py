@@ -13,7 +13,7 @@ def dumpToFile(obj, path):
     if not os.path.exists(d):
         os.makedirs(d)
 
-    f = open(path, 'w')
+    f = open(path, 'wb')
     try:
         pickle.dump(obj, f, protocol=pickle.HIGHEST_PROTOCOL)
 
@@ -27,7 +27,7 @@ def loadFromFile(path):
     if not fileExists(path):
         return None
 
-    f = open(getRealPath(path), 'r')
+    f = open(getRealPath(path), 'rb')
     try:
         return pickle.load(f)
     except Exception, e:
