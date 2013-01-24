@@ -1,16 +1,21 @@
 #if !defined(AICONTROL_H)
 #define AICONTROL_H
 
-#include "Foresee.h"
-#include "Eagle.h"
-#include "AStar.h"
-#include "Impala.h"
+#include "MathTypes/Vector2.h"
+#include "RobotState.h"
+
+#include "Foresee/Foresee.h"
+#include "Eagle/Eagle.h"
+#include "AStar/AStar.h"
+#include "Impala/Impala.h"
+
+#include <list>
 
 class AIControl
 {
 public:
 	void Initialise();
-	void RunAI();
+	std::list<RobotState> RunAI(RobotState ourRobot, RobotState enemyRobot, Vector2 ballPos);
 	
 private:
 	Foresee m_foresee;

@@ -1,7 +1,5 @@
 #include "AIControl.h"
 
-#include "MathTypes/Vector2.h"
-
 #include <vector>
 
 void AIControl::Initialise()
@@ -12,15 +10,11 @@ void AIControl::Initialise()
 	m_impala = Impala();
 }
 
-void AIControl::RunAI()
-{
-	Vector2 ourRobotPos(0,0);
-	Vector2 enemyRobotPos(0,0);
-	Vector2 ballPos(0,0);
-	
+std::list<RobotState> AIControl::RunAI(RobotState ourRobot, RobotState enemyRobot, Vector2 ballPos)
+{	
 	// Given the current position and a certain number of previous positions, 
 	// approximate where the bot will be when it receives our next transmission.
-	std::vector<Vector2> futurePositions = m_foresee.ExtrapolateState(ourRobotPos, enemyRobotPos, ballPos);
+	std::vector<Vector2> futurePositions = m_foresee.ExtrapolateState(ourRobot.Position(), enemyRobot.Position(), ballPos);
 	
 	// Given the positions of the robots and ball, identify the ideal position 
 	// and orientation for us to reach.

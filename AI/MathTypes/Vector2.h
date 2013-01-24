@@ -7,21 +7,20 @@
 class Vector2
 {
 public:
+	Vector2();
 	Vector2(float x, float y);
 	
-	float X() 
-	{
-		return m_x;
-	};
-	
-	float Y() 
-	{
-		return m_y;
-	};
+	float X();
+	float Y();
+
+	void Set(float x, float y);
+	float DistanceSquared(Vector2* dest);
+	float Distance(Vector2 dest);
 	
 private:
 	float m_x;
 	float m_y;
+	bool m_isSet;
 };
 
 #endif
