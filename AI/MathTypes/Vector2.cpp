@@ -49,8 +49,8 @@ float Vector2::DistanceSquared(Vector2* dest) const
 	assert(m_isSet);
 
 	// Note that these values are not absolute.
-	float xDist = this->X() - dest->X();
-	float yDist = this->Y() - dest->Y();
+	float xDist = X() - dest->X();
+	float yDist = Y() - dest->Y();
 
 	float distSquared = pow(xDist,2) + pow(yDist,2);
 	
@@ -64,4 +64,41 @@ float Vector2::MagnitudeSquared() const
 	const float magSquared = pow(X(),2) + pow(Y(),2);
 
 	return magSquared;
+}
+
+// OPERATOR OVERLOADS
+
+bool operator ==(const Vector2& v1, const Vector2& v2)
+{
+	if ((v1.X() == v2.X()) && (v1.Y() == v2.Y()))
+	{
+		return true;
+	}
+
+	return false;
+}
+
+bool operator !=(const Vector2& v1, const Vector2& v2)
+{
+	return !(v1==v2);
+}
+
+Vector2 operator +(const Vector2& v1, const Vector2& v2)
+{
+	return Vector2(v1.X()+v2.X(), v1.Y()+v2.Y());
+}
+
+Vector2 operator +=(const Vector2& v1, const Vector2& v2)
+{
+	return v1+v2;
+}
+
+Vector2 operator -(const Vector2& v1, const Vector2& v2)
+{
+	return Vector2(v1.X()-v2.X(), v1.Y()-v2.Y());
+}
+
+Vector2 operator -=(const Vector2& v1, const Vector2& v2)
+{
+	return v1-v2;
 }
