@@ -1,8 +1,10 @@
 #include "AStarNode.h"
 
+#include <float.h>
+
 AStarNode::AStarNode()
 {
-	fCost = MAXFLOAT;
-	gCost = MAXFLOAT;
-	hCost = MAXFLOAT;
+	fCost = FLT_MAX;
+	gCost = FLT_MAX;
+	hCost = FLT_MAX;
 }

@@ -9,18 +9,28 @@ class Vector2
 public:
 	Vector2();
 	Vector2(float x, float y);
-	
-	float X();
-	float Y();
-
 	void Set(float x, float y);
-	float DistanceSquared(Vector2* dest);
-	float Distance(Vector2 dest);
+	
+	float X() const;
+	float Y() const;
+
+	float Distance(Vector2* dest) const;
+	float DistanceSquared(Vector2* dest) const;
+	float MagnitudeSquared() const;
 	
 private:
 	float m_x;
 	float m_y;
 	bool m_isSet;
+};
+
+// This is used as the comparison operator in maps.
+struct Vector2Comparer 
+{
+    bool operator() (const Vector2 &v1, const Vector2 &v2) const 
+	{
+        return v1.MagnitudeSquared() < v2.MagnitudeSquared();
+	}
 };
 
 #endif

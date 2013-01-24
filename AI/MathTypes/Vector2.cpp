@@ -21,21 +21,30 @@ void Vector2::Set(float x, float y)
 	m_isSet = true;
 }
 
-float Vector2::X() 
+float Vector2::X() const 
 {
 	assert(m_isSet);
 
 	return m_x;
 };
 	
-float Vector2::Y() 
+float Vector2::Y() const 
 {
 	assert(m_isSet);
 
 	return m_y;
 };
 
-float Vector2::DistanceSquared(Vector2* dest)
+float Vector2::Distance(Vector2* dest) const
+{
+	assert(m_isSet);
+
+	float dist = sqrt(DistanceSquared(dest));
+
+	return dist;
+}
+
+float Vector2::DistanceSquared(Vector2* dest) const
 {
 	assert(m_isSet);
 
@@ -48,11 +57,11 @@ float Vector2::DistanceSquared(Vector2* dest)
 	return distSquared;
 }
 
-float Vector2::Distance(Vector2* dest)
+float Vector2::MagnitudeSquared() const
 {
 	assert(m_isSet);
 
-	float dist = sqrt(DistanceSquared(dest));
+	const float magSquared = pow(X(),2) + pow(Y(),2);
 
-	return dist;
+	return magSquared;
 }

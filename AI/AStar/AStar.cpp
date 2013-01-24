@@ -10,15 +10,22 @@ AStar::AStar()
 	{	
 		for (int y=0; y<GRID_SIZE_Y; y++)
 		{
+			Vector2 nodePosition(x,y);
 			AStarNode* aStarNode = new AStarNode();
 
-			m_openSet.insert(std::pair(Vector2(x,y), aStarNode));
+			m_openSet[nodePosition] = aStarNode;
 		}
 	}
  
 }
 
-std::vector<Vector2> AStar::GeneratePath(Vector2 currentPosition, Vector2 destination)
+std::vector<Vector2> AStar::GeneratePath(Vector2 startingNode, Vector2 destinationNode)
 {
-	
+	// Work out which nodes we 
+}
+
+// Find all of the nodes adjacent to the supplied one. Maximum of 8.
+std::list<AStarNode*> AStar::FindAdjacentNodes(Vector2 currentNode)
+{
+
 }

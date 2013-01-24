@@ -5,6 +5,7 @@
 #include "AStarNode.h"
 
 #include <vector>
+#include <list>
 #include <map>
 
 class AStar
@@ -12,11 +13,13 @@ class AStar
 public:
 	AStar();
 	
-	std::vector<Vector2> GeneratePath(Vector2 currentPosition, Vector2 destination);
+	std::vector<Vector2> GeneratePath(Vector2 startingNode, Vector2 destinationNode);
 
 private:
-	std::map<Vector2, AStarNode*> m_openSet;
-	std::map<Vector2, AStarNode*> m_closedSet;
+	std::list<AStarNode*> FindAdjacentNodes(Vector2 currentNode);
+
+	std::map<Vector2, AStarNode*, Vector2Comparer> m_openSet;
+	std::map<Vector2, AStarNode*, Vector2Comparer> m_closedSet;
 };
 
 #endif
