@@ -4,7 +4,24 @@
 
 AStarNode::AStarNode()
 {
-	fCost = FLT_MAX;
-	gCost = FLT_MAX;
-	hCost = FLT_MAX;
+	m_fScore = FLT_MAX;
+	m_gScore = FLT_MAX/2;
+	m_hScore = FLT_MAX/2;
+}
+
+const float AStarNode::getFScore()
+{
+	m_fScore = m_gScore + m_hScore;
+
+	return m_fScore;
+}
+
+void AStarNode::setGScore(float gScore)
+{
+	m_gScore = gScore;
+}
+
+void AStarNode::setHScore(float hScore)
+{
+	m_hScore = hScore;
 }

@@ -6,13 +6,17 @@ class AStarNode
 public:
 	AStarNode();
 
+	const float getFScore();
+	void setGScore(float gScore);
+	void setHScore(float hScore);
+
 private:
-	// fCost = gCost + hCost
-	float fCost;
-	// gCost is the cost of travelling from the starting node to this one.
-	float gCost;
-	// hCost is the admissable heuristic. In this case, the absolute distance from this node to the destination.
-	float hCost;
+	// fScore = gScore + hScore
+	float m_fScore;
+	// gScore is the cost of travelling from the starting node to this one.
+	float m_gScore;
+	// hScore is the admissable heuristic. In this case, the absolute distance from this node to the destination.
+	float m_hScore;
 };
 
 #endif

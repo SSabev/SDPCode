@@ -16,7 +16,7 @@ public:
 	std::vector<Vector2> GeneratePath(Vector2 startingNode, Vector2 destinationNode);
 
 private:
-	std::list<AStarNode*> FindAdjacentNodes(Vector2 currentNode);
+	std::list<Vector2> FindAdjacentNodes(Vector2 currentNode);
 
 	std::map<Vector2, AStarNode*, Vector2Comparer> m_openSet;
 	std::map<Vector2, AStarNode*, Vector2Comparer> m_closedSet;
