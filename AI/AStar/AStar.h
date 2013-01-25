@@ -4,7 +4,6 @@
 #include "../MathTypes/Vector2.h"
 #include "AStarNode.h"
 
-#include <vector>
 #include <list>
 #include <map>
 
@@ -13,7 +12,7 @@ class AStar
 public:
 	AStar();
 	
-	std::vector<Vector2> GeneratePath(Vector2 startingNode, Vector2 destinationNode);
+	std::list<Vector2> GeneratePath(Vector2 startingNode, Vector2 destinationNode);
 
 private:
 	std::list<Vector2> FindAdjacentNodes(Vector2 currentNode);

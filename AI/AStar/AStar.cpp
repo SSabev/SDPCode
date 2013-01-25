@@ -10,7 +10,7 @@ AStar::AStar()
 
 }
 
-std::vector<Vector2> AStar::GeneratePath(Vector2 startingNode, Vector2 destinationNode)
+std::list<Vector2> AStar::GeneratePath(Vector2 startingNode, Vector2 destinationNode)
 {
 	m_costTravelled = 0;
 	
@@ -40,11 +40,25 @@ std::vector<Vector2> AStar::GeneratePath(Vector2 startingNode, Vector2 destinati
 		}
 
 		// Check if we've reached the goal node.
+		// If we have, we've got all the information we need to produce the path.
 		if (currentNode == destinationNode)
 		{
-			
+			// We now want to reconstruct the complete A* path.
+			std::list<Vector2> nodesOnPath;
 
-			break;
+			Vector2 previousNode = destinationNode;
+
+			while (previousNode != startingNode)
+			{
+				nodesOnPath.push_front(previousNode);
+
+				previousNode = m_closedSet[previousNode]->getPreviousNode();
+			}
+
+			// Finally, add the starting node to the path.
+			nodesOnPath.push_front(startingNode);
+
+			return nodesOnPath;
 		}
 
 		// Add the current node to the closed set & remove it from the open set.
@@ -71,6 +85,7 @@ std::vector<Vector2> AStar::GeneratePath(Vector2 startingNode, Vector2 destinati
 				m_openSet[currentAdjacentNode] = new AStarNode();
 				m_openSet[currentAdjacentNode]->setGScore(m_costTravelled + currentNode.Distance(&currentAdjacentNode));
 				m_openSet[currentAdjacentNode]->setHScore(currentAdjacentNode.Distance(&destinationNode));
+				m_openSet[currentAdjacentNode]->setPreviousNode(currentNode);
 
 				continue;
 			}
@@ -83,6 +98,7 @@ std::vector<Vector2> AStar::GeneratePath(Vector2 startingNode, Vector2 destinati
 				m_openSet[currentAdjacentNode] = new AStarNode();
 				m_openSet[currentAdjacentNode]->setGScore(m_costTravelled + currentNode.Distance(&currentAdjacentNode));
 				m_openSet[currentAdjacentNode]->setHScore(currentAdjacentNode.Distance(&destinationNode));
+				m_openSet[currentAdjacentNode]->setPreviousNode(currentNode);
 
 				continue;
 			}
