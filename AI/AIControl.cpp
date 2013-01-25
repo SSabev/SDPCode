@@ -2,7 +2,6 @@
 
 #include <vector>
 
-
 void AIControl::Initialise()
 {
 	m_foresee = Foresee();

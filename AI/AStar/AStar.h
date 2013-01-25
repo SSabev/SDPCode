@@ -7,6 +7,12 @@
 #include <list>
 #include <map>
 
+#if defined(TEST)
+// This facilitates testing of private and protected functions.
+#include "../UnitTests/AStarUnitTests.cpp"
+friend class AStarUnitTests
+#endif
+
 class AStar
 {
 public:
