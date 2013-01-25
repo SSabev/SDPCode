@@ -92,3 +92,61 @@ Vector2 operator -(const Vector2& v1, const Vector2& v2)
 {
 	return Vector2(v1.X()-v2.X(), v1.Y()-v2.Y());
 }
+
+Vector2 operator *(const Vector2& v, const int& i)
+{
+	return Vector2(v.X()*i, v.Y()*i);
+}
+
+Vector2 operator *(const int& i, const Vector2& v)
+{
+	return v*i;
+}
+
+Vector2 operator *(const Vector2& v, const float& f)
+{
+	return Vector2(v.X()*f, v.Y()*f);
+}
+
+Vector2 operator *(const float& f, const Vector2& v)
+{
+	return v*f;
+}
+
+Vector2 operator /(const Vector2& v, const int& i)
+{
+	return Vector2(v.X()/i, v.Y()/i);
+}
+
+Vector2 operator /(const Vector2& v, const float& f)
+{
+	return Vector2(v.X()/f, v.Y()/f);
+}
+
+Vector2 Vector2::operator+=(const Vector2& v2)
+{
+	return *this+v2;
+}
+
+Vector2 Vector2::operator-=(const Vector2& v2)
+{
+	return *this-v2;
+}
+
+Vector2 Vector2::operator*=(const int& i)
+{
+	return *this * i;
+}
+Vector2 Vector2::operator*=(const float& f)
+{
+	return *this * f;
+}
+
+Vector2 Vector2::operator/=(const int& i)
+{
+	return *this / i;
+}
+Vector2 Vector2::operator/=(const float& f)
+{
+	return *this / f;
+}

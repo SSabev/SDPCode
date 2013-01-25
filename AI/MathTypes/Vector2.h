@@ -17,6 +17,14 @@ public:
 	float Distance(Vector2* dest) const;
 	float DistanceSquared(Vector2* dest) const;
 	float MagnitudeSquared() const;
+
+	// Operator overloads.
+	Vector2 operator+=(const Vector2& v2);
+	Vector2 operator-=(const Vector2& v2);
+	Vector2 operator*=(const int& i);
+	Vector2 operator*=(const float& f);
+	Vector2 operator/=(const int& i);
+	Vector2 operator/=(const float& f);
 	
 private:
 	float m_x;
@@ -29,6 +37,12 @@ bool operator==(const Vector2& v1, const Vector2& v2);
 bool operator!=(const Vector2& v1, const Vector2& v2);
 Vector2 operator+(const Vector2& v1, const Vector2& v2);
 Vector2 operator-(const Vector2& v1, const Vector2& v2);
+Vector2 operator*(const int& i, const Vector2& v);
+Vector2 operator*(const Vector2& v, const int& i);
+Vector2 operator*(const float& f, const Vector2& v);
+Vector2 operator*(const Vector2& v, const float& f);
+Vector2 operator/(const Vector2& v, const int& i);
+Vector2 operator/(const Vector2& v, const float& f);
 
 // This is used as the comparer in maps.
 struct Vector2Comparer 
