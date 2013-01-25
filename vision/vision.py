@@ -56,7 +56,7 @@ class Vision:
         while self.running:
             try:
                 if not self.stdout:
-                    self.connect()
+                    self.connected = True
                 else:
                     self.connected = True
 
@@ -96,6 +96,9 @@ class Vision:
             frame = self.cap.getImage()
         else:
             frame = self.cap.getImageUndistort()
+
+	calibrationPath = os.path.join('calibration', 'pitch{0}'.format(0))
+        self.cap.loadCalibration(os.path.join(sys.path[0], calibrationPath))
 
         frame = self.preprocessor.preprocess(frame)
         
@@ -185,6 +188,3 @@ if __name__ == "__main__":
         parser.error('Pitch must be 0 or 1')
 
     Vision(options.pitch, options.stdout, options.file, options.resetPitchSize)
-
-
-

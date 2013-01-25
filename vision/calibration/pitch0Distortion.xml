@@ -5,6 +5,7 @@
   <cols>1</cols>
   <dt>f</dt>
   <data>
-    -3.1740235091903346e-01 -8.6157434640872499e-02 9.2026812110876845e-03
-    4.4950266773574115e-03</data></defaultDistortion>
+0.1328125 0.30729166667 -0.04427083333 -0.15625 
+</data>
+</defaultDistortion>
 </opencv_storage>
