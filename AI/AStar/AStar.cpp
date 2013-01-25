@@ -12,6 +12,8 @@ AStar::AStar()
 
 std::vector<Vector2> AStar::GeneratePath(Vector2 startingNode, Vector2 destinationNode)
 {
+	m_costTravelled = 0;
+	
 	// First, let's add the starting node to the open set.
 	m_openSet[startingNode] = new AStarNode();
 	m_openSet[startingNode]->setGScore(0.0f);
@@ -23,24 +25,65 @@ std::vector<Vector2> AStar::GeneratePath(Vector2 startingNode, Vector2 destinati
 		Vector2 currentNode;
 		float lowestFScore = FLT_MAX;
 
-		std::map<Vector2, AStarNode*, Vector2Comparer>::iterator it;
+		std::map<Vector2, AStarNode*, Vector2Comparer>::iterator openSetIt;
 
 		// Find the node in the open set with the lowest f-score. 
 		// This is the node we want to expand next.
-		for (it = m_openSet.begin(); it != m_openSet.end(); it++)
+		for (openSetIt = m_openSet.begin(); openSetIt != m_openSet.end(); openSetIt++)
 		{
-			const float currentFScore = it->second->getFScore();
+			const float currentFScore = openSetIt->second->getFScore();
 
 			if (currentFScore < lowestFScore)
 			{
-				currentNode = it->first;
+				currentNode = openSetIt->first;
 			}
 		}
 
 		// Check if we've reached the goal node.
 		if (currentNode == destinationNode)
 		{
+			
 
+			break;
+		}
+
+		// Add the current node to the closed set & remove it from the open set.
+		m_closedSet[currentNode] = m_openSet[currentNode];
+		m_openSet.erase(currentNode);
+
+		// Get all nodes adjacent to the current one (i.e. the nodes we can travel to from here).
+		std::list<Vector2> adjacentNodes = FindAdjacentNodes(currentNode);
+		std::list<Vector2>::iterator adjacentNodesIt;
+
+		for (adjacentNodesIt = adjacentNodes.begin(); adjacentNodesIt != adjacentNodes.end(); adjacentNodesIt++)
+		{
+			Vector2 currentAdjacentNode = *adjacentNodesIt;
+
+			// Check if the node is in the closed set.
+			if (m_closedSet.find(currentAdjacentNode) != m_closedSet.end())
+			{
+				continue;
+			}
+			
+			// If this node isn't in the open set, add it.
+			if (m_openSet.find(currentAdjacentNode) == m_openSet.end())
+			{
+				m_openSet[currentAdjacentNode] = new AStarNode();
+				m_openSet[currentAdjacentNode]->setGScore();
+				m_openSet[currentAdjacentNode]->setHScore(currentAdjacentNode.Distance(&destinationNode));
+			}
+
+			// If we've improved upon a previously calculated cost to get to this node, update it.
+			if (!doesNodeNeedUpdating)
+			{
+				float newGScore = m_costTravelled + currentNode.Distance(&currentAdjacentNode);
+
+				if (newGScore < m_openSet[currentAdjacentNode]->getGScore())
+				{
+					doesNodeNeedUpdating = true;
+				}
+
+			}
 		}
 	}
 }

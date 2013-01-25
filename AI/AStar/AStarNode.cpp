@@ -16,6 +16,11 @@ const float AStarNode::getFScore()
 	return m_fScore;
 }
 
+const float AStarNode::getGScore()
+{
+	return m_gScore;
+}
+
 void AStarNode::setGScore(float gScore)
 {
 	m_gScore = gScore;
