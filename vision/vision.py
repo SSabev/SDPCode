@@ -4,35 +4,35 @@ import os
 import time
 import math
 import socket
-import cv
 
 from optparse import OptionParser
 
-from SimpleCV import Image, Camera, VirtualCamera
+from SimpleCV import Camera, VirtualCamera
 from preprocess import Preprocessor
 from features import Features
 from threshold import Threshold
 from display import Gui, ThresholdGui
 
-HOST = 'localhost' 
-PORT = 28546 
+HOST = 'localhost'
+PORT = 28546
 
 PITCH_SIZE = (243.8, 121.9)
 
 # Distinct between field size line or entity line
-ENTITY_BIT = 'E';
-PITCH_SIZE_BIT  = 'P';
+ENTITY_BIT = 'E'
+PITCH_SIZE_BIT = 'P'
+
 
 class Vision:
-    
+
     def __init__(self, pitchnum, stdout, sourcefile, resetPitchSize):
-               
+
         self.running = True
         self.connected = False
-        
-        self.stdout = stdout 
 
-        if sourcefile is None:  
+        self.stdout = stdout
+
+        if sourcefile is None:
             self.cap = Camera()
         else:
             filetype = 'video'
@@ -40,7 +40,7 @@ class Vision:
                 filetype = 'image'
 
             self.cap = VirtualCamera(sourcefile, filetype)
-        
+
         calibrationPath = os.path.join('calibration', 'pitch{0}'.format(pitchnum))
         self.cap.loadCalibration(os.path.join(sys.path[0], calibrationPath))
 
@@ -49,7 +49,7 @@ class Vision:
         self.thresholdGui = ThresholdGui(self.threshold, self.gui)
         self.preprocessor = Preprocessor(resetPitchSize)
         self.features = Features(self.gui, self.threshold)
-        
+
         eventHandler = self.gui.getEventHandler()
         eventHandler.addListener('q', self.quit)
 
@@ -81,27 +81,28 @@ class Vision:
 
         if not self.stdout:
             self.socket.close()
-        
+
     def connect(self):
         print("Attempting to connect...")
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.socket.connect( (HOST, PORT) )
+        self.socket.connect((HOST, PORT))
         self.connected = True
 
     def quit(self):
         self.running = False
-        
+
     def doStuff(self):
         if self.cap.getCameraMatrix is None:
             frame = self.cap.getImage()
         else:
             frame = self.cap.getImageUndistort()
 
-	calibrationPath = os.path.join('calibration', 'pitch{0}'.format(0))
-        self.cap.loadCalibration(os.path.join(sys.path[0], calibrationPath))
+        # Uncomment to see changes in barrell distortion matrix
+        #calibrationPath = os.path.join('calibration', 'pitch{0}'.format(0))
+        #self.cap.loadCalibration(os.path.join(sys.path[0], calibrationPath))
 
         frame = self.preprocessor.preprocess(frame)
-        
+
         self.gui.updateLayer('raw', frame)
 
         ents = self.features.extractFeatures(frame)
@@ -111,7 +112,7 @@ class Vision:
 
     def setNextPitchCorner(self, where):
         self.preprocessor.setNextPitchCorner(where)
-        
+
         if self.preprocessor.hasPitchSize:
             print("Pitch size: {0!r}".format(self.preprocessor.pitch_size))
             self.outputPitchSize()
@@ -119,7 +120,7 @@ class Vision:
             self.gui.updateLayer('corner', None)
         else:
             self.gui.drawCrosshair(where, 'corner')
-    
+
     def outputPitchSize(self):
         print(self.preprocessor.pitch_size)
         self.send('{0} {1} {2} \n'.format(
@@ -144,16 +145,17 @@ class Vision:
             if name == 'ball':
                 self.send('{0} {1} '.format(x, y))
             else:
-                angle = 360 - (((entity.angle() * (180/math.pi)) - 360) % 360)
+                angle = 360 - (((entity.angle() * (180 / math.pi)) - 360) % 360)
                 self.send('{0} {1} {2} '.format(x, y, angle))
 
         self.send(str(int(time.time() * 1000)) + " \n")
-        
+
     def send(self, string):
         if self.stdout:
             sys.stdout.write(string)
         else:
             self.socket.send(string)
+
 
 class OptParser(OptionParser):
     """
@@ -184,7 +186,7 @@ if __name__ == "__main__":
 
     (options, args) = parser.parse_args()
 
-    if options.pitch not in [0,1]:
+    if options.pitch not in [0, 1]:
         parser.error('Pitch must be 0 or 1')
 
     Vision(options.pitch, options.stdout, options.file, options.resetPitchSize)
