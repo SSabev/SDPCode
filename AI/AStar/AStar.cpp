@@ -69,20 +69,22 @@ std::vector<Vector2> AStar::GeneratePath(Vector2 startingNode, Vector2 destinati
 			if (m_openSet.find(currentAdjacentNode) == m_openSet.end())
 			{
 				m_openSet[currentAdjacentNode] = new AStarNode();
-				m_openSet[currentAdjacentNode]->setGScore();
+				m_openSet[currentAdjacentNode]->setGScore(m_costTravelled + currentNode.Distance(&currentAdjacentNode));
 				m_openSet[currentAdjacentNode]->setHScore(currentAdjacentNode.Distance(&destinationNode));
+
+				continue;
 			}
 
 			// If we've improved upon a previously calculated cost to get to this node, update it.
-			if (!doesNodeNeedUpdating)
+			float newGScore = m_costTravelled + currentNode.Distance(&currentAdjacentNode);
+
+			if (newGScore < m_openSet[currentAdjacentNode]->getGScore())
 			{
-				float newGScore = m_costTravelled + currentNode.Distance(&currentAdjacentNode);
+				m_openSet[currentAdjacentNode] = new AStarNode();
+				m_openSet[currentAdjacentNode]->setGScore(m_costTravelled + currentNode.Distance(&currentAdjacentNode));
+				m_openSet[currentAdjacentNode]->setHScore(currentAdjacentNode.Distance(&destinationNode));
 
-				if (newGScore < m_openSet[currentAdjacentNode]->getGScore())
-				{
-					doesNodeNeedUpdating = true;
-				}
-
+				continue;
 			}
 		}
 	}
