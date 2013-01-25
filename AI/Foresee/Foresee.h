@@ -1,7 +1,7 @@
 #if !defined(FORESEE_H)
 #define FORESEE_H
 
-#include "MathTypes/Vector2.h"
+#include "../MathTypes/Vector2.h"
 
 #include <list>
 #include <vector>

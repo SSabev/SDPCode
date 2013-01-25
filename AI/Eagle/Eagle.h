@@ -1,7 +1,7 @@
 #if !defined(EAGLE_H)
 #define EAGLE_H
 
-#include "MathTypes/Vector2.h"
+#include "../MathTypes/Vector2.h"
 
 #include <vector>
 

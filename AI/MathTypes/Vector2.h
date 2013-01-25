@@ -28,9 +28,7 @@ private:
 bool operator==(const Vector2& v1, const Vector2& v2);
 bool operator!=(const Vector2& v1, const Vector2& v2);
 Vector2 operator+(const Vector2& v1, const Vector2& v2);
-Vector2 operator+=(const Vector2& v1, const Vector2& v2);
 Vector2 operator-(const Vector2& v1, const Vector2& v2);
-Vector2 operator-=(const Vector2& v1, const Vector2& v2);
 
 // This is used as the comparer in maps.
 struct Vector2Comparer 

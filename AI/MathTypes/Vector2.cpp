@@ -88,17 +88,7 @@ Vector2 operator +(const Vector2& v1, const Vector2& v2)
 	return Vector2(v1.X()+v2.X(), v1.Y()+v2.Y());
 }
 
-Vector2 operator +=(const Vector2& v1, const Vector2& v2)
-{
-	return v1+v2;
-}
-
 Vector2 operator -(const Vector2& v1, const Vector2& v2)
 {
 	return Vector2(v1.X()-v2.X(), v1.Y()-v2.Y());
-}
-
-Vector2 operator -=(const Vector2& v1, const Vector2& v2)
-{
-	return v1-v2;
 }

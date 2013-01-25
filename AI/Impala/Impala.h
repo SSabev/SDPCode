@@ -1,7 +1,7 @@
 #if !defined(IMPALA_H)
 #define IMPALA_H
 
-#include "MathTypes/Vector2.h"
+#include "../MathTypes/Vector2.h"
 
 #include <vector>
 

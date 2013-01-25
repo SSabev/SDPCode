@@ -1,7 +1,7 @@
 #if !defined(ASTAR_H)
 #define ASTAR_H
 
-#include "MathTypes/Vector2.h"
+#include "../MathTypes/Vector2.h"
 #include "AStarNode.h"
 
 #include <vector>
