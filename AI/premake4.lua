@@ -9,13 +9,13 @@ solution "SDP-AI"
 		"Eagle/*.h", "Eagle/*.cpp",
 		"Foresee/*.h", "Foresee/*.cpp",
 		"Impala/*.h", "Impala/*.cpp",
-		"MathTypes/*.h", "MathTypes/*.cpp" }
-		files { "UnitTests/*.h", "UnitTests/*.cpp" }
+		"MathTypes/*.h", "MathTypes/*.cpp", 
+		"UnitTests/*.h", "UnitTests/*.cpp" }
 
 	links { "cpptest" }
 
-	libdirs { "/usr/local/lib" }
-	includedirs { "/usr/local/include" }
+	libdirs { "./libs/cpptest/src/.libs" }
+	includedirs { "./libs/cpptest/src" }
  
 	configuration "Debug"
 		defines { "DEBUG" }
@@ -31,3 +31,4 @@ solution "SDP-AI"
 		defines { "DEBUG", "TEST" }
 		flags { "Symbols" }
 		targetdir "./test"
+
