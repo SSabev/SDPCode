@@ -10,11 +10,15 @@
 #if defined(TEST)
 // This facilitates testing of private and protected functions.
 #include "../UnitTests/AStarUnitTests.cpp"
-friend class AStarUnitTests
 #endif
 
 class AStar
 {
+
+#if defined(TEST)
+friend class AStarUnitTests;
+#endif
+
 public:
 	AStar();
 	
