@@ -2,7 +2,7 @@
 
 BASEDIR=$(dirname $0)
 
-source "$BASEDIR/../env"
+# source "$BASEDIR/../env"
 
 until python "$BASEDIR/vision.py" $@; do
     echo "Vision crashed :( Respawning.." >&2

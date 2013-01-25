@@ -1,6 +1,6 @@
 import sys
 import os
-import cPickle as pickle
+import cPickle
 
 def dumpToFile(obj, path):
     """
@@ -13,9 +13,9 @@ def dumpToFile(obj, path):
     if not os.path.exists(d):
         os.makedirs(d)
 
-    f = open(path, 'wb')
+    f = open(path, 'w')
     try:
-        pickle.dump(obj, f, protocol=pickle.HIGHEST_PROTOCOL)
+        cPickle.dump(obj, f, protocol=2)
 
     except Exception, e:
         raise e
@@ -27,9 +27,9 @@ def loadFromFile(path):
     if not fileExists(path):
         return None
 
-    f = open(getRealPath(path), 'rb')
+    f = open(getRealPath(path), 'r')
     try:
-        return pickle.load(f)
+        return cPickle.load(f)
     except Exception, e:
         return None
     finally:

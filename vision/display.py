@@ -28,7 +28,7 @@ class Gui:
                 # Overlay layers
                 'yellow': None,
                 'blue': None,
-                'ball' : None,
+                'ball': None,
                 }
 
         # These layers are drawn regardless of the current layerset
@@ -91,7 +91,8 @@ class Gui:
         self._lastFrameTime = thisFrameTime
 
         layer = self._layers['raw'].dl()
-        layer.ezViewText('{0:.2f} fps'.format(fps), (10, 10))
+        print fps
+        #layer.ezViewText('{0:.2f} fps'.format(fps), (10, 10))
 
     def drawCrosshair(self, pos, layerName = None):
         size = self._layers['raw'].size()

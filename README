@@ -1,0 +1,11 @@
+To run vision:
+	> source venv/env/bin/activate
+	> ./vision/runvision.sh -p0 -r
+
+"-r" does some magic for automatic respawning....?
+
+To tweak matrix for barrel distortion in new terminal tab while vision is running:
+	> cd vision
+	> python matrix_tweak.py
+
+	and play with those dials!
