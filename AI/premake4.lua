@@ -14,8 +14,8 @@ solution "SDP-AI"
 
 	links { "cpptest" }
 
-	libdirs { "/usr/local/lib" }
-	includedirs { "/usr/local/include" }
+	libdirs { "./libs" }
+	includedirs { "./libs/include" }
  
 	configuration "Debug"
 		defines { "DEBUG" }
