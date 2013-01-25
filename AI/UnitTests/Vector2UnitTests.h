@@ -16,6 +16,7 @@ private:
 	
 	void Vector2Distance();
 	void Vector2DistanceSquared();
+	void Vector2MagnitudeSquared();
 };
 
 #endif

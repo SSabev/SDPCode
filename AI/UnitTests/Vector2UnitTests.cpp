@@ -2,9 +2,6 @@
 
 #include "../MathTypes/Vector2.h"
 
-#include <math.h>
-#include <stdio.h>
-
 Vector2UnitTests::Vector2UnitTests()
 {
 	TEST_ADD(Vector2UnitTests::Vector2Equals);
@@ -14,6 +11,7 @@ Vector2UnitTests::Vector2UnitTests()
 	
 	TEST_ADD(Vector2UnitTests::Vector2Distance);
 	TEST_ADD(Vector2UnitTests::Vector2DistanceSquared);
+	TEST_ADD(Vector2UnitTests::Vector2MagnitudeSquared);
 }
 
 void Vector2UnitTests::Vector2Equals()
@@ -62,4 +60,11 @@ void Vector2UnitTests::Vector2DistanceSquared()
 	Vector2 v2(3,1);
 
 	TEST_ASSERT(v1.DistanceSquared(&v2) == 9);
+}
+
+void Vector2UnitTests::Vector2MagnitudeSquared()
+{
+	Vector2 v1(-5,0);
+
+	TEST_ASSERT(v1.MagnitudeSquared() == 25);
 }
