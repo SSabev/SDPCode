@@ -3,7 +3,8 @@
 
 #include <ui_mainwindow.h>
 
-#include "Logging.h"
+#include "LoggingWidget.h"
+#include "Comm/BTComm.h"
 
 #include <QMainWindow>
 
@@ -24,8 +25,10 @@ private slots:
 
 private:
     void SetupGUI();
+    void InitSytem();
 
-    CLogging *m_logWdgt;
+    CLoggingWidget *m_logWdgt;
+    CBtComm        *m_btComm;
 };
 
 

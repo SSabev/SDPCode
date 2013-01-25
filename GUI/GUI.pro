@@ -4,11 +4,19 @@ FORMS += \
 
 HEADERS += \
     MainWindow.h \
-    ../SharedMem/SharedMem.h \
-    Logging.h
+    ../Shared/SharedMem.h \
+    ../Shared/Logging.h \
+    LoggingWidget.h \
+    ../Shared/Sockets.h \
+    Comm/BTComm.h
 
 SOURCES += \
     MainWindow.cpp \
     main.cpp \
-    Reader/Reader.cpp \
-    Logging.cpp
+    SharedMem.cpp \
+    LoggingWidget.cpp \
+    Logging.cpp \
+    Comm/BTComm.cpp
+
+CONFIG += network
+QT += network

@@ -3,6 +3,27 @@
 
 #define SH_MEM_SIZE 8
 
+typedef enum {
+    eIDLE,
+    eMatch,
+    eLeftPenalty,
+    eRightPenalty,
+    eStop = eIDLE,   // Same as IDLE
+
+    eMoveStraight,   // First milestone
+    eDoPenalty       // First milestone
+} TSystemState;
+
+typedef struct{
+    //! TODO: need to identify data that is required
+    ///       for robot movement
+    unsigned char motor_1;
+    unsigned char motor_2;
+    unsigned char motor_3;
+    unsigned char motor_4;
+    unsigned      kicker    : 1;
+} __attribute__ ((packed)) TRobotData;
+
 typedef struct
 {
     unsigned char yellow_x;
@@ -18,6 +39,11 @@ typedef struct
 
     unsigned      timestamp;
 
+    // next 5 fields to be sent out to robot
+
+    TRobotData robotData;
+
+    // next field to be recieved from robot
     unsigned      r_sensor  : 1;
     unsigned      l_sensor  : 1;
     unsigned      have_ball : 1;
@@ -25,8 +51,9 @@ typedef struct
 
 typedef struct
 {
-    TEntry      Positioning[SH_MEM_SIZE];
-    unsigned    CurrentIdx;               // index of last retrieved position
+    TSystemState  systemState;
+    unsigned      CurrentIdx;               // index of active TEntry frame
+    TEntry        Positioning[SH_MEM_SIZE];
 } TShMem;
 
 extern TShMem sharedMem;
