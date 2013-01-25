@@ -7,6 +7,7 @@ public:
 	AStarNode();
 
 	const float getFScore();
+	const float getGScore();
 	void setGScore(float gScore);
 	void setHScore(float hScore);
 
