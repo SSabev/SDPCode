@@ -18,6 +18,7 @@ public:
 private:
 	std::list<Vector2> FindAdjacentNodes(Vector2 currentNode);
 
+	float m_costTravelled;
 	std::map<Vector2, AStarNode*, Vector2Comparer> m_openSet;
 	std::map<Vector2, AStarNode*, Vector2Comparer> m_closedSet;
 };
