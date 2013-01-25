@@ -2,6 +2,7 @@
 
 #include <vector>
 
+
 void AIControl::Initialise()
 {
 	m_foresee = Foresee();
@@ -10,8 +11,13 @@ void AIControl::Initialise()
 	m_impala = Impala();
 }
 
-std::list<RobotState> AIControl::RunAI(RobotState ourRobot, RobotState enemyRobot, Vector2 ballPos)
+void AIControl::RunAI()
 {	
+	// These should be read from shared memory (sharedMem).
+	RobotState ourRobot(0,0,0);
+	RobotState enemyRobot(0,0,0);
+	Vector2 ballPos(0,0);
+
 	// Given the current position and a certain number of previous positions, 
 	// approximate where the bot will be when it receives our next transmission.
 	std::vector<Vector2> futurePositions = m_foresee.ExtrapolateState(ourRobot.Position(), enemyRobot.Position(), ballPos);
@@ -25,4 +31,6 @@ std::list<RobotState> AIControl::RunAI(RobotState ourRobot, RobotState enemyRobo
 	
 	// Smooth and optimise the path using knowledge of our bot's capabilities.
 	std::list<Vector2> smoothedPath = m_impala.SmoothPath(aStarPath);
+
+	// Results should be written to shared memory.
 }

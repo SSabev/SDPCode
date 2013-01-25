@@ -1,6 +1,8 @@
 #if !defined(AICONTROL_H)
 #define AICONTROL_H
 
+#include "../Shared/SharedMem.h"
+
 #include "MathTypes/Vector2.h"
 #include "RobotState.h"
 
@@ -15,7 +17,7 @@ class AIControl
 {
 public:
 	void Initialise();
-	std::list<RobotState> RunAI(RobotState ourRobot, RobotState enemyRobot, Vector2 ballPos);
+	void RunAI();
 	
 private:
 	Foresee m_foresee;
