@@ -25,6 +25,10 @@ COMPILING
 
 The AI can be compiled as a standalone binary, however this is only for debug and development purposes. In practice, it should be included in and compiled as part of the GUI binary.
 
+The libs can and should be configured and compiled by executing:
+
+./compile-libs.sh
+
 However, if you do wish to compile the AI directly, a premake4.lua file is included to help you with this. It can be used to generate make files or projects for various IDEs, e.g.
 
 premake4 gmake
@@ -36,6 +40,7 @@ UNIT TESTING
 
 The AI comes with certain unit tests, using the included library cpptest. You can run these tests as follows:
 
+./compile-libs.sh
 premake4 gmake
 make config=test
 cd test
