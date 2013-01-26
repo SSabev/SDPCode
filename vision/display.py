@@ -136,7 +136,9 @@ class Gui:
         if not pygame.key.get_focused():
             c = cv.WaitKey(2)
             self._eventHandler.processKey(chr(c % 0x100))
-
+        
+        if self.showPixel:
+            self.__updatePixel()
         self.__updateFps()
         self.__draw()
 
@@ -168,6 +170,74 @@ class Gui:
             self.updateLayer('mouse', None)
 
         self._showMouse = showMouse
+        
+    # Show pixel mode: turn on/off by 'p', show the HSV of the pixel at the mouse
+    showPixel = False;
+    def toggleShowPixel(self):
+        self.showPixel = not self.showPixel
+        
+    # Record pixel mode: use the current pixel to update threshold
+    recordPixel = False;
+    def toggleRecordPixel(self):
+        self.recordPixel = not self.recordPixel
+    
+    def getMousePos(self):
+        return (self._display.mouseX, self._display.mouseY)
+        
+    def getPixelHSV(self, x, y):
+        return self._layers['raw'].crop(x,y,1,1).toHSV()[0,0]
+        
+    def getPixel(self, x, y):
+        return self._layers['raw'][x,y]
+        
+    #check (x,y) is in the image range
+    def inRange(self,x,y):
+        h = self._layers['raw'].height
+        w = self._layers['raw'].width
+        return (0< x and x < w and 0< y and y< h)
+        
+    # Display the pixel HSV
+    def __updatePixel(self):
+        (x,y)   = self.getMousePos()
+        if self.inRange(x,y):
+            (h,s,v) = self.getPixelHSV(x,y)
+        else:
+            return
+        
+        if self.recordPixel:
+            self.updateMinMax(h,s,v)
+            
+        drawingLayer = self.getDrawingLayer()
+        drawingLayer.ezViewText('Pixel ({0}, {1}) HSV = ({2}, {3}, {4})'.format(x,y,h,s,v),(10,10))
+        drawingLayer.ezViewText('HSV_min =  ({0}, {1}, {2}) '.format(self.h_min, self.s_min, self.v_min),(10,30))
+        drawingLayer.ezViewText('HSV_max =  ({0}, {1}, {2}) '.format(self.h_max, self.s_max, self.v_max),(10,50))
+        if self.recordPixel:
+            drawingLayer.ezViewText('Recording Pixel',(10,70))
+        
+        #print 'pixel ',(x,y), ' HSV = ', (h,s,v), ' RGB = ', (r,g,b),
+        #print 'HSV_min = ', (self.h_min,self.s_min,self.v_min), 
+        #print 'HSV_max = ', (self.h_max,self.s_max,self.v_max)
+        
+        
+    h_min = s_min = v_min = 255
+    h_max = s_max = v_max = 0
+    
+    def resetMinMax(self):
+    	self.h_min = self.s_min = self.v_min = 255
+    	self.h_max = self.s_max = self.v_max = 0
+    
+    # use the given HSV to update threshold
+    def updateMinMax(self,h,s,v):        
+        self.h_min = min(self.h_min, h)
+        self.s_min = min(self.s_min, s)
+        self.v_min = min(self.v_min, v)
+        self.h_max = max(self.h_max, h)
+        self.s_max = max(self.s_max, s)
+        self.v_max = max(self.v_max, v)
+        
+                
+    def getDrawingLayer(self):
+        return self._layers['raw'].dl()
         
     class EventHandler:
         
@@ -239,7 +309,36 @@ class ThresholdGui:
         keyHandler.addListener('r', ball)
 
         keyHandler.addListener('t', self.toggleShowOnGui)
+        keyHandler.addListener('p', self.toggleShowPixel)
+        keyHandler.addListener('o', self.toggleRecordPixel)
+        keyHandler.addListener('i', self.applyMinMax)
+        keyHandler.addListener('u', self.resetMinMax)
 
+
+    def applyMinMax(self):
+        h_min = int (self._gui.h_min)
+        s_min = int (self._gui.s_min)
+        v_min = int (self._gui.v_min)
+        h_max = int (self._gui.h_max)
+        s_max = int (self._gui.s_max)
+        v_max = int (self._gui.v_max)
+        
+        allvalues = [[h_min, s_min, v_min], [h_max, s_max, v_max]]
+        #print allvalues
+        self.threshold.updateValues(self.currentEntity, allvalues)
+        name = self.currentEntity
+        self.setTrackbarValues(self.threshold._values[name])
+
+        # Make sure trackbars update immediately
+        cv.WaitKey(2)
+
+        if self._showOnGui:
+            self._gui.switchLayerset(name)
+            
+    def resetMinMax(self):
+    	self._gui.resetMinMax()
+            
+    
     def __createTrackbars(self):
 
         cv.CreateTrackbar('H min', self.window, 0, 255, self.__onTrackbarChanged)
@@ -272,7 +371,13 @@ class ThresholdGui:
             self._gui.switchLayerset(self.currentEntity)
         else:
             self._gui.switchLayerset('default')
-
+    
+    def toggleShowPixel(self):
+        self._gui.toggleShowPixel()
+        
+    def toggleRecordPixel(self):
+        self._gui.toggleRecordPixel()
+    
     def changeEntity(self, name):
         """
         Change which entity to adjust thresholding
