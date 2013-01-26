@@ -4,16 +4,25 @@
 #include "../MathTypes/Vector2.h"
 #include "AStarNode.h"
 
-#include <vector>
 #include <list>
 #include <map>
 
+#if defined(TEST)
+// This facilitates testing of private and protected functions.
+#include "../UnitTests/AStarUnitTests.cpp"
+#endif
+
 class AStar
 {
+
+#if defined(TEST)
+friend class AStarUnitTests;
+#endif
+
 public:
 	AStar();
 	
-	std::vector<Vector2> GeneratePath(Vector2 startingNode, Vector2 destinationNode);
+	std::list<Vector2> GeneratePath(Vector2 startingNode, Vector2 destinationNode);
 
 private:
 	std::list<Vector2> FindAdjacentNodes(Vector2 currentNode);

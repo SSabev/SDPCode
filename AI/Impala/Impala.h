@@ -3,14 +3,14 @@
 
 #include "../MathTypes/Vector2.h"
 
-#include <vector>
+#include <list>
 
 class Impala
 {
 public:
 	Impala();
 	
-	std::vector<Vector2> SmoothPath(std::vector<Vector2> aStarPath);
+	std::list<Vector2> SmoothPath(std::list<Vector2> aStarPath);
 };
 
 #endif

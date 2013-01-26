@@ -14,6 +14,8 @@ solution "SDP-AI"
 
 	links { "cpptest" }
 
+	defines{ "STANDALONE" }
+
 	libdirs { "./libs/cpptest/src/.libs" }
 	includedirs { "./libs/cpptest/src" }
  

@@ -30,3 +30,13 @@ void AStarNode::setHScore(float hScore)
 {
 	m_hScore = hScore;
 }
+
+const Vector2 AStarNode::getPreviousNode()
+{
+	return m_previousNode;
+}
+
+void AStarNode::setPreviousNode(Vector2 previousNode)
+{
+	m_previousNode = previousNode;
+}
