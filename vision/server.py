@@ -1,5 +1,14 @@
 import socket
 import os
+from ctypes import *
+
+
+class InitSignal(Structure):
+    fields_ = [("pitchWidth", c_int), ("pitchHeight", c_int)]
+
+
+class RegSignal(Structure):
+    fields_ = [("x", c_int), ("y", c_int)]
 
 server_address = '/tmp/vision_sock'
 
@@ -22,12 +31,15 @@ while True:
     print 'Connection established'
 
     while True:
-        data = connection.recv(64)
-        if data == '1':
-            print 'Sending data back to the client'
-            data = "The big brown fox jumped over..."
+        data = connection.recv(8)
+        if data == 0xFF:
+            print 'Sending initial data to client'
+            data = InitSignal(600, 400)
             connection.sendall(data)
-        elif data == '0':
+        elif data == 0xAA:
+            print 'Sending data back to the client'
+            connection.sendall(data)
+        elif data == 0x00:
             print 'Client terminated connection'
             connection.close()
             break
