@@ -8,7 +8,8 @@ HEADERS += \
     ../Shared/Logging.h \
     LoggingWidget.h \
     ../Shared/Sockets.h \
-    Comm/BTComm.h
+    Comm/BTComm.h \
+    Comm/VisionComm.h
 
 SOURCES += \
     MainWindow.cpp \
@@ -16,7 +17,11 @@ SOURCES += \
     SharedMem.cpp \
     LoggingWidget.cpp \
     Logging.cpp \
-    Comm/BTComm.cpp
+    Comm/BTComm.cpp \
+    Comm/VisionComm.cpp
+
+INCLUDEPATH += \
+        Shared
 
 CONFIG += network
 QT += network

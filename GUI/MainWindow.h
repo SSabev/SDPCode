@@ -5,6 +5,7 @@
 
 #include "LoggingWidget.h"
 #include "Comm/BTComm.h"
+#include "Comm/VisionComm.h"
 
 #include <QMainWindow>
 
@@ -23,12 +24,17 @@ private slots:
     void PenaltySlot();
     void StopeMvmntSlot();
 
+    void SetPitchSide();
+    void ConnToVision();
+    void ConnToBT();
+
 private:
     void SetupGUI();
     void InitSytem();
 
     CLoggingWidget *m_logWdgt;
     CBtComm        *m_btComm;
+    CVisionComm    *m_visionComm;
 };
 
 

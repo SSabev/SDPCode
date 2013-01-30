@@ -18,16 +18,25 @@ MainWindow::~MainWindow()
 void MainWindow::MoveStraightSlot()
 {
     sharedMem.systemState = eMoveStraight;
+
+    sharedMem.Positioning[0].robotData.motor_1 = 1;
+    m_btComm->SendData(&sharedMem.Positioning[0].robotData);
 }
 
 void MainWindow::PenaltySlot()
 {
     sharedMem.systemState = eDoPenalty;
+
+    sharedMem.Positioning[0].robotData.motor_1 = 2;
+    m_btComm->SendData(&sharedMem.Positioning[0].robotData);
 }
 
 void MainWindow::StopeMvmntSlot()
 {
     sharedMem.systemState = eStop;
+
+    sharedMem.Positioning[0].robotData.motor_1 = 3;
+    m_btComm->SendData(&sharedMem.Positioning[0].robotData);
 }
 
 void MainWindow::SetupGUI()
@@ -40,6 +49,10 @@ void MainWindow::SetupGUI()
 
     m_logWdgt = new CLoggingWidget(this);
     m_logWdgt->show();
+
+    connect(actionSet_Pitch_Side, SIGNAL(triggered()), this, SLOT(SetPitchSide()));
+    connect(actionConnect_To_Vision, SIGNAL(triggered()), this, SLOT(ConnToVision()));
+    connect(actionConnect_To_BT, SIGNAL(triggered()), this, SLOT(ConnToBT()));
 }
 
 void MainWindow::InitSytem()
@@ -51,6 +64,23 @@ void MainWindow::InitSytem()
     // set current state as IDLE
     sharedMem.systemState = eIDLE;
 
-    m_btComm = new CBtComm();
+    m_btComm = new CBtComm(this);
+    m_visionComm = new CVisionComm(this);
+
+    loggingObj->ShowMsg("Configured...");
+}
+
+void MainWindow::ConnToBT()
+{
+    m_btComm->ConnectToBT();
+}
+
+void MainWindow::ConnToVision()
+{
+    m_visionComm->ConnectToVision();
+}
+
+void MainWindow::SetPitchSide()
+{
 
 }
