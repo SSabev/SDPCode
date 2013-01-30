@@ -3,3 +3,5 @@
 *.un~
 *.pyc
 *.py~
+GUI_release/*
+*~

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>155</width>
-    <height>223</height>
+    <width>318</width>
+    <height>417</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -53,6 +53,27 @@
          </property>
         </widget>
        </item>
+       <item>
+        <widget class="Line" name="line_2">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="btConnectBtn">
+         <property name="text">
+          <string>Connect to BT</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="connToVisionBtn">
+         <property name="text">
+          <string>Connect to Vision</string>
+         </property>
+        </widget>
+       </item>
       </layout>
      </widget>
     </item>
@@ -63,7 +84,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>155</width>
+     <width>318</width>
      <height>29</height>
     </rect>
    </property>
@@ -78,7 +99,6 @@
    </widget>
    <addaction name="menuTools"/>
   </widget>
-  <widget class="QStatusBar" name="statusbar"/>
   <action name="actionSet_Pitch_Side">
    <property name="text">
     <string>Set Pitch Side</string>

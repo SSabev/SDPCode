@@ -4,6 +4,9 @@
 
 #include <string.h>
 
+#include <QMenu>
+#include <QMenuBar>
+
 MainWindow::MainWindow()
 {
     SetupGUI();
@@ -41,6 +44,8 @@ void MainWindow::StopeMvmntSlot()
 
 void MainWindow::SetupGUI()
 {
+//    QMenu *menu;
+
     setupUi(this);
 
     connect(moveStraightBtn, SIGNAL(clicked()), this, SLOT(MoveStraightSlot()));
@@ -49,10 +54,21 @@ void MainWindow::SetupGUI()
 
     m_logWdgt = new CLoggingWidget(this);
     m_logWdgt->show();
+    /*
+    menu = menuBar()->addMenu("Tools");
+    menu->setEnabled(true);
+
+    menu->addAction(actionSet_Pitch_Side);
+    menu->addAction(actionConnect_To_Vision);
+    menu->addAction(actionConnect_To_BT);
 
     connect(actionSet_Pitch_Side, SIGNAL(triggered()), this, SLOT(SetPitchSide()));
     connect(actionConnect_To_Vision, SIGNAL(triggered()), this, SLOT(ConnToVision()));
     connect(actionConnect_To_BT, SIGNAL(triggered()), this, SLOT(ConnToBT()));
+    */
+//    connect(actionSet_Pitch_Side, SIGNAL(triggered()), this, SLOT(SetPitchSide()));
+    connect(connToVisionBtn, SIGNAL(clicked()), this, SLOT(ConnToVision()));
+    connect(btConnectBtn, SIGNAL(clicked()), this, SLOT(ConnToBT()));
 }
 
 void MainWindow::InitSytem()
