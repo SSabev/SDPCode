@@ -4,7 +4,7 @@ from ctypes import *
 
 
 class InitSignal(Structure):
-    fields_ = [("pitchWidth", c_int), ("pitchHeight", c_int)]
+    _fields_ = [("pitchWidth", c_int), ("pitchHeight", c_int)]
 
 
 class RegSignal(Structure):
@@ -32,10 +32,12 @@ while True:
 
     while True:
         data = connection.recv(8)
-        if data == 0xFF:
+        print str(data)
+        if data == 'a':
             print 'Sending initial data to client'
             data = InitSignal(600, 400)
-            connection.sendall(data)
+            s = connection.send(data)
+            print s
         elif data == 0xAA:
             print 'Sending data back to the client'
             connection.sendall(data)
@@ -43,6 +45,8 @@ while True:
             print 'Client terminated connection'
             connection.close()
             break
+        elif data:
+            print data
         else:
             print 'No more data'
             break

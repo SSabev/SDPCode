@@ -56,17 +56,68 @@ void CVisionComm::SockErr()
 
 bool CVisionComm::ReadData(TVisionData *data)
 {
-    int read;
+    int net;
+    char sendByte;
 
-    read = localSocket.read((char *) data, sizeof(TVisionData));
+    if(localSocket.state() != QLocalSocket::ConnectedState){
+        loggingObj->ShowMsg("VISIONCOMM: failed to read data - not connected");
+        return false;
+    }
 
-    if(read != sizeof(TVisionData)){
+    sendByte = VISION_REQUEST_NAV;
+    localSocket.write(&sendByte);
+
+    net = localSocket.read((char *) data, sizeof(TVisionData));
+
+    if(net != sizeof(TVisionData)){
         loggingObj->ShowMsg(QString("VISIONCOMM: read size differs from expected: expected %1, written %2")
                             .arg(sizeof(TVisionData))
-                            .arg(read)
+                            .arg(net)
                             .toAscii()
                             .data());
         return false;
     }
+    return true;
+}
+
+bool CVisionComm::ReadData(TPitchCfg *data)
+{
+    int net;
+    char sendByte;
+
+    if(localSocket.state() != QLocalSocket::ConnectedState){
+        loggingObj->ShowMsg("VISIONCOMM: failed to read data - not connected");
+        return false;
+    }
+
+    sendByte = VISION_REQUEST_CFG;
+    net = localSocket.write(&sendByte, 1);
+    loggingObj->ShowMsg(QString("VISIONCOMM: written %1")
+                        .arg(net)
+                        .toAscii()
+                        .data());
+
+    localSocket.waitForBytesWritten();
+    net = localSocket.read((char *) data, sizeof(TPitchCfg));
+
+    if(net != sizeof(TPitchCfg)){
+        loggingObj->ShowMsg(QString("VISIONCOMM: read size differs from expected: expected %1, read %2")
+                            .arg(sizeof(TPitchCfg))
+                            .arg(net)
+                            .toAscii()
+                            .data());
+        return false;
+    }
+    return true;
+}
+bool CVisionComm::ShutdownVision()
+{
+    char sendByte = VISION_SHUTDOWN;
+    if(localSocket.state() != QLocalSocket::ConnectedState){
+        loggingObj->ShowMsg("VISIONCOMM: failed to send data - not connected");
+        return false;
+    }
+
+    localSocket.write(&sendByte);
     return true;
 }

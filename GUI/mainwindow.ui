@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>318</width>
-    <height>417</height>
+    <width>330</width>
+    <height>188</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,17 +18,17 @@
     <normaloff>img/robot_icon.gif</normaloff>img/robot_icon.gif</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QVBoxLayout" name="verticalLayout_2">
+   <layout class="QHBoxLayout" name="horizontalLayout">
     <item>
      <widget class="QGroupBox" name="groupBox">
       <property name="title">
        <string>Robot Controls</string>
       </property>
-      <layout class="QVBoxLayout" name="verticalLayout">
+      <layout class="QVBoxLayout" name="verticalLayout_2">
        <item>
         <widget class="QPushButton" name="moveStraightBtn">
          <property name="text">
-          <string>Move Straight</string>
+          <string>Read CFG</string>
          </property>
         </widget>
        </item>
@@ -40,26 +40,28 @@
         </widget>
        </item>
        <item>
-        <widget class="Line" name="line">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
-       </item>
-       <item>
         <widget class="QPushButton" name="stopBtn">
          <property name="text">
           <string>Stop</string>
          </property>
         </widget>
        </item>
-       <item>
-        <widget class="Line" name="line_2">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
-       </item>
+      </layout>
+     </widget>
+    </item>
+    <item>
+     <widget class="Line" name="line">
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QGroupBox" name="groupBox_2">
+      <property name="title">
+       <string>Configuration</string>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout">
        <item>
         <widget class="QPushButton" name="btConnectBtn">
          <property name="text">
@@ -74,6 +76,13 @@
          </property>
         </widget>
        </item>
+       <item>
+        <widget class="QPushButton" name="pitchSideBtn">
+         <property name="text">
+          <string>Set Pitch Side</string>
+         </property>
+        </widget>
+       </item>
       </layout>
      </widget>
     </item>
@@ -84,36 +93,11 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>318</width>
+     <width>330</width>
      <height>29</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menuTools">
-    <property name="title">
-     <string>Tools</string>
-    </property>
-    <addaction name="actionSet_Pitch_Side"/>
-    <addaction name="separator"/>
-    <addaction name="actionConnect_To_Vision"/>
-    <addaction name="actionConnect_To_BT"/>
-   </widget>
-   <addaction name="menuTools"/>
   </widget>
-  <action name="actionSet_Pitch_Side">
-   <property name="text">
-    <string>Set Pitch Side</string>
-   </property>
-  </action>
-  <action name="actionConnect_To_Vision">
-   <property name="text">
-    <string>Connect To Vision</string>
-   </property>
-  </action>
-  <action name="actionConnect_To_BT">
-   <property name="text">
-    <string>Connect To BT</string>
-   </property>
-  </action>
  </widget>
  <resources/>
  <connections/>

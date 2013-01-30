@@ -17,6 +17,7 @@ public:
     CLoggingWidget(QWidget *parent = 0);
 
     virtual void ShowMsg(const char *msg);
+    void ShowMsg(QString msg);
 };
 
 #endif // LOGGING_H

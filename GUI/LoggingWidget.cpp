@@ -12,3 +12,8 @@ void CLoggingWidget::ShowMsg(const char *msg)
 {
     msgBrowser->append(msg);
 }
+
+void CLoggingWidget::ShowMsg(QString msg)
+{
+    msgBrowser->append(msg);
+}

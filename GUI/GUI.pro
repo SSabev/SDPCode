@@ -1,6 +1,7 @@
 FORMS += \
     mainwindow.ui \
-    Logging.ui
+    Logging.ui \
+    Tools/PitchSideDlg.ui
 
 HEADERS += \
     MainWindow.h \
@@ -9,7 +10,8 @@ HEADERS += \
     LoggingWidget.h \
     ../Shared/Sockets.h \
     Comm/BTComm.h \
-    Comm/VisionComm.h
+    Comm/VisionComm.h \
+    Tools/PitchSideDlg.h
 
 SOURCES += \
     MainWindow.cpp \
@@ -18,7 +20,8 @@ SOURCES += \
     LoggingWidget.cpp \
     Logging.cpp \
     Comm/BTComm.cpp \
-    Comm/VisionComm.cpp
+    Comm/VisionComm.cpp \
+    Tools/PitchSideDlg.cpp
 
 INCLUDEPATH += \
         Shared

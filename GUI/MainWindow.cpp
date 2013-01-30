@@ -2,10 +2,9 @@
 #include "../Shared/SharedMem.h"
 #include "../Shared/Logging.h"
 
-#include <string.h>
+#include "Tools/PitchSideDlg.h"
 
-#include <QMenu>
-#include <QMenuBar>
+#include <string.h>
 
 MainWindow::MainWindow()
 {
@@ -20,32 +19,39 @@ MainWindow::~MainWindow()
 
 void MainWindow::MoveStraightSlot()
 {
+    /*
     sharedMem.systemState = eMoveStraight;
 
-    sharedMem.Positioning[0].robotData.motor_1 = 1;
-    m_btComm->SendData(&sharedMem.Positioning[0].robotData);
+    sharedMem.positioning[0].robotData.motor_1 = 1;
+    m_btComm->SendData(&sharedMem.positioning[0].robotData);
+    */
+    if(!m_visionComm->ReadData(&sharedMem.pitchCfg))
+        m_logWdgt->ShowMsg("Returned false");
+    else
+        m_logWdgt->ShowMsg(QString("Read: pitchWidth = %1\n pitchHeight = %2")
+                           .arg(sharedMem.pitchCfg.pitchWidth)
+                           .arg(sharedMem.pitchCfg.pitchHeight));
+
 }
 
 void MainWindow::PenaltySlot()
 {
     sharedMem.systemState = eDoPenalty;
 
-    sharedMem.Positioning[0].robotData.motor_1 = 2;
-    m_btComm->SendData(&sharedMem.Positioning[0].robotData);
+    sharedMem.positioning[0].robotData.motor_1 = 2;
+    m_btComm->SendData(&sharedMem.positioning[0].robotData);
 }
 
 void MainWindow::StopeMvmntSlot()
 {
     sharedMem.systemState = eStop;
 
-    sharedMem.Positioning[0].robotData.motor_1 = 3;
-    m_btComm->SendData(&sharedMem.Positioning[0].robotData);
+    sharedMem.positioning[0].robotData.motor_1 = 3;
+    m_btComm->SendData(&sharedMem.positioning[0].robotData);
 }
 
 void MainWindow::SetupGUI()
 {
-//    QMenu *menu;
-
     setupUi(this);
 
     connect(moveStraightBtn, SIGNAL(clicked()), this, SLOT(MoveStraightSlot()));
@@ -54,21 +60,10 @@ void MainWindow::SetupGUI()
 
     m_logWdgt = new CLoggingWidget(this);
     m_logWdgt->show();
-    /*
-    menu = menuBar()->addMenu("Tools");
-    menu->setEnabled(true);
 
-    menu->addAction(actionSet_Pitch_Side);
-    menu->addAction(actionConnect_To_Vision);
-    menu->addAction(actionConnect_To_BT);
-
-    connect(actionSet_Pitch_Side, SIGNAL(triggered()), this, SLOT(SetPitchSide()));
-    connect(actionConnect_To_Vision, SIGNAL(triggered()), this, SLOT(ConnToVision()));
-    connect(actionConnect_To_BT, SIGNAL(triggered()), this, SLOT(ConnToBT()));
-    */
-//    connect(actionSet_Pitch_Side, SIGNAL(triggered()), this, SLOT(SetPitchSide()));
     connect(connToVisionBtn, SIGNAL(clicked()), this, SLOT(ConnToVision()));
     connect(btConnectBtn, SIGNAL(clicked()), this, SLOT(ConnToBT()));
+    connect(pitchSideBtn, SIGNAL(clicked()), this, SLOT(SetPitchSide()));
 }
 
 void MainWindow::InitSytem()
@@ -98,5 +93,6 @@ void MainWindow::ConnToVision()
 
 void MainWindow::SetPitchSide()
 {
-
+    CPitchSideDlg dlg(this);
+    dlg.exec();
 }

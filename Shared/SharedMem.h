@@ -22,6 +22,11 @@ typedef enum{
 } TPitchSide;
 
 typedef struct{
+    unsigned pitchWidth;
+    unsigned pitchHeight;
+} __attribute__ ((packed)) TPitchCfg;
+
+typedef struct{
     //! TODO: need to identify data that is required
     ///       for robot movement
     /// For testing (Milestone 1) it's size is 2 integers
@@ -33,18 +38,18 @@ typedef struct{
 } __attribute__ ((packed)) TRobotData;
 
 typedef struct{
-    unsigned char yellow_x;
-    unsigned char yellow_y;
-    unsigned char yellow_angle;
+    unsigned    yellow_x;
+    unsigned    yellow_y;
+    float       yellow_angle;
 
-    unsigned char blue_x;
-    unsigned char blue_y;
-    unsigned char blue_angle;
+    unsigned    blue_x;
+    unsigned    blue_y;
+    float       blue_angle;
 
-    unsigned char ball_x;
-    unsigned char ball_y;
+    unsigned    ball_x;
+    unsigned    ball_y;
 
-    unsigned      timestamp;
+    unsigned    timestamp;
 } __attribute__ ((packed)) TVisionData;
 
 
@@ -62,10 +67,10 @@ typedef struct
 typedef struct
 {
     TSystemState  systemState;
-    unsigned      CurrentIdx;               // index of active TEntry frame
-    TEntry        Positioning[SH_MEM_SIZE];
-
-    TPitchSide pitchSide;
+    unsigned      currentIdx;               // index of active TEntry frame
+    TEntry        positioning[SH_MEM_SIZE];
+    TPitchSide    pitchSide;
+    TPitchCfg     pitchCfg;
 } TShMem;
 
 extern TShMem sharedMem;
