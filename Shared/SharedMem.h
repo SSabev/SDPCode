@@ -1,6 +1,8 @@
 #ifndef SHAREDMEM_H
 #define SHAREDMEM_H
 
+#include <stdint.h>
+
 #define SH_MEM_SIZE 8
 
 typedef enum {
@@ -14,18 +16,23 @@ typedef enum {
     eDoPenalty       // First milestone
 } TSystemState;
 
+typedef enum{
+    eLeftSide,
+    eRightSide
+} TPitchSide;
+
 typedef struct{
     //! TODO: need to identify data that is required
     ///       for robot movement
+    /// For testing (Milestone 1) it's size is 2 integers
     unsigned char motor_1;
     unsigned char motor_2;
     unsigned char motor_3;
     unsigned char motor_4;
-    unsigned      kicker    : 1;
+    uint32_t      kicker    : 1;
 } __attribute__ ((packed)) TRobotData;
 
-typedef struct
-{
+typedef struct{
     unsigned char yellow_x;
     unsigned char yellow_y;
     unsigned char yellow_angle;
@@ -38,9 +45,12 @@ typedef struct
     unsigned char ball_y;
 
     unsigned      timestamp;
+} __attribute__ ((packed)) TVisionData;
 
-    // next 5 fields to be sent out to robot
 
+typedef struct
+{
+    TVisionData visionData;
     TRobotData robotData;
 
     // next field to be recieved from robot
@@ -54,6 +64,8 @@ typedef struct
     TSystemState  systemState;
     unsigned      CurrentIdx;               // index of active TEntry frame
     TEntry        Positioning[SH_MEM_SIZE];
+
+    TPitchSide pitchSide;
 } TShMem;
 
 extern TShMem sharedMem;

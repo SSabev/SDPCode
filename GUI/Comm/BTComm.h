@@ -1,9 +1,8 @@
 #ifndef BTCOMM_H
 #define BTCOMM_H
 
-#include <QObject>
-#include <QtNetwork/QLocalServer>
-#include <QtNetwork/QLocalSocket>
+#include <QWidget>
+#include <QtNetwork/QTcpSocket>
 
 #include "../../Shared/SharedMem.h"
 
@@ -15,24 +14,26 @@ typedef struct{
 
 
 class CBtComm
-        : public QObject
+        : public QWidget
 {
     Q_OBJECT
 public:
-    CBtComm();
+    CBtComm(QWidget *parent = 0);
     ~CBtComm();
 
     void SendData(TRobotData *data);
     bool ReadData(TReadData &data);
 
+    void ConnectToBT();
+
 private slots:
-    void NewCleintSlot();
-    void ClientLost();
-    void ClientSockErr();
+    void ConnectedSlot();
+    void ConnLost();
+    void SockErr();
 
 private:
-    QLocalServer m_socketServ;
-    QLocalSocket *m_clientSock;
+    QTcpSocket  m_clientSock;
+//    int                 m_socketFd;
 };
 
 #endif // BTCOMM_H

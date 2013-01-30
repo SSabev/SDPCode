@@ -67,8 +67,33 @@
      <height>29</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menuTools">
+    <property name="title">
+     <string>Tools</string>
+    </property>
+    <addaction name="actionSet_Pitch_Side"/>
+    <addaction name="separator"/>
+    <addaction name="actionConnect_To_Vision"/>
+    <addaction name="actionConnect_To_BT"/>
+   </widget>
+   <addaction name="menuTools"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionSet_Pitch_Side">
+   <property name="text">
+    <string>Set Pitch Side</string>
+   </property>
+  </action>
+  <action name="actionConnect_To_Vision">
+   <property name="text">
+    <string>Connect To Vision</string>
+   </property>
+  </action>
+  <action name="actionConnect_To_BT">
+   <property name="text">
+    <string>Connect To BT</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>
