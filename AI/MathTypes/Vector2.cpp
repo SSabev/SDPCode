@@ -3,6 +3,8 @@
 #include <assert.h>
 #include <math.h>
 
+#include <sstream>
+
 Vector2::Vector2()
 {
 	m_isSet = false;
@@ -21,21 +23,21 @@ void Vector2::Set(float x, float y)
 	m_isSet = true;
 }
 
-float Vector2::X() const 
+const float Vector2::X() const 
 {
 	assert(m_isSet);
 
 	return m_x;
 };
 	
-float Vector2::Y() const 
+const float Vector2::Y() const 
 {
 	assert(m_isSet);
 
 	return m_y;
 };
 
-float Vector2::Distance(Vector2* dest) const
+const float Vector2::Distance(Vector2* dest) const
 {
 	assert(m_isSet);
 
@@ -44,7 +46,7 @@ float Vector2::Distance(Vector2* dest) const
 	return dist;
 }
 
-float Vector2::DistanceSquared(Vector2* dest) const
+const float Vector2::DistanceSquared(Vector2* dest) const
 {
 	assert(m_isSet);
 
@@ -57,13 +59,30 @@ float Vector2::DistanceSquared(Vector2* dest) const
 	return distSquared;
 }
 
-float Vector2::MagnitudeSquared() const
+const float Vector2::MagnitudeSquared() const
 {
 	assert(m_isSet);
 
 	const float magSquared = pow(X(),2) + pow(Y(),2);
 
 	return magSquared;
+}
+
+const std::string Vector2::ToString() const
+{
+	assert(m_isSet);
+
+	std::stringstream ss;
+
+	ss << "Vector2(";
+	ss << X();
+	ss << ",";
+	ss << Y();
+	ss << ")";
+	
+	std::string outputString = ss.str();
+
+	return outputString;
 }
 
 // OPERATOR OVERLOADS

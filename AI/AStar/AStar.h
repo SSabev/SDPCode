@@ -5,18 +5,13 @@
 #include "AStarNode.h"
 
 #include <list>
-#include <map>
-
-#if defined(TEST)
-// This facilitates testing of private and protected functions.
-#include "../UnitTests/AStarUnitTests.cpp"
-#endif
 
 class AStar
 {
 
 #if defined(TEST)
-friend class AStarUnitTests;
+	// This facilitates testing of private and protected functions.
+	friend class AStarUnitTests;
 #endif
 
 public:
@@ -28,8 +23,8 @@ private:
 	std::list<Vector2> FindAdjacentNodes(Vector2 currentNode);
 
 	float m_costTravelled;
-	std::map<Vector2, AStarNode*, Vector2Comparer> m_openSet;
-	std::map<Vector2, AStarNode*, Vector2Comparer> m_closedSet;
+	std::list< std::pair<Vector2, AStarNode*> > m_openSet;
+	std::list< std::pair<Vector2, AStarNode*> > m_closedSet;
 };
 
 #endif

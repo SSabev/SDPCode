@@ -1,109 +1,170 @@
 #include "AStar.h"
 
 #include <float.h>
+#include <assert.h>
+#include <iostream>
 
-const int GRID_SIZE_X = 50;
-const int GRID_SIZE_Y = 20;
+const int GRID_SIZE_X = 244;
+const int GRID_SIZE_Y = 122;
+// I'm experimenting with penalising the heuristic, otherwise it results in expanding 
+// too many nodes needlessly.
+// This will make it inadmissable (not really A* anymore), but given that we know there are 
+// few obstacles on the pitch and a truly optimal path isn't really necessary, we can 
+// probably get away with it. **The speed benefit is insane - factor of 100s**
+const float HEURISTIC_PENALTY = 1.5;
 
 AStar::AStar()
 {
 
 }
 
-std::list<Vector2> AStar::GeneratePath(Vector2 startingNode, Vector2 destinationNode)
+std::list<Vector2> AStar::GeneratePath(Vector2 startingVector, Vector2 destinationVector)
 {
 	m_costTravelled = 0;
 	
 	// First, let's add the starting node to the open set.
-	m_openSet[startingNode] = new AStarNode();
-	m_openSet[startingNode]->setGScore(0.0f);
-	m_openSet[startingNode]->setHScore(startingNode.Distance(&destinationNode));
+	AStarNode* p_startingNode = new AStarNode();
+	m_openSet.push_front(std::make_pair(startingVector, p_startingNode));
+	p_startingNode->setGScore(0.0f);
+	p_startingNode->setHScore(startingVector.Distance(&destinationVector));
 
 	// If the open set's not empty, that means we still have some nodes to explore.
 	while (!m_openSet.empty())
 	{
-		Vector2 currentNode;
+		Vector2 currentVector;
+		AStarNode* currentNode;
 		float lowestFScore = FLT_MAX;
 
-		std::map<Vector2, AStarNode*, Vector2Comparer>::iterator openSetIt;
+		std::list< std::pair<Vector2, AStarNode*> >::iterator openSetIt;
+		std::list< std::pair<Vector2, AStarNode*> >::iterator closedSetIt;
+
+		//std::cout << "OpenSet" << std::endl;
 
 		// Find the node in the open set with the lowest f-score. 
 		// This is the node we want to expand next.
 		for (openSetIt = m_openSet.begin(); openSetIt != m_openSet.end(); openSetIt++)
 		{
+			// DEBUG
+			//std::cout << openSetIt->first.ToString() << std::endl;
+
 			const float currentFScore = openSetIt->second->getFScore();
 
 			if (currentFScore < lowestFScore)
 			{
-				currentNode = openSetIt->first;
+				currentVector = openSetIt->first;
+				currentNode = openSetIt->second;
+				lowestFScore = currentFScore;
 			}
 		}
 
+		m_costTravelled = currentNode->getGScore();
+
+		// Add the current node to the closed set & remove it from the open set.
+		m_closedSet.push_front(std::make_pair(currentVector, currentNode));
+
+		for (openSetIt = m_openSet.begin(); openSetIt != m_openSet.end(); openSetIt++)
+		{
+			if (openSetIt->first == currentVector)
+			{
+				m_openSet.erase(openSetIt);
+				break;
+			}
+		}
+
+		int debugOpenSetSize = m_openSet.size();
+		int debugClosedSetSize = m_closedSet.size();
+
 		// Check if we've reached the goal node.
 		// If we have, we've got all the information we need to produce the path.
-		if (currentNode == destinationNode)
+		if (currentVector == destinationVector)
 		{
 			// We now want to reconstruct the complete A* path.
 			std::list<Vector2> nodesOnPath;
 
-			Vector2 previousNode = destinationNode;
+			Vector2 previousVector = destinationVector;
 
-			while (previousNode != startingNode)
+			while (previousVector != startingVector)
 			{
-				nodesOnPath.push_front(previousNode);
+				nodesOnPath.push_front(previousVector);
 
-				previousNode = m_closedSet[previousNode]->getPreviousNode();
+				int debugClosedSetSize = m_closedSet.size();
+				int debugNodesOnPathSize = nodesOnPath.size();
+
+				for (closedSetIt = m_closedSet.begin(); closedSetIt != m_closedSet.end(); closedSetIt++)
+				{
+					if (closedSetIt->first == previousVector)
+					{
+						previousVector = closedSetIt->second->getPreviousNode();
+						break;
+					}
+				}
 			}
 
 			// Finally, add the starting node to the path.
-			nodesOnPath.push_front(startingNode);
+			nodesOnPath.push_front(startingVector);
 
 			return nodesOnPath;
 		}
 
-		// Add the current node to the closed set & remove it from the open set.
-		m_closedSet[currentNode] = m_openSet[currentNode];
-		m_openSet.erase(currentNode);
-
 		// Get all nodes adjacent to the current one (i.e. the nodes we can travel to from here).
-		std::list<Vector2> adjacentNodes = FindAdjacentNodes(currentNode);
+		std::list<Vector2> adjacentNodes = FindAdjacentNodes(currentVector);
 		std::list<Vector2>::iterator adjacentNodesIt;
 
 		for (adjacentNodesIt = adjacentNodes.begin(); adjacentNodesIt != adjacentNodes.end(); adjacentNodesIt++)
 		{
-			Vector2 currentAdjacentNode = *adjacentNodesIt;
+			Vector2 currentAdjacentVector = *adjacentNodesIt;
+
+			bool isVectorInClosedSet = false;
 
 			// Check if the node is in the closed set.
-			if (m_closedSet.find(currentAdjacentNode) != m_closedSet.end())
+			for (closedSetIt=m_closedSet.begin(); closedSetIt != m_closedSet.end(); closedSetIt++)
+			{
+				if (closedSetIt->first == currentAdjacentVector)
+				{
+					isVectorInClosedSet = true;
+				}
+			}
+
+			if (isVectorInClosedSet)
 			{
 				continue;
 			}
+
+			bool isVectorInOpenSet = false;
 			
-			// If this node isn't in the open set, add it.
-			if (m_openSet.find(currentAdjacentNode) == m_openSet.end())
+			for (openSetIt = m_openSet.begin(); openSetIt != m_openSet.end(); openSetIt++)
 			{
-				m_openSet[currentAdjacentNode] = new AStarNode();
-				m_openSet[currentAdjacentNode]->setGScore(m_costTravelled + currentNode.Distance(&currentAdjacentNode));
-				m_openSet[currentAdjacentNode]->setHScore(currentAdjacentNode.Distance(&destinationNode));
-				m_openSet[currentAdjacentNode]->setPreviousNode(currentNode);
+				if (openSetIt->first == currentAdjacentVector)
+				{
+					// If we've improved upon a previously calculated cost to get to this node, update it.
+					float newGScore = m_costTravelled + currentVector.Distance(&currentAdjacentVector);
 
-				continue;
+					if (newGScore < openSetIt->second->getGScore())
+					{
+						openSetIt->second->setGScore(m_costTravelled + currentVector.Distance(&currentAdjacentVector));
+						openSetIt->second->setHScore(currentAdjacentVector.Distance(&destinationVector) * HEURISTIC_PENALTY);
+						openSetIt->second->setPreviousNode(currentVector);
+					}
+	
+					isVectorInOpenSet = true;
+
+					break;
+				}
 			}
 
-			// If we've improved upon a previously calculated cost to get to this node, update it.
-			float newGScore = m_costTravelled + currentNode.Distance(&currentAdjacentNode);
-
-			if (newGScore < m_openSet[currentAdjacentNode]->getGScore())
+			// If this node isn't in the open set, add it.
+			if (!isVectorInOpenSet)
 			{
-				m_openSet[currentAdjacentNode] = new AStarNode();
-				m_openSet[currentAdjacentNode]->setGScore(m_costTravelled + currentNode.Distance(&currentAdjacentNode));
-				m_openSet[currentAdjacentNode]->setHScore(currentAdjacentNode.Distance(&destinationNode));
-				m_openSet[currentAdjacentNode]->setPreviousNode(currentNode);
-
-				continue;
+				AStarNode* p_newAStarNode = new AStarNode();
+				m_openSet.push_front(std::make_pair(currentAdjacentVector, p_newAStarNode));
+				p_newAStarNode->setGScore(m_costTravelled + currentVector.Distance(&currentAdjacentVector));
+				p_newAStarNode->setHScore(currentAdjacentVector.Distance(&destinationVector) * HEURISTIC_PENALTY);
+				p_newAStarNode->setPreviousNode(currentVector);
 			}
 		}
 	}
+
+	assert(false);
 }
 
 // Find all of the nodes adjacent to the supplied one. Maximum of 8.
@@ -138,4 +199,6 @@ std::list<Vector2> AStar::FindAdjacentNodes(Vector2 currentNode)
 			adjacentNodes.push_back(Vector2(currentNode.X() + i, currentNode.Y() + j));
 		}
 	}
+
+	return adjacentNodes;
 }

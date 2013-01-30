@@ -5,6 +5,12 @@
 
 class AStarUnitTests : public Test::Suite
 {
+public:
+	AStarUnitTests();
+
+private:
+	void AStarFindAdjacentNodesZero();
+	void AStarFindPath();
 
 };
 
