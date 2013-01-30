@@ -1,8 +1,8 @@
 Our A* - how it works:
 
-THINGS SPECIFIC TO THIS IMPLEMENTATION
-
 Current approx. speed (with ~30K waypoints - one per cm^2 of pitch space): ~45hz, when navigating from one extreme of the pitch to the other.
+
+THINGS SPECIFIC TO THIS IMPLEMENTATION
 
 * I've added a penalty to the heuristic measure. This is because due to the nature of the task, a lot of waypoints were being expanded unnecessarily, especially given that there are very few obstacles on the pitch. This penalty makes the algorithm less likely to backtrack. The speed increase from this is a factor of several hundred.
 
