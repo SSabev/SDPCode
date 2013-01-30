@@ -6,3 +6,6 @@ Computes the distance to the point the robot is supposed to go and the angle by 
 ---------------------------------------------------------------------------------------------------------------------------
 Movement:
 Translates the computations from Compute in order to give commands for wheel speed in order to get into the right position.
+---------------------------------------------------------------------------------------------------------------------------
+Motor:
+Defines the Motor class that I use for issuing speeds to each individual motors.
