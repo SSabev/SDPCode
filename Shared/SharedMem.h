@@ -21,6 +21,12 @@ typedef enum{
     eRightSide
 } TPitchSide;
 
+
+typedef enum{
+    eYellowTeam,
+    eBlueTeam
+} TTeamColor;
+
 typedef struct{
     unsigned pitchWidth;
     unsigned pitchHeight;
@@ -70,6 +76,7 @@ typedef struct
     unsigned      currentIdx;               // index of active TEntry frame
     TEntry        positioning[SH_MEM_SIZE];
     TPitchSide    pitchSide;
+    TTeamColor    teamColor;
     TPitchCfg     pitchCfg;
 } TShMem;
 

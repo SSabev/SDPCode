@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>PitchSideDlg</class>
- <widget class="QDialog" name="PitchSideDlg">
+ <class>TeamCfgDlg</class>
+ <widget class="QDialog" name="TeamCfgDlg">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
     <width>242</width>
-    <height>160</height>
+    <height>260</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_2">
+  <layout class="QVBoxLayout" name="verticalLayout_3">
    <item>
     <widget class="QGroupBox" name="groupBox">
      <property name="title">
@@ -31,6 +31,29 @@
        <widget class="QRadioButton" name="rightBtn">
         <property name="text">
          <string>Right Side</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupBox_2">
+     <property name="title">
+      <string>Team Color</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_2">
+      <item>
+       <widget class="QRadioButton" name="yellowBtn">
+        <property name="text">
+         <string>Yellow</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="blueBtn">
+        <property name="text">
+         <string>Blue</string>
         </property>
        </widget>
       </item>

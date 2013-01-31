@@ -2,15 +2,15 @@
 #define PITCHSIDE_H
 
 #include <QDialog>
-#include "ui_PitchSideDlg.h"
+#include "ui_TeamCfgDlg.h"
 
-class CPitchSideDlg
+class CTeamCfgDlg
         : public QDialog
-        , public Ui::PitchSideDlg
+        , public Ui::TeamCfgDlg
 {
     Q_OBJECT
 public:
-    CPitchSideDlg(QWidget *parent = 0);
+    CTeamCfgDlg(QWidget *parent = 0);
 
 private slots:
     void OkSlot();

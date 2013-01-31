@@ -24,7 +24,7 @@ private slots:
     void PenaltySlot();
     void StopeMvmntSlot();
 
-    void SetPitchSide();
+    void TeamSetup();
     void ConnToVision();
     void ConnToBT();
     void ShowLogWin();

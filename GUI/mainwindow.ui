@@ -90,9 +90,9 @@
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="pitchSideBtn">
+        <widget class="QPushButton" name="teamSetupBtn">
          <property name="text">
-          <string>Set Pitch Side</string>
+          <string>Team Setup</string>
          </property>
         </widget>
        </item>

@@ -2,7 +2,7 @@
 #include "../Shared/SharedMem.h"
 #include "../Shared/Logging.h"
 
-#include "Tools/PitchSideDlg.h"
+#include "Tools/TeamCfgDlg.h"
 
 #include <string.h>
 
@@ -63,7 +63,7 @@ void MainWindow::SetupGUI()
 
     connect(connToVisionBtn, SIGNAL(clicked()), this, SLOT(ConnToVision()));
     connect(btConnectBtn, SIGNAL(clicked()), this, SLOT(ConnToBT()));
-    connect(pitchSideBtn, SIGNAL(clicked()), this, SLOT(SetPitchSide()));
+    connect(teamSetupBtn, SIGNAL(clicked()), this, SLOT(TeamSetup()));
     connect(logBtn, SIGNAL(clicked()), this, SLOT(ShowLogWin()));
 }
 
@@ -92,9 +92,9 @@ void MainWindow::ConnToVision()
     m_visionComm->ConnectToVision();
 }
 
-void MainWindow::SetPitchSide()
+void MainWindow::TeamSetup()
 {
-    CPitchSideDlg dlg(this);
+    CTeamCfgDlg dlg(this);
     dlg.exec();
 }
 
