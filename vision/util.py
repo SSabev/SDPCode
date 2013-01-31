@@ -16,7 +16,6 @@ def dumpToFile(obj, path):
     f = open(path, 'w')
     try:
         cPickle.dump(obj, f, protocol=2)
-
     except Exception, e:
         raise e
     finally:
