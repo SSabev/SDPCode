@@ -25,6 +25,7 @@ void MainWindow::MoveStraightSlot()
     sharedMem.positioning[0].robotData.motor_1 = 1;
     m_btComm->SendData(&sharedMem.positioning[0].robotData);
     */
+    /*
     if(!m_visionComm->ReadData(&sharedMem.positioning[0].visionData))
         m_logWdgt->ShowMsg("Returned false");
     else
@@ -41,7 +42,7 @@ void MainWindow::MoveStraightSlot()
                            .arg(sharedMem.positioning[0].visionData.ball_x)
                            .arg(sharedMem.positioning[0].visionData.ball_y)
                            .arg(sharedMem.positioning[0].visionData.timestamp));
-
+    */
 }
 
 void MainWindow::PenaltySlot()
