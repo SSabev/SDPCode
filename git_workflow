@@ -1,4 +1,4 @@
 git add .;
-git commit;
+git commit -am $1;
 git pull;
 git push;
