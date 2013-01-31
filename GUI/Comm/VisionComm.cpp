@@ -65,8 +65,8 @@ bool CVisionComm::ReadData(TVisionData *data)
     }
 
     sendByte = VISION_REQUEST_NAV;
-    localSocket.write(&sendByte);
-
+    localSocket.write(&sendByte, 1);
+    localSocket.waitForBytesWritten();
     net = localSocket.read((char *) data, sizeof(TVisionData));
 
     if(net != sizeof(TVisionData)){

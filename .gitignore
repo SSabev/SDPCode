@@ -3,6 +3,6 @@
 *.un~
 *.pyc
 *.py~
-GUI_Release/*
+GUI_(R|r)elease/*
 *~
 GUI/GUI.pro.user
