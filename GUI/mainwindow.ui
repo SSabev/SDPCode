@@ -28,7 +28,7 @@
        <item>
         <widget class="QPushButton" name="moveStraightBtn">
          <property name="text">
-          <string>Read CFG</string>
+          <string>Read Data</string>
          </property>
         </widget>
        </item>

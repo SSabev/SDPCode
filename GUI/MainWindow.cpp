@@ -25,12 +25,22 @@ void MainWindow::MoveStraightSlot()
     sharedMem.positioning[0].robotData.motor_1 = 1;
     m_btComm->SendData(&sharedMem.positioning[0].robotData);
     */
-    if(!m_visionComm->ReadData(&sharedMem.pitchCfg))
+    if(!m_visionComm->ReadData(&sharedMem.positioning[0].visionData))
         m_logWdgt->ShowMsg("Returned false");
     else
-        m_logWdgt->ShowMsg(QString("Read: pitchWidth = %1\n pitchHeight = %2")
-                           .arg(sharedMem.pitchCfg.pitchWidth)
-                           .arg(sharedMem.pitchCfg.pitchHeight));
+        m_logWdgt->ShowMsg(QString("Read data:\n yellow x = %1 y = %2 angle = %3\n"
+                                   "blue   x = %4 y = %5 angle = %6\n"
+                                   "ball x = %7 y = %8\n"
+                                   "timestamp = %9")
+                           .arg(sharedMem.positioning[0].visionData.yellow_x)
+                           .arg(sharedMem.positioning[0].visionData.yellow_y)
+                           .arg(sharedMem.positioning[0].visionData.yellow_angle)
+                           .arg(sharedMem.positioning[0].visionData.blue_x)
+                           .arg(sharedMem.positioning[0].visionData.blue_y)
+                           .arg(sharedMem.positioning[0].visionData.blue_angle)
+                           .arg(sharedMem.positioning[0].visionData.ball_x)
+                           .arg(sharedMem.positioning[0].visionData.ball_y)
+                           .arg(sharedMem.positioning[0].visionData.timestamp));
 
 }
 

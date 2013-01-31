@@ -14,7 +14,6 @@ public:
     CVisionComm(QWidget *parent = 0);
 
     bool ReadData(TVisionData *data);
-    bool ReadData(TPitchCfg *data);
     bool ShutdownVision();
 
     void ConnectToVision();
