@@ -1,7 +1,7 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'BTComm.h'
 **
-** Created: Thu Jan 31 13:21:01 2013
+** Created: Thu Jan 31 13:26:17 2013
 **      by: The Qt Meta Object Compiler version 62 (Qt 4.6.2)
 **
 ** WARNING! All changes made in this file will be lost!
