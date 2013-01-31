@@ -3,7 +3,6 @@ import sys
 import os
 import time
 import math
-import socket
 
 from optparse import OptionParser
 
@@ -15,7 +14,6 @@ from display import Gui, ThresholdGui
 
 from c_types import *
 
-SERVER_SOCKET = '/tmp/vision_sock'
 
 PITCH_SIZE = (243.8, 121.9)
 
@@ -83,18 +81,6 @@ class Vision:
         if not self.stdout:
             self.socket.close()
 
-    def connect(self):
-        try:
-            os.unlink(SERVER_SOCKET)
-        except OSError:
-            if os.path.exists(SERVER_SOCKET):
-                raise
-        sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-
-        print 'Starting up on %s' % SERVER_SOCKET
-        sock.bind(SERVER_SOCKET)
-        sock.listen(1)
-
     def quit(self):
         self.running = False
 
@@ -156,12 +142,6 @@ class Vision:
                 self.send('{0} {1} {2} '.format(x, y, angle))
 
         self.send(str(int(time.time() * 1000)) + " \n")
-
-    def send(self, string):
-        if self.stdout:
-            sys.stdout.write(string)
-        else:
-            self.socket.send(string)
 
 
 class OptParser(OptionParser):
