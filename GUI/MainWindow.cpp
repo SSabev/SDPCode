@@ -64,6 +64,7 @@ void MainWindow::SetupGUI()
     connect(connToVisionBtn, SIGNAL(clicked()), this, SLOT(ConnToVision()));
     connect(btConnectBtn, SIGNAL(clicked()), this, SLOT(ConnToBT()));
     connect(pitchSideBtn, SIGNAL(clicked()), this, SLOT(SetPitchSide()));
+    connect(logBtn, SIGNAL(clicked()), this, SLOT(ShowLogWin()));
 }
 
 void MainWindow::InitSytem()
@@ -95,4 +96,9 @@ void MainWindow::SetPitchSide()
 {
     CPitchSideDlg dlg(this);
     dlg.exec();
+}
+
+void MainWindow::ShowLogWin()
+{
+    m_logWdgt->show();
 }

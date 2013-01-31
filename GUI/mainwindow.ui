@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>330</width>
-    <height>188</height>
+    <width>317</width>
+    <height>271</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -46,6 +46,19 @@
          </property>
         </widget>
        </item>
+       <item>
+        <spacer name="verticalSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
       </layout>
      </widget>
     </item>
@@ -83,6 +96,26 @@
          </property>
         </widget>
        </item>
+       <item>
+        <widget class="QPushButton" name="logBtn">
+         <property name="text">
+          <string>Show Logging</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="verticalSpacer_2">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
       </layout>
      </widget>
     </item>
@@ -93,7 +126,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>330</width>
+     <width>317</width>
      <height>29</height>
     </rect>
    </property>

@@ -27,6 +27,7 @@ private slots:
     void SetPitchSide();
     void ConnToVision();
     void ConnToBT();
+    void ShowLogWin();
 
 private:
     void SetupGUI();
