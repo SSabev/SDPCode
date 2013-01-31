@@ -4,14 +4,23 @@
 #include <assert.h>
 #include <iostream>
 
+// (244,122) is one waypoint per cm^2.
 const int GRID_SIZE_X = 244;
 const int GRID_SIZE_Y = 122;
+
 // I'm experimenting with penalising the heuristic, otherwise it results in expanding 
 // too many nodes needlessly.
 // This will make it inadmissable (not really A* anymore), but given that we know there are 
 // few obstacles on the pitch and a truly optimal path isn't really necessary, we can 
 // probably get away with it. **The speed benefit is insane - factor of 100s**
 const float HEURISTIC_PENALTY = 1.5;
+
+/* This is an experimental optimisation for early termination of paths. As there are few 
+ * obstacles on the pitch, in most cases, we can assume that the straightest path is also 
+ * optimal. We will decide if this is an appropriate situation in which to terminate early 
+ * and if so, terminate after this distance has been travelled. */
+const int EARLY_TERMINATION_COST = 50;
+const bool EARLY_TERMINATION_ENABLED = false;
 
 AStar::AStar()
 {
@@ -38,15 +47,10 @@ std::list<Vector2> AStar::GeneratePath(Vector2 startingVector, Vector2 destinati
 		std::list< std::pair<Vector2, AStarNode*> >::iterator openSetIt;
 		std::list< std::pair<Vector2, AStarNode*> >::iterator closedSetIt;
 
-		//std::cout << "OpenSet" << std::endl;
-
 		// Find the node in the open set with the lowest f-score. 
 		// This is the node we want to expand next.
 		for (openSetIt = m_openSet.begin(); openSetIt != m_openSet.end(); openSetIt++)
 		{
-			// DEBUG
-			//std::cout << openSetIt->first.ToString() << std::endl;
-
 			const float currentFScore = openSetIt->second->getFScore();
 
 			if (currentFScore < lowestFScore)
@@ -71,24 +75,20 @@ std::list<Vector2> AStar::GeneratePath(Vector2 startingVector, Vector2 destinati
 			}
 		}
 
-		int debugOpenSetSize = m_openSet.size();
-		int debugClosedSetSize = m_closedSet.size();
-
 		// Check if we've reached the goal node.
 		// If we have, we've got all the information we need to produce the path.
-		if (currentVector == destinationVector)
+		// Alternatively, can we terminate early here?
+
+		if ((currentVector == destinationVector) || ((CanTerminateEarly()) && (m_costTravelled > EARLY_TERMINATION_COST)))
 		{
 			// We now want to reconstruct the complete A* path.
 			std::list<Vector2> nodesOnPath;
 
-			Vector2 previousVector = destinationVector;
+			Vector2 previousVector = currentVector;
 
 			while (previousVector != startingVector)
 			{
 				nodesOnPath.push_front(previousVector);
-
-				int debugClosedSetSize = m_closedSet.size();
-				int debugNodesOnPathSize = nodesOnPath.size();
 
 				for (closedSetIt = m_closedSet.begin(); closedSetIt != m_closedSet.end(); closedSetIt++)
 				{
@@ -102,6 +102,8 @@ std::list<Vector2> AStar::GeneratePath(Vector2 startingVector, Vector2 destinati
 
 			// Finally, add the starting node to the path.
 			nodesOnPath.push_front(startingVector);
+
+			CleanUp();
 
 			return nodesOnPath;
 		}
@@ -201,4 +203,34 @@ std::list<Vector2> AStar::FindAdjacentNodes(Vector2 currentNode)
 	}
 
 	return adjacentNodes;
+}
+
+// Decides if it's appropriate to terminate path calculation early. For now, let's just return true.
+bool AStar::CanTerminateEarly()
+{
+	return EARLY_TERMINATION_ENABLED;
+}
+
+// Clean up various objects so the algo is ready for another run.
+void AStar::CleanUp()
+{
+	std::list< std::pair<Vector2, AStarNode*> >::iterator it;
+
+	for (it = m_openSet.begin(); it != m_openSet.end(); it++)
+	{
+		delete(it->second);
+		it->second = NULL;
+	}
+
+	m_openSet.empty();
+
+	for (it = m_closedSet.begin(); it != m_closedSet.end(); it++)
+	{
+		delete(it->second);
+		it->second = NULL;
+	}
+
+	m_closedSet.empty();
+
+	m_costTravelled = 0;
 }

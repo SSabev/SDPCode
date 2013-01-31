@@ -10,7 +10,7 @@
 
 AStarUnitTests::AStarUnitTests()
 {
-	//TEST_ADD(AStarUnitTests::AStarFindAdjacentNodesZero);
+	TEST_ADD(AStarUnitTests::AStarFindAdjacentNodesZero);
 	TEST_ADD(AStarUnitTests::AStarFindPath);
 }
 
@@ -28,7 +28,7 @@ void AStarUnitTests::AStarFindPath()
 {
 	AStar aStar;
 
-	std::list<Vector2> aStarPath = aStar.GeneratePath(Vector2(0,0), Vector2(243,121));
+	std::list<Vector2> aStarPath = aStar.GeneratePath(Vector2(5,60), Vector2(18,90));
 
 	std::list<Vector2>::iterator it;
 

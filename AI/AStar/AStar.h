@@ -21,6 +21,8 @@ public:
 
 private:
 	std::list<Vector2> FindAdjacentNodes(Vector2 currentNode);
+	bool CanTerminateEarly();
+	void CleanUp();
 
 	float m_costTravelled;
 	std::list< std::pair<Vector2, AStarNode*> > m_openSet;
