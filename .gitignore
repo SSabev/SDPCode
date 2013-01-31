@@ -5,3 +5,4 @@
 *.py~
 GUI_Release/*
 *~
+GUI/GUI.pro.user
