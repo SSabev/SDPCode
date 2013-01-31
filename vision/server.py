@@ -10,6 +10,11 @@ class InitSignal(Structure):
 class RegSignal(Structure):
     fields_ = [("x", c_int), ("y", c_int)]
 
+class FrameData(Structure):
+    _fields_ = [("yellow_x", c_int), ("yellow_y", c_int), ("yellow_angle", c_float), \
+            ("blue_x", c_int), ("blue_y", c_int), ("blue_angle", c_float),
+            ("ball_x",c_int), ("ball_y", c_int), ("timestamp", c_uint)]
+
 server_address = '/tmp/vision_sock'
 
 # Make sure the socket does not already exist
@@ -38,10 +43,14 @@ while True:
             data = InitSignal(600, 400)
             s = connection.send(data)
             print s
-        elif data == 0xAA:
+            del(data)
+        elif data == 'b':
             print 'Sending data back to the client'
+            # this is navigation data
+            f_data = FrameData(2, 3, 4, 5, 6, 7, 8, 8, 1)
             connection.sendall(data)
-        elif data == 0x00:
+            del(f_data)
+        elif data == 'c':
             print 'Client terminated connection'
             connection.close()
             break
