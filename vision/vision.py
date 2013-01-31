@@ -13,8 +13,9 @@ from features import Features
 from threshold import Threshold
 from display import Gui, ThresholdGui
 
-HOST = 'localhost'
-PORT = 28546
+from c_types import *
+
+SERVER_SOCKET = '/tmp/vision_sock'
 
 PITCH_SIZE = (243.8, 121.9)
 
@@ -83,10 +84,16 @@ class Vision:
             self.socket.close()
 
     def connect(self):
-        print("Attempting to connect...")
-        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.socket.connect((HOST, PORT))
-        self.connected = True
+        try:
+            os.unlink(SERVER_SOCKET)
+        except OSError:
+            if os.path.exists(SERVER_SOCKET):
+                raise
+        sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+
+        print 'Starting up on %s' % SERVER_SOCKET
+        sock.bind(SERVER_SOCKET)
+        sock.listen(1)
 
     def quit(self):
         self.running = False
