@@ -70,7 +70,7 @@ bool CVisionComm::ReadData(TVisionData *data)
     net = localSocket.read((char *) data, sizeof(TVisionData));
 
     if(net != sizeof(TVisionData)){
-        loggingObj->ShowMsg(QString("VISIONCOMM: read size differs from expected: expected %1, written %2")
+        loggingObj->ShowMsg(QString("VISIONCOMM: read size differs from expected: expected %1, read %2")
                             .arg(sizeof(TVisionData))
                             .arg(net)
                             .toAscii()

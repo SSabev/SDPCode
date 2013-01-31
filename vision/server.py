@@ -49,7 +49,7 @@ while True:
             print 'Sending data back to the client'
             # this is navigation data
             f_data = FrameData(2, 3, 4, 5, 6, 7, 8, 8, 1)
-            connection.send(data)
+            connection.send(f_data)
             del(f_data)
         elif data == 'c':
             print 'Client terminated connection'
