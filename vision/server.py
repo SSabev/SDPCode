@@ -7,8 +7,6 @@ from c_types import *
 def run(pipe):
     server_address = '/tmp/vision_sock'
 
-    print pipe.recv()
-
     # Make sure the socket does not already exist
     try:
         os.unlink(server_address)
@@ -28,26 +26,27 @@ def run(pipe):
         print 'Connection established'
 
         while True:
-            data = connection.recv(8)
-            print str(data)
-            if data == 'a':
+            data = pipe.recv()
+            request = connection.recv(8)
+            print str(request)
+            if request == 'a':
                 print 'Sending initial data to client'
-                data = InitSignal(600, 400)
-                s = connection.send(data)
+                pitch_data = InitSignal(600, 400)
+                s = connection.send(pitch_data)
                 print s
-                del(data)
-            elif data == 'b':
+                del(pitch_data)
+            elif request == 'b':
                 print 'Sending data back to the client'
                 # this is navigation data
-                f_data = FrameData(2, 3, 4.0, 5, 6, 7.0, 8, 8, 1)
-                connection.send(f_data)
-                del(f_data)
-            elif data == 'c':
+                # data = FrameData(2, 3, 4.0, 5, 6, 7.0, 8, 8, 1)
+                connection.send(data)
+                del(data)
+            elif request == 'c':
                 print 'Client terminated connection'
                 connection.close()
                 break
-            elif data:
-                print data
+            elif request:
+                print request
             else:
                 print 'No more data'
                 break
