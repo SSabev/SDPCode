@@ -6,13 +6,6 @@
 
 #include "../../Shared/SharedMem.h"
 
-typedef struct{
-    unsigned char r_sensor  : 1;
-    unsigned char l_sensor  : 1;
-    unsigned char have_ball : 1;
-} __attribute__ ((packed)) TReadData;
-
-
 class CBtComm
         : public QWidget
 {
@@ -22,7 +15,7 @@ public:
     ~CBtComm();
 
     void SendData(TRobotData *data);
-    bool ReadData(TReadData &data);
+    bool ReadData(TRobotState *data);
 
     void ConnectToBT();
 
@@ -33,7 +26,6 @@ private slots:
 
 private:
     QTcpSocket  m_clientSock;
-//    int                 m_socketFd;
 };
 
 #endif // BTCOMM_H

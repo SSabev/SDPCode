@@ -102,7 +102,7 @@ void CBtComm::SendData(TRobotData *data)
                             .data());
 }
 
-bool CBtComm::ReadData(TReadData &data)
+bool CBtComm::ReadData(TRobotState *data)
 {
     int read;
 
@@ -111,10 +111,10 @@ bool CBtComm::ReadData(TReadData &data)
         return false;
     }
 
-    read = m_clientSock.read((char *) &data, sizeof(TReadData));
-    if(read != sizeof(TReadData)){
+    read = m_clientSock.read((char *) data, sizeof(TRobotState));
+    if(read != sizeof(TRobotState)){
         loggingObj->ShowMsg(QString("BTCOMM: read size differs from expected: expected %1, written %2")
-                            .arg(sizeof(TReadData))
+                            .arg(sizeof(TRobotState))
                             .arg(read)
                             .toAscii()
                             .data());
