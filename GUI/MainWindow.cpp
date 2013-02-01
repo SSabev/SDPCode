@@ -6,7 +6,10 @@
 
 #include <string.h>
 
+#define TIMER_INTERVAL_MS 20
+
 MainWindow::MainWindow()
+    : m_timer(this)
 {
     SetupGUI();
     InitSytem();
@@ -17,56 +20,27 @@ MainWindow::~MainWindow()
 
 }
 
-void MainWindow::MoveStraightSlot()
+void MainWindow::MoveWithBallSlot()
 {
-    /*
-    sharedMem.systemState = eMoveStraight;
-
-    sharedMem.positioning[0].robotData.motor_1 = 1;
-    m_btComm->SendData(&sharedMem.positioning[0].robotData);
-    */
-    /*
-    if(!m_visionComm->ReadData(&sharedMem.positioning[0].visionData))
-        m_logWdgt->ShowMsg("Returned false");
-    else
-        m_logWdgt->ShowMsg(QString("Read data:\n yellow x = %1 y = %2 angle = %3\n"
-                                   "blue   x = %4 y = %5 angle = %6\n"
-                                   "ball x = %7 y = %8\n"
-                                   "timestamp = %9")
-                           .arg(sharedMem.positioning[0].visionData.yellow_x)
-                           .arg(sharedMem.positioning[0].visionData.yellow_y)
-                           .arg(sharedMem.positioning[0].visionData.yellow_angle)
-                           .arg(sharedMem.positioning[0].visionData.blue_x)
-                           .arg(sharedMem.positioning[0].visionData.blue_y)
-                           .arg(sharedMem.positioning[0].visionData.blue_angle)
-                           .arg(sharedMem.positioning[0].visionData.ball_x)
-                           .arg(sharedMem.positioning[0].visionData.ball_y)
-                           .arg(sharedMem.positioning[0].visionData.timestamp));
-    */
+    sharedMem.systemState = eDribbleBall;
 }
 
-void MainWindow::PenaltySlot()
+void MainWindow::NavToBallSlot()
 {
-    sharedMem.systemState = eDoPenalty;
-
-    sharedMem.positioning[0].robotData.motor_1 = 2;
-    m_btComm->SendData(&sharedMem.positioning[0].robotData);
+    sharedMem.systemState = eNavToBall;
 }
 
 void MainWindow::StopeMvmntSlot()
 {
     sharedMem.systemState = eStop;
-
-    sharedMem.positioning[0].robotData.motor_1 = 3;
-    m_btComm->SendData(&sharedMem.positioning[0].robotData);
 }
 
 void MainWindow::SetupGUI()
 {
     setupUi(this);
 
-    connect(moveStraightBtn, SIGNAL(clicked()), this, SLOT(MoveStraightSlot()));
-    connect(penaltyBtn, SIGNAL(clicked()), this, SLOT(PenaltySlot()));
+    connect(moveWithBallBtn, SIGNAL(clicked()), this, SLOT(MoveWithBallSlot()));
+    connect(NavToBallBtn, SIGNAL(clicked()), this, SLOT(NavToBallSlot()));
     connect(stopBtn, SIGNAL(clicked()), this, SLOT(StopeMvmntSlot()));
 
     m_logWdgt = new CLoggingWidget(this);
@@ -76,6 +50,9 @@ void MainWindow::SetupGUI()
     connect(btConnectBtn, SIGNAL(clicked()), this, SLOT(ConnToBT()));
     connect(teamSetupBtn, SIGNAL(clicked()), this, SLOT(TeamSetup()));
     connect(logBtn, SIGNAL(clicked()), this, SLOT(ShowLogWin()));
+
+    m_timer.setSingleShot(false);
+    connect(&m_timer, SIGNAL(timeout()), this, SLOT(TimerCallBack()));
 }
 
 void MainWindow::InitSytem()
@@ -89,6 +66,8 @@ void MainWindow::InitSytem()
 
     m_btComm = new CBtComm(this);
     m_visionComm = new CVisionComm(this);
+
+    sharedMem.currentIdx = 0;
 
     loggingObj->ShowMsg("Configured...");
 }
@@ -112,4 +91,32 @@ void MainWindow::TeamSetup()
 void MainWindow::ShowLogWin()
 {
     m_logWdgt->show();
+}
+
+void MainWindow::TimerCallBack()
+{
+    if(!sharedMem.systemStatus == eOperational){
+        return;
+    }
+
+    // Read Modules new information
+    m_btComm->ReadData(
+                &sharedMem.positioning[
+                    sharedMem.currentIdx]
+                .robotState);
+    m_visionComm->ReadData(&sharedMem.positioning[
+                                sharedMem.currentIdx]
+                           .visionData);
+
+    /// TODO: Call AI
+
+    /// TODO: Call Navigation
+
+    // Send new data to the robot
+    m_btComm->SendData(&sharedMem.positioning[
+                            sharedMem.currentIdx]
+                       .robotData);
+
+    // increment index
+    sharedMem.currentIdx = (sharedMem.currentIdx+1) & SH_MEM_SIZE_MASK;
 }

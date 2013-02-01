@@ -26,16 +26,16 @@
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_2">
        <item>
-        <widget class="QPushButton" name="moveStraightBtn">
+        <widget class="QPushButton" name="moveWithBallBtn">
          <property name="text">
-          <string>Read Data</string>
+          <string>Dribble </string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="penaltyBtn">
+        <widget class="QPushButton" name="NavToBallBtn">
          <property name="text">
-          <string>Penalty</string>
+          <string>Move To Ball</string>
          </property>
         </widget>
        </item>

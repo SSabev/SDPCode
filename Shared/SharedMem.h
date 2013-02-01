@@ -4,16 +4,17 @@
 #include <stdint.h>
 
 #define SH_MEM_SIZE 8
+#define SH_MEM_SIZE_MASK (SH_MEM_SIZE - 1)
 
 typedef enum {
     eIDLE,
     eMatch,
     eLeftPenalty,
     eRightPenalty,
-    eStop = eIDLE,   // Same as IDLE
+    eStop = eIDLE,   // Stop is the same as IDLE
 
-    eMoveStraight,   // First milestone
-    eDoPenalty       // First milestone
+    eDribbleBall,    // Second milestone
+    eNavToBall       // Second milestone
 } TSystemState;
 
 typedef enum{
@@ -58,17 +59,25 @@ typedef struct{
     unsigned    timestamp;
 } __attribute__ ((packed)) TVisionData;
 
+typedef struct{
+    unsigned char r_sensor  : 1;
+    unsigned char l_sensor  : 1;
+    unsigned char have_ball : 1;
+} __attribute__ ((packed)) TRobotState;
 
 typedef struct
 {
-    TVisionData visionData;
-    TRobotData robotData;
-
-    // next field to be recieved from robot
-    unsigned      r_sensor  : 1;
-    unsigned      l_sensor  : 1;
-    unsigned      have_ball : 1;
+    TVisionData     visionData;
+    TRobotData      robotData;
+    TRobotState     robotState;
 } __attribute__ ((packed))  TEntry;
+
+typedef enum{
+    eNonOperational = 0,
+    eBTPresent      = 1,
+    eVisionPresent  = (1 << 1),
+    eOperational    = (eBTPresent | eVisionPresent)
+} TSystemStatus;
 
 typedef struct
 {
@@ -78,6 +87,8 @@ typedef struct
     TPitchSide    pitchSide;
     TTeamColor    teamColor;
     TPitchCfg     pitchCfg;
+
+    TSystemStatus systemStatus;
 } TShMem;
 
 extern TShMem sharedMem;

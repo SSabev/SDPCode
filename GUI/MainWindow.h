@@ -8,6 +8,7 @@
 #include "Comm/VisionComm.h"
 
 #include <QMainWindow>
+#include <QTimer>
 
 class MainWindow
         : public QMainWindow
@@ -20,14 +21,16 @@ public:
     ~MainWindow();
 
 private slots:
-    void MoveStraightSlot();
-    void PenaltySlot();
+    void NavToBallSlot();
+    void MoveWithBallSlot();
     void StopeMvmntSlot();
 
     void TeamSetup();
     void ConnToVision();
     void ConnToBT();
     void ShowLogWin();
+
+    void TimerCallBack();
 
 private:
     void SetupGUI();
@@ -36,6 +39,8 @@ private:
     CLoggingWidget *m_logWdgt;
     CBtComm        *m_btComm;
     CVisionComm    *m_visionComm;
+
+    QTimer         m_timer;
 };
 
 
