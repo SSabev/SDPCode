@@ -13,4 +13,4 @@ AI/release/*
 AI/test/*
 AI/premake4
 AI/Makefile
-AI/SDP-AI.make
+AI/SDP-AI.*
