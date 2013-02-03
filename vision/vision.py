@@ -36,7 +36,7 @@ class Vision:
             self.cap = Camera()
         else:
             filetype = 'video'
-            if sourcefile.endswith(('jpg', 'png')):th))
+            if sourcefile.endswith(('jpg', 'png'))))
 
         self.gui = Gui()
         self.threshold = Threshold(pitchnum)
