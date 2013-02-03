@@ -30,16 +30,20 @@ std::vector<Vector2> Foresee::ExtrapolateState(Vector2 ourRobotPos, Vector2 enem
 	m_ourRobotPositions.push_front(ourRobotPos);
 	m_enemyRobotPositions.push_front(enemyRobotPos);
 	m_ballPositions.push_front(ballPos);
+
+	std::vector<Vector2> ourRobotVector(m_ourRobotPositions.begin(), m_ourRobotPositions.end());
+	std::vector<Vector2> enemyRobotVector(m_enemyRobotPositions.begin(), m_ourRobotPositions.end());
+	std::vector<Vector2> ballVector(m_ourRobotPositions.begin(), m_ballPositions.end());
 	
 	std::vector<Vector2> futurePositions;
-	futurePositions[0] = ExtrapolatePositionFromPoints(m_ourRobotPositions);
-	futurePositions[1] = ExtrapolatePositionFromPoints(m_enemyRobotPositions);
-	futurePositions[2] = ExtrapolatePositionFromPoints(m_ballPositions);
+	futurePositions[0] = ExtrapolatePositionFromPoints(ourRobotVector);
+	futurePositions[1] = ExtrapolatePositionFromPoints(enemyRobotVector);
+	futurePositions[2] = ExtrapolatePositionFromPoints(ballVector);
 	
 	return futurePositions;
 }
 
-Vector2 Foresee::ExtrapolatePositionFromPoints(std::list<Vector2> positions)
+Vector2 Foresee::ExtrapolatePositionFromPoints(std::vector<Vector2> positions)
 {
 	assert(positions.size() > 0);
 	
@@ -50,5 +54,8 @@ Vector2 Foresee::ExtrapolatePositionFromPoints(std::list<Vector2> positions)
 		return positions.front();
 	}
 	
+	// For now, we're going to assume that the delay between frames is constant.
+	Vector2 extrapolatedPosition = positions[0] + (positions[0] - positions[1]);
 	
+	return extrapolatedPosition;
 }
