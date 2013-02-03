@@ -3,6 +3,7 @@ import sys
 import os
 import time
 import math
+import socket
 
 from optparse import OptionParser
 
@@ -37,11 +38,6 @@ class Vision:
             filetype = 'video'
             if sourcefile.endswith(('jpg', 'png')):
                 filetype = 'image'
-
-            self.cap = VirtualCamera(sourcefile, filetype)
-
-        calibrationPath = os.path.join('calibration', 'pitch{0}'.format(pitchnum))
-        self.cap.loadCalibration(os.path.join(sys.path[0], calibrationPath))
 
         self.gui = Gui()
         self.threshold = Threshold(pitchnum)
