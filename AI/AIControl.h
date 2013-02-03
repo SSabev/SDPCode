@@ -15,11 +15,19 @@
 
 class AIControl
 {
+
+#if defined(TEST)
+	// This facilitates testing of private and protected functions.
+	friend class AStarUnitTests;
+#endif
+
 public:
 	void Initialise();
 	void RunAI();
 	
 private:
+	void Plot(std::list<Vector2> aStarPath, std::vector<Vector2> ourPrevious, Vector2 destination, std::vector<Vector2> ballPrevious, Vector2 ballFuture);
+
 	Foresee m_foresee;
 	Eagle m_eagle;
 	AStar m_aStar;

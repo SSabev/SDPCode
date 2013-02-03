@@ -2,6 +2,9 @@
 
 #include <vector>
 
+#include <iostream>
+#include <fstream>
+
 void AIControl::Initialise()
 {
 	m_foresee = Foresee();
@@ -32,4 +35,60 @@ void AIControl::RunAI()
 	std::list<Vector2> smoothedPath = m_impala.SmoothPath(aStarPath);
 
 	// Results should be written to shared memory.
+}
+
+void AIControl::Plot(std::list<Vector2> aStarPath, std::vector<Vector2> ourPrevious, Vector2 destination, std::vector<Vector2> ballPrevious, Vector2 ballFuture)
+{
+	std::ofstream myfile;
+	myfile.open("astar_path.dat");
+
+	std::list<Vector2>::iterator it;
+
+	for (it = aStarPath.begin(); it != aStarPath.end(); it++)
+	{
+		// We want to make sure that every point except the last one is followed 
+		// by a line break.
+		if (it != aStarPath.begin())
+		{
+			myfile << std::endl;
+		}
+
+		myfile << it->ToString();
+	}
+
+	myfile.close();
+
+	myfile.open("ball_current.dat");
+
+	myfile << ballPrevious[1].ToString() << std::endl;
+	myfile << ballPrevious[0].ToString() << std::endl;
+	myfile << ballFuture.ToString();
+
+	myfile.close();
+
+	myfile.open("ball_future.dat");
+
+	myfile << ballFuture.ToString();
+
+	myfile.close();
+
+	myfile.open("dest_pos.dat");
+
+	myfile << destination.ToString();
+
+	myfile.close();
+
+	myfile.open("our_current.dat");
+
+	myfile << ourPrevious[1].ToString() << std::endl;
+	myfile << ourPrevious[0].ToString() << std::endl;
+	myfile << aStarPath.front().ToString();
+
+	myfile.close();
+
+	myfile.open("our_future.dat");
+
+	myfile << aStarPath.front().ToString();
+
+	myfile.close();
 }
