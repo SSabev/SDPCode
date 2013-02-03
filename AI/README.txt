@@ -31,8 +31,9 @@ The libs can and should be configured and compiled by executing:
 
 However, if you do wish to compile the AI directly, a premake4.lua file is included to help you with this. It can be used to generate make files or projects for various IDEs, e.g.
 
-premake4 gmake
-premake4 codelite
+./get_premake4.sh
+./premake4 gmake
+./premake4 codelite
 
 =========================================================================================
 
@@ -40,8 +41,9 @@ UNIT TESTING
 
 The AI comes with certain unit tests, using the included library cpptest. You can run these tests as follows:
 
+./get_premake4.sh
 ./compile-libs.sh
-premake4 gmake
+./premake4 gmake
 make config=test
 cd test
 ./SDP-AI
