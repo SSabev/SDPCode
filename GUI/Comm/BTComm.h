@@ -4,7 +4,7 @@
 #include <QWidget>
 #include <QtNetwork/QTcpSocket>
 
-#include "../../Shared/SharedMem.h"
+#include <SharedMem.h>
 
 class CBtComm
         : public QWidget

@@ -4,7 +4,7 @@
 #include <QWidget>
 #include <QLocalSocket>
 
-#include "../../Shared/SharedMem.h"
+#include <SharedMem.h>
 
 class CVisionComm
         : public QWidget

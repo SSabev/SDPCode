@@ -1,3 +1,3 @@
-#include "../Shared/SharedMem.h"
+#include <SharedMem.h>
 
 TShMem sharedMem;

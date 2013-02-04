@@ -1,8 +1,7 @@
 #include <QMessageBox>
 
-#include "../../Shared/Sockets.h"
-#include "../../Shared/Logging.h"
-
+#include <Sockets.h>
+#include <Logging.h>
 
 #include "VisionComm.h"
 
