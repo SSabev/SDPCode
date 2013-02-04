@@ -6,12 +6,14 @@ Vector2UnitTests::Vector2UnitTests()
 {
 	TEST_ADD(Vector2UnitTests::Vector2Equals);
 	TEST_ADD(Vector2UnitTests::Vector2DoesNotEqual);
+	TEST_ADD(Vector2UnitTests::Vector2DoesNotEqual2);
 	TEST_ADD(Vector2UnitTests::Vector2Addition);
 	TEST_ADD(Vector2UnitTests::Vector2CompoundAddition);	
 	TEST_ADD(Vector2UnitTests::Vector2Subtraction);
 	TEST_ADD(Vector2UnitTests::Vector2CompoundSubtraction);
 	TEST_ADD(Vector2UnitTests::Vector2MultiplicationInt);
 	TEST_ADD(Vector2UnitTests::Vector2MultiplicationFloat);
+	TEST_ADD(Vector2UnitTests::Vector2MultiplicationFloat2);
 	TEST_ADD(Vector2UnitTests::Vector2CompoundMultiplicationInt);
 	TEST_ADD(Vector2UnitTests::Vector2CompoundMultiplicationFloat);
 	TEST_ADD(Vector2UnitTests::Vector2DivisionInt);
@@ -22,6 +24,7 @@ Vector2UnitTests::Vector2UnitTests()
 	TEST_ADD(Vector2UnitTests::Vector2Distance);
 	TEST_ADD(Vector2UnitTests::Vector2DistanceSquared);
 	TEST_ADD(Vector2UnitTests::Vector2MagnitudeSquared);
+	TEST_ADD(Vector2UnitTests::Vector2MagnitudeSquaredZero);
 }
 
 void Vector2UnitTests::Vector2Equals()
@@ -36,6 +39,14 @@ void Vector2UnitTests::Vector2DoesNotEqual()
 {
 	Vector2 v1(5,9);
 	Vector2 v2(-3,9);
+	
+	TEST_ASSERT(v1 != v2);
+}
+
+void Vector2UnitTests::Vector2DoesNotEqual2()
+{
+	Vector2 v1(1,1);
+	Vector2 v2(-1,-1);
 	
 	TEST_ASSERT(v1 != v2);
 }
@@ -87,6 +98,15 @@ void Vector2UnitTests::Vector2MultiplicationFloat()
 
 	TEST_ASSERT((f * v) == Vector2(7.5f,13.5f));
 }
+
+void Vector2UnitTests::Vector2MultiplicationFloat2()
+{
+	Vector2 v(5,9);
+	float f = 0.0f;
+
+	TEST_ASSERT((f * v) == Vector2(0.0f,0.0f));
+}
+
 
 void Vector2UnitTests::Vector2CompoundMultiplicationInt()
 {
@@ -157,4 +177,11 @@ void Vector2UnitTests::Vector2MagnitudeSquared()
 	Vector2 v1(-5,0);
 
 	TEST_ASSERT(v1.MagnitudeSquared() == 25);
+}
+
+void Vector2UnitTests::Vector2MagnitudeSquaredZero()
+{
+	Vector2 v1(0,0);
+
+	TEST_ASSERT(v1.MagnitudeSquared() == 0);
 }

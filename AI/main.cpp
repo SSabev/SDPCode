@@ -3,10 +3,6 @@
 #include "RobotState.h"
 #include "MathTypes/Vector2.h"
 
-#include "../Shared/SharedMem.h"
-
-#include <string.h>
-
 #if defined(TEST)
 #include "cpptest.h"
 
@@ -16,18 +12,6 @@
 
 int main(int argc, char *argv[])
 {
-#if defined(STANDALONE)
-
-	// Simulate the shared memory if we're running standalone.
-	TShMem sharedMem;
-
-	// zero-out the shared memory
-    memset(&sharedMem, 0, sizeof(TShMem));
-    // set current state as IDLE
-    sharedMem.systemState = eIDLE;
-
-#endif
-
 #if defined(TEST)
 
 	Test::TextOutput output(Test::TextOutput::Verbose);

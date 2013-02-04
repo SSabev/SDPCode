@@ -17,6 +17,7 @@ class AStar
 public:
 	AStar();
 	
+	void SetPitchDimensions(int pitchSizeX, int pitchSizeY);
 	std::list<Vector2> GeneratePath(Vector2 startingNode, Vector2 destinationNode);
 
 private:
@@ -27,6 +28,9 @@ private:
 	float m_costTravelled;
 	std::list< std::pair<Vector2, AStarNode*> > m_openSet;
 	std::list< std::pair<Vector2, AStarNode*> > m_closedSet;
+
+	int m_gridSizeX;
+	int m_gridSizeY;
 };
 
 #endif

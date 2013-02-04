@@ -2,11 +2,21 @@
 
 #include <vector>
 
+#include "../Shared/SharedMem.h"
+
+#include <string.h>
 #include <iostream>
 #include <fstream>
 
 void AIControl::Initialise()
 {
+#if defined(STANDALONE)
+	// zero-out the shared memory
+    memset(&sharedMem, 0, sizeof(TShMem));
+    // set current state as IDLE
+    sharedMem.systemState = eIDLE;
+#endif
+
 	m_foresee = Foresee();
 	m_eagle = Eagle();
 	m_aStar = AStar();
@@ -15,21 +25,42 @@ void AIControl::Initialise()
 
 void AIControl::RunAI()
 {	
-	// These should be read from shared memory (sharedMem).
-	RobotState ourRobot(0,0,0);
-	RobotState enemyRobot(0,0,0);
-	Vector2 ballPos(0,0);
+	int currentFrameIndex = sharedMem.currentIdx;
+
+	RobotState blueRobotState(sharedMem.positioning[currentFrameIndex].visionData.blue_x, sharedMem.positioning[currentFrameIndex].visionData.blue_y,sharedMem.positioning[currentFrameIndex].visionData.blue_angle);
+	RobotState yellowRobotState(sharedMem.positioning[currentFrameIndex].visionData.yellow_x, sharedMem.positioning[currentFrameIndex].visionData.yellow_y, sharedMem.positioning[currentFrameIndex].visionData.yellow_angle);
+
+	RobotState ourRobot;
+	RobotState enemyRobot;
+
+	if (sharedMem.teamColor == eBlueTeam)
+	{
+		ourRobot = blueRobotState;
+		enemyRobot = yellowRobotState;
+	}
+	else
+	{
+		ourRobot = yellowRobotState;
+		enemyRobot = blueRobotState;
+	}
+
+	Vector2 ballPos(sharedMem.positioning[currentFrameIndex].visionData.ball_x, sharedMem.positioning[currentFrameIndex].visionData.ball_y);
 
 	// Given the current position and a certain number of previous positions, 
 	// approximate where the bot will be when it receives our next transmission.
 	std::vector<Vector2> futurePositions = m_foresee.ExtrapolateState(ourRobot.Position(), enemyRobot.Position(), ballPos);
 	
+	// ** FOR NOW, EAGLE DOESN'T DO ANYTHING. TARGET POSITION WILL BE BALL POSITION. **
+
 	// Given the positions of the robots and ball, identify the ideal position 
 	// and orientation for us to reach.
-	Vector2 targetPosition = m_eagle.IdentifyTarget(futurePositions);
+	//Vector2 targetPosition = m_eagle.IdentifyTarget(futurePositions);
 	
 	// Using A*, generate the best path to the target.
-	std::list<Vector2> aStarPath = m_aStar.GeneratePath(futurePositions[0], targetPosition);
+	//std::list<Vector2> aStarPath = m_aStar.GeneratePath(futurePositions[0], targetPosition);
+
+	m_aStar.SetPitchDimensions(sharedMem.pitchCfg.pitchWidth, sharedMem.pitchCfg.pitchHeight);
+	std::list<Vector2> aStarPath = m_aStar.GeneratePath(futurePositions[0], ballPos);
 	
 	// Smooth and optimise the path using knowledge of our bot's capabilities.
 	std::list<Vector2> smoothedPath = m_impala.SmoothPath(aStarPath);

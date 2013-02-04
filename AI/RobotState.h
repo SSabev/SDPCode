@@ -6,6 +6,7 @@
 class RobotState
 {
 public:
+	RobotState();
 	RobotState(float posX, float posY, float orientation);
 
 	Vector2 Position()
@@ -19,6 +20,8 @@ public:
 	}
 
 private:
+	bool m_isSet;
+
 	Vector2 m_position;
 	float m_orientation;
 };

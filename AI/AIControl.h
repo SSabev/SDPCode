@@ -32,6 +32,11 @@ private:
 	Eagle m_eagle;
 	AStar m_aStar;
 	Impala m_impala;
+
+#if defined(STANDALONE)
+	// Simulate the shared memory if we're running standalone.
+	TShMem sharedMem;
+#endif
 };
 
 #endif

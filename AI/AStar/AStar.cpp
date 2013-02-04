@@ -5,8 +5,8 @@
 #include <iostream>
 
 // (244,122) is one waypoint per cm^2.
-const int GRID_SIZE_X = 244;
-const int GRID_SIZE_Y = 122;
+//const int GRID_SIZE_X = 244;
+//const int GRID_SIZE_Y = 122;
 
 // I'm experimenting with penalising the heuristic, otherwise it results in expanding 
 // too many nodes needlessly.
@@ -25,6 +25,12 @@ const bool EARLY_TERMINATION_ENABLED = false;
 AStar::AStar()
 {
 
+}
+
+void AStar::SetPitchDimensions(int pitchSizeX, int pitchSizeY)
+{
+	m_gridSizeX = pitchSizeX;
+	m_gridSizeY = pitchSizeY;
 }
 
 std::list<Vector2> AStar::GeneratePath(Vector2 startingVector, Vector2 destinationVector)
@@ -192,7 +198,7 @@ std::list<Vector2> AStar::FindAdjacentNodes(Vector2 currentNode)
 				continue;
 			}
 
-			if ((currentNode.X() + i >= GRID_SIZE_X) || (currentNode.Y() + j >= GRID_SIZE_Y))
+			if ((currentNode.X() + i >= m_gridSizeX) || (currentNode.Y() + j >= m_gridSizeY))
 			{
 				continue;
 			}
