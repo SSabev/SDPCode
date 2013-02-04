@@ -84,15 +84,20 @@ class Gui:
         if self._lastFrame is not None:
             # Smooth values
             thisFrame = thisFrame * (1 - smoothConst) + smoothConst * self._lastFrame
-        
+
         fps = 1.0 / thisFrame
 
         self._lastFrame = thisFrame
         self._lastFrameTime = thisFrameTime
 
-        layer = self._layers['raw'].dl()
-        print fps
-        #layer.ezViewText('{0:.2f} fps'.format(fps), (10, 10))
+        # layer = self._layers['raw'].dl()
+
+        # print fps
+        # layer.ezViewText('{0:.2f} fps'.format(fps), (10, 10))
+        # drawingLayer = self.getDrawingLayer()
+        # drawingLayer.ezViewText('fps', (10, 10))
+        # drawingLayer.ezViewText('asd', (10, 10), fgcolor=(255, 255, 255), bgcolor=(0, 0, 0))
+
 
     def drawCrosshair(self, pos, layerName = None):
         size = self._layers['raw'].size()
@@ -127,23 +132,23 @@ class Gui:
         # Only fire click event once for each click
         if mouseLeft == 1 and self._lastMouseState == 0:
             self._eventHandler.processClick((mouseX, mouseY))
-        
+
         self._lastMouseState = mouseLeft
-        
+
         # Processing OpenCV events requires calling cv.WaitKey() with a reasonable timeout,
         # which hits our framerate hard (NOTE: Need to confirm this on DICE), so only do
         # this if the focus isn't on the pygame (image) window`
         if not pygame.key.get_focused():
             c = cv.WaitKey(2)
             self._eventHandler.processKey(chr(c % 0x100))
-        
+
         if self.showPixel:
             self.__updatePixel()
         self.__updateFps()
         self.__draw()
 
     def getEventHandler(self):
-        return self._eventHandler   
+        return self._eventHandler
 
     def getDrawingLayer(self):
         return DrawingLayer(self._layers['raw'].size())
@@ -151,10 +156,10 @@ class Gui:
     def updateLayer(self, name, layer):
         """
         Update the layer specified by 'name'
-        If the layer name is not in the known list of layers, 
+        If the layer name is not in the known list of layers,
         then it will be drawn regardless of the current view setting
         """
-        
+
         if name in self._layers.keys():
             self._layers[name] = layer
         else:
@@ -170,32 +175,33 @@ class Gui:
             self.updateLayer('mouse', None)
 
         self._showMouse = showMouse
-        
+
     # Show pixel mode: turn on/off by 'p', show the HSV of the pixel at the mouse
-    showPixel = False;
+    showPixel = False
+
     def toggleShowPixel(self):
         self.showPixel = not self.showPixel
-        
     # Record pixel mode: use the current pixel to update threshold
-    recordPixel = False;
+    recordPixel = False
+
     def toggleRecordPixel(self):
         self.recordPixel = not self.recordPixel
-    
+
     def getMousePos(self):
         return (self._display.mouseX, self._display.mouseY)
-        
+
     def getPixelHSV(self, x, y):
-        return self._layers['raw'].crop(x,y,1,1).toHSV()[0,0]
-        
+        return self._layers['raw'].crop(x, y, 1, 1).toHSV()[0, 0]
+
     def getPixel(self, x, y):
-        return self._layers['raw'][x,y]
-        
+        return self._layers['raw'][x, y]
+
     #check (x,y) is in the image range
-    def inRange(self,x,y):
+    def inRange(self, x, y):
         h = self._layers['raw'].height
         w = self._layers['raw'].width
-        return (0< x and x < w and 0< y and y< h)
-        
+        return (0 < x and x < w and 0 < y and y < h)
+
     # Display the pixel HSV
     def __updatePixel(self):
         (x,y)   = self.getMousePos()
@@ -324,7 +330,7 @@ class ThresholdGui:
         v_max = int (self._gui.v_max)
         
         allvalues = [[h_min, s_min, v_min], [h_max, s_max, v_max]]
-        #print allvalues
+        # print allvalues
         self.threshold.updateValues(self.currentEntity, allvalues)
         name = self.currentEntity
         self.setTrackbarValues(self.threshold._values[name])

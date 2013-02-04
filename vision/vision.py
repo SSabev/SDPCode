@@ -60,11 +60,9 @@ class Vision:
 
         frame = self.camera.getImageUndistort()
 
-
-
         # Uncomment to see changes in barrell distortion matrix
-        calibrationPath = os.path.join('calibration', 'pitch{0}'.format(0))
-        self.camera.loadCalibration(os.path.join(sys.path[0], calibrationPath))
+        # calibrationPath = os.path.join('calibration', 'pitch{0}'.format(0))
+        # self.camera.loadCalibration(os.path.join(sys.path[0], calibrationPath))
 
         frame = self.preprocessor.preprocess(frame)
 
@@ -79,7 +77,6 @@ class Vision:
         self.preprocessor.setNextPitchCorner(where)
 
         if self.preprocessor.hasPitchSize:
-            print("Pitch size: {0!r}".format(self.preprocessor.pitch_size))
             self.outputPitchSize()
             self.gui.setShowMouse(False)
             self.gui.updateLayer('corner', None)
@@ -117,6 +114,6 @@ class Vision:
         data = FrameData(*msg_data)
 
         if self.stdout:
-            print ("Yellow:\t %i\t %i\t Angle:\t %s\n\ Blue:\t %i\t %i\t Angle:\t %s\n\ Ball:\t %i\t %i\t\n\ Time:\t %i\n" % tuple(msg_data))
+            print ("Yellow:\t %i\t %i\t Angle:\t %s\nBlue:\t %i\t %i\t Angle:\t %s\nBall:\t %i\t %i\t\nTime:\t %i\n" % tuple(msg_data))
 
         self.pipe.send(data)

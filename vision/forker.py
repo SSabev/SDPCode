@@ -35,6 +35,7 @@ if __name__ == "__main__":
 
     SOCK_ADDRESS = '/tmp/vision_sock'
 
+    # TODO: perhaps a shared array may be quicker than all those pipes. Research!
     srv_parent, srv_child = Pipe()
     vis_parent, vis_child = Pipe()
 
@@ -46,8 +47,22 @@ if __name__ == "__main__":
     print 'Starting vision'
     vis.start()
 
+    # Send pitch data to connected client
+    pitch_size = vis_parent.recv()
+    srv_parent.send(pitch_size)
+
     while True:
         data = vis_parent.recv()
+        request = srv_parent.poll()
 
-    # p.join()
+        if request:
+            req = srv_parent.recv()
+            if req == 2:
+                print 'Terminating processes'
+                vis.join()
+                srv.join()
+            else:
+                print 'Sending to server'
+                srv_parent.send(data)
 
+        del(data)

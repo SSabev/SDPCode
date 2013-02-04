@@ -25,7 +25,7 @@ class Preprocessor:
 
     def __loadPitchSize(self):
         self._cropRect = util.loadFromFile(self._filepath)
-        print self._cropRect
+        # print self._cropRect
 
     @property
     def pitch_size(self):
