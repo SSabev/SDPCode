@@ -51,11 +51,10 @@ class Preprocessor:
         else:
             return
 
-
         print "Cropped rectangle {0}".format(self._cropRect)
-        
+
     def preprocess(self, frame):
-        
+
         if self.hasPitchSize:
             frame = frame.crop(*self._cropRect)
 

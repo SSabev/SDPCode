@@ -1,13 +1,53 @@
 from multiprocessing import Process, Pipe
+from optparse import OptionParser
 
+from vision import *
 from server import *
 
 
-if __name__ == '__main__':
-    parent_conn, child_conn = Pipe()
-    p = Process(target=run, args=(child_conn, ))
-    print 'Running server'
-    p.start()
-    print 'Sending signal'
-    parent_conn.send('Fuck yeah!')
-    p.join()
+class OptParser(OptionParser):
+    """
+    The default OptionParser exits with exit code 2
+    if OptionParser.error() is called. Unfortunately this
+    screws up our vision restart script which tries to indefinitely
+    restart the vision system with bad options. This just exits with
+    0 instead so everything works.
+    """
+    def error(self, msg):
+        self.print_usage(sys.stderr)
+        self.exit(0, "%s: error: %s\n" % (self.get_prog_name(), msg))
+
+if __name__ == "__main__":
+
+    parser = OptParser()
+    parser.add_option('-p', '--pitch', dest='pitch', type='int', metavar='PITCH',
+                      help='PITCH should be 0 for main pitch, 1 for the other pitch')
+    parser.add_option('-f', '--file', dest='file', metavar='FILE',
+                      help='Use FILE as input instead of capturing from Camera')
+    parser.add_option('-s', '--stdout', action='store_true', dest='stdout', default=False,
+                      help='Send output to stdout instead of using a socket')
+    parser.add_option('-r', '--reset', action='store_true', dest='resetPitchSize', default=False,
+                      help='Don\'t restore the last run\'s saved pitch size')
+
+    (options, args) = parser.parse_args()
+    if options.pitch not in [0, 1]:
+        parser.error('Pitch must be 0 or 1')
+
+    SOCK_ADDRESS = '/tmp/vision_sock'
+
+    srv_parent, srv_child = Pipe()
+    vis_parent, vis_child = Pipe()
+
+    srv = Process(target=Server, args=(SOCK_ADDRESS, srv_child, ))
+    vis = Process(target=Vision, args=(options.pitch, options.stdout,
+                                         options.file, options.resetPitchSize, vis_child, ))
+    print 'Starting server'
+    srv.start()
+    print 'Starting vision'
+    vis.start()
+
+    while True:
+        data = vis_parent.recv()
+
+    # p.join()
+
