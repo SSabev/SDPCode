@@ -1,3 +1,3 @@
-#include "../Shared/Logging.h"
+#include <Logging.h>
 
 ILogging *loggingObj;

@@ -1,6 +1,6 @@
 #include "TeamCfgDlg.h"
 
-#include "../../Shared/SharedMem.h"
+#include <SharedMem.h>
 
 CTeamCfgDlg::CTeamCfgDlg(QWidget *parent)
     : QDialog(parent)

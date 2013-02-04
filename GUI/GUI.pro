@@ -24,7 +24,8 @@ SOURCES += \
     Tools/TeamCfgDlg.cpp
 
 INCLUDEPATH += \
-        Shared
+        Shared \
+        ${QMAKE_VAR__PRO_FILE_PWD_}../Shared
 
 CONFIG += network
 QT += network

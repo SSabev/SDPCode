@@ -4,7 +4,8 @@
 #include <QWidget>
 
 #include "ui_Logging.h"
-#include "../Shared/Logging.h"
+
+#include <Logging.h>
 
 class CLoggingWidget
         : public QWidget

@@ -1,8 +1,8 @@
 #include "MainWindow.h"
-#include "../Shared/SharedMem.h"
-#include "../Shared/Logging.h"
-
 #include "Tools/TeamCfgDlg.h"
+
+#include <SharedMem.h>
+#include <Logging.h>
 
 #include <string.h>
 

@@ -1,40 +1,13 @@
 #include "BTComm.h"
 
-#include "../../Shared/Sockets.h"
-#include "../../Shared/Logging.h"
-/*
-#include <sys/socket.h>
-#include <sys/stat.h>
-#include <netinet/in.h>
-#include <string.h>
-#include <netdb.h>
-#include <fcntl.h>
-*/
+#include <Sockets.h>
+#include <Logging.h>
+
 #include <QMessageBox>
 
 CBtComm::CBtComm(QWidget *parent)
     : QWidget(parent)
 {
-/*
-    int flags;
-    struct sockaddr_in sa;
-    struct hostent *server;
-
-    server = gethostbyname("localhost");
-
-    memset(&sa, 0, sizeof(struct sockaddr_in));
-    sa.sin_family = AF_INET;
-    sa.sin_port = htons(BT_COMM_SOCKET_PORT);
-    bcopy( (char *)server->h_addr,
-           (char *)&sa.sin_addr.s_addr,
-                server->h_length);
-
-    m_socketFd = socket( AF_INET, SOCK_STREAM, 0 );
-    flags = fcntl(m_socketFd, F_GETFL, 0);          // get flags
-    fcntl(m_socketFd, F_SETFL, flags | O_NONBLOCK); // set non-blocking flag
-    ::connect(m_socketFd, (struct sockaddr*) &sa, sizeof(sa));
-
-*/
     connect(&m_clientSock, SIGNAL(connected()), this, SLOT(ConnectedSlot()));
     connect(&m_clientSock, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(SockErr()));
     connect(&m_clientSock, SIGNAL(disconnected()), this, SLOT(ConnLost()));
