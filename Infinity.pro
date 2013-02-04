@@ -3,7 +3,15 @@ HEADERS += \
     GUI/LoggingWidget.h \
     GUI/Tools/TeamCfgDlg.h \
     GUI/Comm/VisionComm.h \
-    GUI/Comm/BTComm.h
+    GUI/Comm/BTComm.h \
+    AI/AIControl.h \
+    AI/AStar/AStarNode.h \
+    AI/AStar/AStar.h \
+    AI/Eagle/Eagle.h \
+    AI/Foresee/Foresee.h \
+    AI/Impala/Impala.h \
+    AI/MathTypes/Vector2.h \
+    AI/RobotState.h
 
 SOURCES += \
     GUI/SharedMem.cpp \
@@ -13,7 +21,15 @@ SOURCES += \
     GUI/Logging.cpp \
     GUI/Tools/TeamCfgDlg.cpp \
     GUI/Comm/VisionComm.cpp \
-    GUI/Comm/BTComm.cpp
+    GUI/Comm/BTComm.cpp \
+    AI/AIControl.cpp \
+    AI/AStar/AStarNode.cpp \
+    AI/AStar/AStar.cpp \
+    AI/Eagle/Eagle.cpp \
+    AI/Foresee/Foresee.cpp \
+    AI/Impala/Impala.cpp \
+    AI/MathTypes/Vector2.cpp \
+    AI/RobotState.cpp
 
 FORMS += \
     GUI/mainwindow.ui \
@@ -21,7 +37,8 @@ FORMS += \
     GUI/Tools/TeamCfgDlg.ui
 
 INCLUDEPATH += \
-    Shared
+    Shared \
+    $$PWD/AI
 
 CONFIG += network
 QT += network

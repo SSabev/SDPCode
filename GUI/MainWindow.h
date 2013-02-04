@@ -7,6 +7,8 @@
 #include "Comm/BTComm.h"
 #include "Comm/VisionComm.h"
 
+#include <AIControl.h>
+
 #include <QMainWindow>
 #include <QTimer>
 
@@ -39,6 +41,8 @@ private:
     CLoggingWidget *m_logWdgt;
     CBtComm        *m_btComm;
     CVisionComm    *m_visionComm;
+
+    AIControl       aiCtrl;
 
     QTimer         m_timer;
 };
