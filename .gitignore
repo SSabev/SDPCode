@@ -15,3 +15,5 @@ AI/premake4
 AI/Makefile
 AI/SDP-AI.*
 Infinity.pro.user
+
+*.profile
