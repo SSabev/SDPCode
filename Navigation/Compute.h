@@ -7,7 +7,7 @@
 
 #ifndef COMPUTE_H_
 #define COMPUTE_H_
-#include "../AI/AI/MathTypes/Vector2.h"
+#include "../AI/MathTypes/Vector2.h"
 #include <vector>
 
 class Compute

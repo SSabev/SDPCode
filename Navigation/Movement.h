@@ -7,7 +7,7 @@
 
 #ifndef MOVEMENT_H_
 #define MOVEMENT_H_
-#include "../AI/AI/MathTypes/Vector2.h"
+#include "../AI/MathTypes/Vector2.h"
 #include "Motor.h"
 
 
@@ -15,8 +15,9 @@ class Movement
 {
 public:
 	Movement();
+	Movement(Vector2 targetLocation, Vector2 ourRobotLocation);
 
-    void IssueSpeed(Vector2 targetLocation, Vector2 ourRobotLocation);
+    	void IssueSpeed(Vector2 targetLocation, Vector2 ourRobotLocation);
 	
 	int GetMotorSpeed(int motorNumber);
 private:
