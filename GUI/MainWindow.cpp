@@ -69,6 +69,8 @@ void MainWindow::InitSytem()
 
     sharedMem.currentIdx = 0;
 
+    aiCtrl.Initialise();
+
     loggingObj->ShowMsg("Configured...");
 }
 

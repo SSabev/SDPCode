@@ -1,4 +1,8 @@
-git add *;
-git commit -m $1;
-git pull;
+#!/bin/sh
+
+
+git add .;
+git commit -m "${1}";
+git pull origin master;
 git push;
+git status;

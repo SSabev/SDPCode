@@ -1,6 +1,6 @@
 #include "Compute.h"
 #define _USE_MATH_DEFINES
-#include "../AI/AI/MathTypes/Vector2.h"
+#include "../AI/MathTypes/Vector2.h"
 #include <math.h>
 #include <vector>
 
@@ -90,8 +90,8 @@ void Compute::ComputeMotorSpeeds(int angle) {
 		}
 		motorSpeed[0] = speed2;
 		motorSpeed[1] = speed1;
-		motorSpeed[2] = (speed2 * (-1));
-		motorSpeed[3] = (speed1 * (-1));
+        motorSpeed[2] = (speed2);
+        motorSpeed[3] = (speed1);
 	} else if (angle > 90 && angle <= 180) {
 		angle = angle - 90;
 		if (angle > (90 - angle)) {
@@ -101,10 +101,10 @@ void Compute::ComputeMotorSpeeds(int angle) {
 			speed2 = 100;
 			speed1 = ((angle) * 100) / (90 - angle);
 		}
-		motorSpeed[0] = (speed1 * (-1));
+        motorSpeed[0] = (speed1);
 		motorSpeed[1] = (speed2);
 		motorSpeed[2] = speed1;
-		motorSpeed[3] = (speed2 * (-1));
+        motorSpeed[3] = (speed2);
 	} else if (angle > 180 && angle <= 270) {
 		angle = angle - 180;
 		if (angle > (90 - angle)) {
@@ -114,8 +114,8 @@ void Compute::ComputeMotorSpeeds(int angle) {
 			speed2 = 100;
 			speed1 = ((angle) * 100) / (90 - angle);
 		}
-		motorSpeed[0] =  speed2 * (-1);
-		motorSpeed[1] = (speed1 * (-1));
+        motorSpeed[0] =  speed2;
+        motorSpeed[1] = (speed1);
 		motorSpeed[2] = speed2;
 		motorSpeed[3] = speed1;
 	} else {
@@ -128,8 +128,8 @@ void Compute::ComputeMotorSpeeds(int angle) {
 			speed1 = ((angle) * 100) / (90 - angle);
 		}
 		motorSpeed[0] =  speed1;
-		motorSpeed[1] = (speed2 * (-1));
-		motorSpeed[2] = ((speed1) * (-1));
+        motorSpeed[1] = (speed2);
+        motorSpeed[2] = ((speed1));
 		motorSpeed[3] = speed2;
 	}
 }

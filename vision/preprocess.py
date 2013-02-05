@@ -25,7 +25,7 @@ class Preprocessor:
 
     def __loadPitchSize(self):
         self._cropRect = util.loadFromFile(self._filepath)
-        print self._cropRect
+        # print self._cropRect
 
     @property
     def pitch_size(self):
@@ -51,11 +51,10 @@ class Preprocessor:
         else:
             return
 
-
         print "Cropped rectangle {0}".format(self._cropRect)
-        
+
     def preprocess(self, frame):
-        
+
         if self.hasPitchSize:
             frame = frame.crop(*self._cropRect)
 
