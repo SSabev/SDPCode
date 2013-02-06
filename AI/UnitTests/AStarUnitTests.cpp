@@ -32,6 +32,7 @@ void AStarUnitTests::AStarFindPath()
 {
 	AStar aStar;
 
+	aStar.SetPitchDimensions(244, 122);
 	std::list<Vector2> aStarPath = aStar.GeneratePath(Vector2(5,60), Vector2(18,90));
 
 	/*std::list<Vector2>::iterator it;
@@ -66,6 +67,7 @@ void AStarUnitTests::AStarPlot()
 	Vector2 ourRobotFuture = foresee.ExtrapolatePositionFromPoints(ourRobotPrevious);
 	Vector2 ballFuture = foresee.ExtrapolatePositionFromPoints(ballPrevious);
 
+	aStar.SetPitchDimensions(244, 122);
 	std::list<Vector2> aStarPath = aStar.GeneratePath(ourRobotFuture, ballFuture);
 
 	std::list<Vector2> smoothedPath = impala.SmoothPath(aStarPath, 29);

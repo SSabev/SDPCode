@@ -27,8 +27,10 @@ void AIControl::RunAI()
 {	
 	int currentFrameIndex = sharedMem.currentIdx;
 
-	RobotState blueRobotState(sharedMem.positioning[currentFrameIndex].visionData.blue_x, sharedMem.positioning[currentFrameIndex].visionData.blue_y,sharedMem.positioning[currentFrameIndex].visionData.blue_angle);
-	RobotState yellowRobotState(sharedMem.positioning[currentFrameIndex].visionData.yellow_x, sharedMem.positioning[currentFrameIndex].visionData.yellow_y, sharedMem.positioning[currentFrameIndex].visionData.yellow_angle);
+	TEntry currentEntry = sharedMem.positioning[currentFrameIndex];
+
+	RobotState blueRobotState(currentEntry.visionData.blue_x, currentEntry.visionData.blue_y,currentEntry.visionData.blue_angle);
+	RobotState yellowRobotState(currentEntry.visionData.yellow_x, currentEntry.visionData.yellow_y, currentEntry.visionData.yellow_angle);
 
 	RobotState ourRobot;
 	RobotState enemyRobot;
@@ -44,7 +46,7 @@ void AIControl::RunAI()
 		enemyRobot = blueRobotState;
 	}
 
-	Vector2 ballPos(sharedMem.positioning[currentFrameIndex].visionData.ball_x, sharedMem.positioning[currentFrameIndex].visionData.ball_y);
+	Vector2 ballPos(currentEntry.visionData.ball_x, currentEntry.visionData.ball_y);
 
 	// Given the current position and a certain number of previous positions, 
 	// approximate where the bot will be when it receives our next transmission.
@@ -63,7 +65,7 @@ void AIControl::RunAI()
 	std::list<Vector2> aStarPath = m_aStar.GeneratePath(futurePositions[0], ballPos);
 	
 	// Smooth and optimise the path using knowledge of our bot's capabilities.
-	std::list<Vector2> smoothedPath = m_impala.SmoothPath(aStarPath);
+	std::list<Vector2> smoothedPath = m_impala.SmoothPath(aStarPath, 9);
 
 	// Results should be written to shared memory.
 }
