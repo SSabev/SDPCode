@@ -8,6 +8,7 @@ GUI_Release/*
 *~
 GUI/GUI.pro.user
 AI/debug/*
+AI/libs/*
 AI/obj/*
 AI/release/*
 AI/test/*
