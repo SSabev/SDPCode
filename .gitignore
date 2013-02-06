@@ -9,6 +9,7 @@ GUI_Release/*
 GUI/GUI.pro.user
 AI/debug/*
 AI/libs/*
+!AI/libs/cpptest/cpptest.zip
 AI/obj/*
 AI/release/*
 AI/test/*
