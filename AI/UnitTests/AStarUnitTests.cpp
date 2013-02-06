@@ -72,7 +72,7 @@ void AStarUnitTests::AStarPlot()
 	aStar.SetPitchDimensions(244, 122);
 	std::list<Vector2> aStarPath = aStar.GeneratePath(ourRobotFuture, ballFuture);
 
-	std::list<Vector2> smoothedPath = impala.SmoothPath(aStarPath, 29);
+	std::list<Vector2> smoothedPath = impala.SmoothPath(aStarPath, 19);
 
 	// We're passing ballFuture twice as it also happens to be the destination currently.
 	aiControl.Plot(smoothedPath, ourRobotPrevious, ballFuture, ballPrevious, ballFuture);
