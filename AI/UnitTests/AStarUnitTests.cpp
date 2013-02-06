@@ -22,6 +22,7 @@ void AStarUnitTests::AStarFindAdjacentNodesZero()
 {
 	AStar aStar;
 
+	aStar.SetPitchDimensions(244, 122);
 	std::list<Vector2> adjacentNodes = aStar.FindAdjacentNodes(Vector2(0,0));
 
 	// Nodes adjacent to (0,0) should be (1,0), (0,1), (1,1).
