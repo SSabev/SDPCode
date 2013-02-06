@@ -17,10 +17,10 @@ public:
 	Foresee();
 	
 	std::vector<Vector2> ExtrapolateState(Vector2 ourRobotPos, Vector2 enemyRobotPos, Vector2 ballPos);
+	void SetPitchDimensions(int pitchSizeX, int pitchSizeY);
 	
 private: 
 	Vector2 ExtrapolatePositionFromPoints(std::vector<Vector2> positions);
-	void SetPitchDimensions(int pitchSizeX, int pitchSizeY);
 
 	std::list<Vector2> m_ourRobotPositions;
 	std::list<Vector2> m_enemyRobotPositions;
