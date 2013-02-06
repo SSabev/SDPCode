@@ -20,10 +20,14 @@ public:
 	
 private: 
 	Vector2 ExtrapolatePositionFromPoints(std::vector<Vector2> positions);
+	void SetPitchDimensions(int pitchSizeX, int pitchSizeY);
 
 	std::list<Vector2> m_ourRobotPositions;
 	std::list<Vector2> m_enemyRobotPositions;
 	std::list<Vector2> m_ballPositions;
+
+	int m_pitchSizeX;
+	int m_pitchSizeY;
 };
 
 #endif
