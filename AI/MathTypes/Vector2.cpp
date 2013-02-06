@@ -74,11 +74,9 @@ const std::string Vector2::ToString() const
 
 	std::stringstream ss;
 
-	ss << "Vector2(";
 	ss << X();
-	ss << ",";
+	ss << " ";
 	ss << Y();
-	ss << ")";
 	
 	std::string outputString = ss.str();
 
