@@ -65,6 +65,7 @@ void AStarUnitTests::AStarPlot()
 	Impala impala;
 
 	// We're not dealing with the enemy robot position currently.
+	foresee.SetPitchDimensions(244, 122);
 	Vector2 ourRobotFuture = foresee.ExtrapolatePositionFromPoints(ourRobotPrevious);
 	Vector2 ballFuture = foresee.ExtrapolatePositionFromPoints(ballPrevious);
 

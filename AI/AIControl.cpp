@@ -50,6 +50,7 @@ void AIControl::RunAI()
 
 	// Given the current position and a certain number of previous positions, 
 	// approximate where the bot will be when it receives our next transmission.
+	m_foresee.SetPitchDimensions(sharedMem.pitchCfg.pitchWidth, sharedMem.pitchCfg.pitchHeight);
 	std::vector<Vector2> futurePositions = m_foresee.ExtrapolateState(ourRobot.Position(), enemyRobot.Position(), ballPos);
 	
 	// ** FOR NOW, EAGLE DOESN'T DO ANYTHING. TARGET POSITION WILL BE BALL POSITION. **
