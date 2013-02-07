@@ -37,6 +37,29 @@ const float Vector2::Y() const
 	return m_y;
 };
 
+// Restricts this vector to being within a rectangle, the two extreme 
+// corners of which are defined by the min and max vectors.
+void Vector2::Clamp(Vector2 minVector, Vector2 maxVector)
+{
+	if (X() < minVector.X())
+	{
+		m_x = minVector.X();
+	}
+	else if (X() > maxVector.X())
+	{
+		m_x = maxVector.X();
+	}
+
+	if (Y() < minVector.Y())
+	{
+		m_x = minVector.Y();
+	}
+	else if (Y() > maxVector.Y())
+	{
+		m_x = maxVector.Y();
+	}
+}
+
 const float Vector2::Distance(Vector2* dest) const
 {
 	assert(m_isSet);
@@ -74,11 +97,9 @@ const std::string Vector2::ToString() const
 
 	std::stringstream ss;
 
-	ss << "Vector2(";
 	ss << X();
-	ss << ",";
+	ss << " ";
 	ss << Y();
-	ss << ")";
 	
 	std::string outputString = ss.str();
 

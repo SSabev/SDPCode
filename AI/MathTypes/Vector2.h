@@ -16,6 +16,7 @@ public:
 	const float X() const;
 	const float Y() const;
 
+	void Clamp(Vector2 minVector, Vector2 maxVector);
 	const float Distance(Vector2* dest) const;
 	const float DistanceSquared(Vector2* dest) const;
 	const float MagnitudeSquared() const;

@@ -17,7 +17,32 @@ std::list<Vector2> Impala::SmoothPath(std::list<Vector2> aStarPath, int numAddit
 	return smoothedPath;
 }
 
+// New triangle centroid method.
 std::list<Vector2> Impala::RunPass(std::list<Vector2> path)
+{
+	std::vector<Vector2> pathVector(path.begin(), path.end());
+
+	// This method attempts to find the centroid of a triangle, where the three points 
+	// are a given one and those immediately preceding and following it in the path.
+	std::list<Vector2> smoothedPath;
+
+	smoothedPath.push_front(pathVector.front());
+
+	// Note  1 <= i < size-1, as we want a point either side of it.
+	for (int i=1; i<pathVector.size()-1; i++)
+	{
+		Vector2 midpoint = (pathVector[i-1] + pathVector[i] + pathVector[i+1])/3;
+	
+		smoothedPath.push_back(midpoint);
+	}
+
+	smoothedPath.push_back(pathVector.back());
+
+	return smoothedPath;
+}
+
+// Original Method
+/*std::list<Vector2> Impala::RunPass(std::list<Vector2> path)
 {
 	std::vector<Vector2> pathVector(path.begin(), path.end());
 
@@ -40,4 +65,4 @@ std::list<Vector2> Impala::RunPass(std::list<Vector2> path)
 	smoothedPath.push_back(pathVector.back());
 
 	return smoothedPath;
-}
+}*/
