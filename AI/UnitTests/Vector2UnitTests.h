@@ -30,6 +30,11 @@ private:
 	void Vector2DistanceSquared();
 	void Vector2MagnitudeSquared();
 	void Vector2MagnitudeSquaredZero();
+    
+    	void Vector2ClampOutsideX();
+    	void Vector2ClampInsideX();
+   	void Vector2ClampOutsideY();
+    	void Vector2ClampInsideY();
 };
 
 #endif
