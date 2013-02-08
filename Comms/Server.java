@@ -1,5 +1,3 @@
-package comms;
-
 import java.io.*;
 import java.net.*;
 import java.nio.*;
@@ -13,10 +11,21 @@ public class Server implements Runnable
 
   // A pre-allocated buffer for encrypting data
   private final ByteBuffer buffer = ByteBuffer.allocate( 16384 );
+  private static Communicator connection;
 
   public Server( int port ) {
+  	
+  	try {
+		this.connection = new Communicator();
+		this.connection.connect();
+	} catch (Exception e) {
+			System.err.println("Exception: " + e.getMessage());
+	}
+  	
     this.port = port;
-    new Thread( this ).start();
+
+    new Thread( this ).start();				// start server thread
+	new Thread( connection ).start();		// start bluetooth listener thread
   }
 
   public void run() {
@@ -132,8 +141,7 @@ System.out.println( "acc" );
     }
   }
 
-  // Do some cheesy encryption on the incoming data,
-  // and send it back out
+
   private boolean processInput( SocketChannel sc ) throws IOException {
     buffer.clear();
     sc.read( buffer );
@@ -144,29 +152,22 @@ System.out.println( "acc" );
       return false;
     }
 
-    // Simple rot-13 encryption
-    for (int i=0; i<buffer.limit(); ++i) {
-      byte b = buffer.get( i );
-
-      if ((b>='a' && b<='m') || (b>='A' && b<='M')) {
-        b += 13;
-      } else if ((b>='n' && b<='z') || (b>='N' && b<='Z')) {
-        b -= 13;
-      }
-
-      buffer.put( i, b );
-    }
-
     sc.write( buffer );
 
-    System.out.println( "Processed "+buffer.limit()+" from "+sc );
-
+	byte motor_1 = (byte) buffer.get(0);
+	byte motor_2 = (byte) buffer.get(1);
+	byte motor_3 = (byte) buffer.get(2);
+	byte motor_4 = (byte) buffer.get(3);
+	byte kick	 = (byte) buffer.get(4);
+	
+	byte[] packet = new byte[] { motor_1, motor_2, motor_3, motor_4, kick };
+	
+	connection.sendPacket(packet);
+	
     return true;
   }
 
   static public void main( String args[] ) throws Exception {
-    int port = Integer.parseInt( args[0] );
-
-    new Server( port );
+    new Server(9000);
   }
 }

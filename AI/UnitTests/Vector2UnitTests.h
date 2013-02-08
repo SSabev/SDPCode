@@ -11,12 +11,14 @@ public:
 private:
 	void Vector2Equals();
 	void Vector2DoesNotEqual();
+	void Vector2DoesNotEqual2();
 	void Vector2Addition();
 	void Vector2CompoundAddition();
 	void Vector2Subtraction();
 	void Vector2CompoundSubtraction();
 	void Vector2MultiplicationInt();
 	void Vector2MultiplicationFloat();
+	void Vector2MultiplicationFloat2();
 	void Vector2CompoundMultiplicationInt();
 	void Vector2CompoundMultiplicationFloat();
 	void Vector2DivisionInt();
@@ -27,6 +29,7 @@ private:
 	void Vector2Distance();
 	void Vector2DistanceSquared();
 	void Vector2MagnitudeSquared();
+	void Vector2MagnitudeSquaredZero();
 };
 
 #endif

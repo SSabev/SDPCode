@@ -9,6 +9,12 @@ Foresee::Foresee()
 	
 }
 
+void Foresee::SetPitchDimensions(int pitchSizeX, int pitchSizeY)
+{
+	m_pitchSizeX = pitchSizeX;
+	m_pitchSizeY = pitchSizeY;
+}
+
 std::vector<Vector2> Foresee::ExtrapolateState(Vector2 ourRobotPos, Vector2 enemyRobotPos, Vector2 ballPos)
 {
 	// Limit the amount of positions we're keeping.
@@ -56,6 +62,9 @@ Vector2 Foresee::ExtrapolatePositionFromPoints(std::vector<Vector2> positions)
 	
 	// For now, we're going to assume that the delay between frames is constant.
 	Vector2 extrapolatedPosition = positions[0] + (positions[0] - positions[1]);
+
+	// Ensure that the extrapolated position is within the confines of the pitch.
+	extrapolatedPosition.Clamp(Vector2(0,0), Vector2(m_pitchSizeX, m_pitchSizeY));
 	
 	return extrapolatedPosition;
 }
