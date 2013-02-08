@@ -214,11 +214,15 @@ class Gui:
             self.updateMinMax(h,s,v)
             
         drawingLayer = self.getDrawingLayer()
-        drawingLayer.ezViewText('Pixel ({0}, {1}) HSV = ({2}, {3}, {4})'.format(x,y,h,s,v),(10,10))
-        drawingLayer.ezViewText('HSV_min =  ({0}, {1}, {2}) '.format(self.h_min, self.s_min, self.v_min),(10,30))
-        drawingLayer.ezViewText('HSV_max =  ({0}, {1}, {2}) '.format(self.h_max, self.s_max, self.v_max),(10,50))
+        #drawingLayer.ezViewText('Pixel ({0}, {1}) HSV = ({2}, {3}, {4})'.format(x,y,h,s,v),(10,10))
+        #drawingLayer.ezViewText('HSV_min =  ({0}, {1}, {2}) '.format(self.h_min, self.s_min, self.v_min),(10,30))
+        #drawingLayer.ezViewText('HSV_max =  ({0}, {1}, {2}) '.format(self.h_max, self.s_max, self.v_max),(10,50))
+        print ('Pixel ({0}, {1}) HSV = ({2}, {3}, {4})'.format(x,y,h,s,v))
+        print ('HSV_min =  ({0}, {1}, {2}) '.format(self.h_min, self.s_min, self.v_min))
+        print ('HSV_max =  ({0}, {1}, {2}) '.format(self.h_max, self.s_max, self.v_max))
         if self.recordPixel:
-            drawingLayer.ezViewText('Recording Pixel',(10,70))
+            print 'Recording Pixel'
+            #drawingLayer.ezViewText('Recording Pixel',(10,70))
         
         #print 'pixel ',(x,y), ' HSV = ', (h,s,v), ' RGB = ', (r,g,b),
         #print 'HSV_min = ', (self.h_min,self.s_min,self.v_min), 
