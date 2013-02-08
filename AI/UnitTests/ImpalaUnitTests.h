@@ -1,5 +1,5 @@
-//#if !defined(IMPALAUNITTESTS_H)
-//#define IMPALAUNITTESTS_H
+#if !defined(IMPALAUNITTESTS_H)
+#define IMPALAUNITTESTS_H
 
 #include "cpptest.h"
 
@@ -11,3 +11,5 @@ ImpalaUnitTests();
 private:
 
 };
+
+#endif

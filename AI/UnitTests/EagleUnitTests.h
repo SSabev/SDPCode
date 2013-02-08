@@ -1,5 +1,5 @@
-//#if !defined(EAGLEUNITTESTS_H)
-//#define EAGLEUNITTESTS_H
+#if !defined(EAGLEUNITTESTS_H)
+#define EAGLEUNITTESTS_H
 
 #include "cpptest.h"
 #include "../MathTypes/Vector2.h"
@@ -13,3 +13,4 @@ EagleUnitTests();
 //private:
 
 };
+#endif
