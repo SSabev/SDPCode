@@ -52,11 +52,11 @@ void Vector2::Clamp(Vector2 minVector, Vector2 maxVector)
 
 	if (Y() < minVector.Y())
 	{
-		m_x = minVector.Y();
+		m_y = minVector.Y();
 	}
 	else if (Y() > maxVector.Y())
 	{
-		m_x = maxVector.Y();
+		m_y = maxVector.Y();
 	}
 }
 

@@ -25,6 +25,10 @@ Vector2UnitTests::Vector2UnitTests()
 	TEST_ADD(Vector2UnitTests::Vector2DistanceSquared);
 	TEST_ADD(Vector2UnitTests::Vector2MagnitudeSquared);
 	TEST_ADD(Vector2UnitTests::Vector2MagnitudeSquaredZero);
+    	TEST_ADD(Vector2UnitTests::Vector2ClampOutsideX);
+    	TEST_ADD(Vector2UnitTests::Vector2ClampInsideX);
+    	TEST_ADD(Vector2UnitTests::Vector2ClampOutsideY);
+   	TEST_ADD(Vector2UnitTests::Vector2ClampInsideY);
 }
 
 void Vector2UnitTests::Vector2Equals()
@@ -184,4 +188,54 @@ void Vector2UnitTests::Vector2MagnitudeSquaredZero()
 	Vector2 v1(0,0);
 
 	TEST_ASSERT(v1.MagnitudeSquared() == 0);
+}
+
+void Vector2UnitTests::Vector2ClampOutsideX()
+{
+    Vector2 v1 (6, 12);
+    Vector2 v2 (8, 8);
+    Vector2 v3 (15, 15);
+    Vector2 v4 (8, 12);
+
+    v1.Clamp(v2,v3);
+
+    TEST_ASSERT(v1 == v4);
+
+}
+
+void Vector2UnitTests::Vector2ClampInsideX()
+{
+    Vector2 v1 (9, 12);
+    Vector2 v2 (8, 8);
+    Vector2 v3 (15, 15);    
+
+    v1.Clamp(v2,v3);
+
+    TEST_ASSERT(v1 == Vector2(9,12));
+
+}
+
+void Vector2UnitTests::Vector2ClampOutsideY()
+{
+    Vector2 v1 (9, 17);
+    Vector2 v2 (8, 8);
+    Vector2 v3 (15, 15);
+    Vector2 v4 (9, 15);
+
+    v1.Clamp(v2,v3);
+
+    TEST_ASSERT(v1 == v4);
+
+}
+
+void Vector2UnitTests::Vector2ClampInsideY()
+{
+    Vector2 v1 (9, 12);
+    Vector2 v2 (8, 8);
+    Vector2 v3 (15, 15);    
+
+    v1.Clamp(v2,v3);
+
+    TEST_ASSERT(v1 == Vector2(9,12));
+
 }
