@@ -9,18 +9,20 @@
 #define MOVEMENT_H_
 #include "../AI/MathTypes/Vector2.h"
 #include "Motor.h"
+#include "Compute.h"
 
 
 class Movement
 {
 public:
-	Movement();
-	Movement(Vector2 targetLocation, Vector2 ourRobotLocation);
-
-    	void IssueSpeed(Vector2 targetLocation, Vector2 ourRobotLocation);
+    
+	void Initialise();
+	void RunMovement();    	
+	void IssueSpeed(Vector2 targetLocation, Vector2 ourRobotLocation);
 	
 	int GetMotorSpeed(int motorNumber);
 private:
+	Compute comp;	
 	Motor motor1;
 	Motor motor2;
 	Motor motor3;
