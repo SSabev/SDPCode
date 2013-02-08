@@ -5,6 +5,7 @@
 
 #define SH_MEM_SIZE 8
 #define SH_MEM_SIZE_MASK (SH_MEM_SIZE - 1)
+#define MAX_PATH_SIZE 30
 
 typedef enum {
     eIDLE,
@@ -32,6 +33,18 @@ typedef struct{
     unsigned pitchWidth;
     unsigned pitchHeight;
 } __attribute__ ((packed)) TPitchCfg;
+
+typedef struct {
+    float position_X;
+    float position_Y;
+    float orientation;
+} __attribute__ ((packed)) TAIWaypoint;
+
+typedef struct{
+    unsigned      pathLength;
+    TAIWaypoint    path[MAX_PATH_SIZE];
+    uint32_t      shouldKick    : 1;
+} __attribute__ ((packed)) TAIData;
 
 typedef struct{
     //! TODO: need to identify data that is required
@@ -70,6 +83,7 @@ typedef struct
     TVisionData     visionData;
     TRobotData      robotData;
     TRobotState     robotState;
+    TAIData         aiData;
 } __attribute__ ((packed))  TEntry;
 
 typedef enum{
