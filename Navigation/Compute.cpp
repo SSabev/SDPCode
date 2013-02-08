@@ -21,14 +21,14 @@ float Compute::ComputeDistance(Vector2 targetLocation, Vector2 ourRobotLocation)
 
 /*
  * Obsolete code to be determined if needed
+ *
+ */
 
-
- float Compute::ComputeAngleToTurnBy(Vector2 targetLocation, Vector2 targetLocation, int orientation)
+ float Compute::ComputeAngleToTurnBy(Vector2 targetLocation, Vector2 ourRobotLocation, float orientation)
  {
  return 0;
  }
- *
- */
+
 
 /*
  * 	Computes the angle between the current orientation and the orientation after the move

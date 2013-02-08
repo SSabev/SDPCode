@@ -16,8 +16,8 @@ solution "SDP-AI"
 
 	defines{ "STANDALONE" }
 
-	libdirs { "./libs/cpptest/src/.libs" }
-	includedirs { "./libs/cpptest/src" }
+	libdirs { "libs" }
+	includedirs { "libs/include" }
  
 	configuration "Debug"
 		defines { "DEBUG" }

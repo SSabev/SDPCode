@@ -7,6 +7,7 @@
 #include <string.h>
 #include <iostream>
 #include <fstream>
+#include <algorithm>
 
 void AIControl::Initialise()
 {
@@ -50,24 +51,44 @@ void AIControl::RunAI()
 
 	// Given the current position and a certain number of previous positions, 
 	// approximate where the bot will be when it receives our next transmission.
+	m_foresee.SetPitchDimensions(sharedMem.pitchCfg.pitchWidth, sharedMem.pitchCfg.pitchHeight);
 	std::vector<Vector2> futurePositions = m_foresee.ExtrapolateState(ourRobot.Position(), enemyRobot.Position(), ballPos);
-	
-	// ** FOR NOW, EAGLE DOESN'T DO ANYTHING. TARGET POSITION WILL BE BALL POSITION. **
 
 	// Given the positions of the robots and ball, identify the ideal position 
 	// and orientation for us to reach.
-	//Vector2 targetPosition = m_eagle.IdentifyTarget(futurePositions);
+	Vector2 targetPosition = m_eagle.IdentifyTarget(futurePositions);
 	
 	// Using A*, generate the best path to the target.
-	//std::list<Vector2> aStarPath = m_aStar.GeneratePath(futurePositions[0], targetPosition);
-
 	m_aStar.SetPitchDimensions(sharedMem.pitchCfg.pitchWidth, sharedMem.pitchCfg.pitchHeight);
-	std::list<Vector2> aStarPath = m_aStar.GeneratePath(futurePositions[0], ballPos);
+	std::list<Vector2> aStarPath = m_aStar.GeneratePath(futurePositions[0], targetPosition);
 	
 	// Smooth and optimise the path using knowledge of our bot's capabilities.
 	std::list<Vector2> smoothedPath = m_impala.SmoothPath(aStarPath, 9);
 
 	// Results should be written to shared memory.
+	currentEntry.aiData.pathLength = smoothedPath.size();
+	currentEntry.aiData.shouldKick = 0;
+
+	const int maxPathSize = 30;
+	const int pointsToWrite = std::min((int)smoothedPath.size(), maxPathSize);
+	int pointsWritten = 0;
+
+	std::list<Vector2>::iterator it;
+
+	for (it = smoothedPath.begin(); it!=smoothedPath.end(); it++)
+	{
+		if (pointsWritten >= maxPathSize)
+		{
+			break;
+		}
+
+		currentEntry.aiData.path[pointsWritten].position_X = it->X();
+		currentEntry.aiData.path[pointsWritten].position_X = it->Y();
+		// For now AI just returns orientation=0.
+		currentEntry.aiData.path[pointsWritten].orientation = 0;
+
+		pointsWritten++;
+	}
 }
 
 void AIControl::Plot(std::list<Vector2> aStarPath, std::vector<Vector2> ourPrevious, Vector2 destination, std::vector<Vector2> ballPrevious, Vector2 ballFuture)

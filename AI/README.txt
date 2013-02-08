@@ -46,4 +46,7 @@ The AI comes with certain unit tests, using the included library cpptest. You ca
 ./premake4 gmake
 make config=test
 cd test
+export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/group/teaching/sdp/sdp8/SDPCode/AI/libs"
 ./SDP-AI
+
+Note that the 'export' call will need to be made each time you want to run the program in a new terminal, and is a temporary fix until I can get back to DICE and do something proper.
