@@ -50,8 +50,8 @@ typedef struct{
     //! TODO: need to identify data that is required
     ///       for robot movement
     /// For testing (Milestone 1) it's size is 2 integers
-    unsigned char motor_1;
-    unsigned char motor_2;
+    unsigned char motor_fl;
+    unsigned char motor_fr;
     unsigned char motor_3;
     unsigned char motor_4;
     uint32_t      kicker    : 1;
