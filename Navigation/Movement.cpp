@@ -9,11 +9,18 @@
 #include "Compute.h"
 #include "../Shared/Logging.h"
 #include "../Shared/SharedMem.h"
-//#include "MathTypes/Vector2.h"
+#include "MathTypes/Vector2.h"
 #include <QString>
 #include <string.h>
 
-Movement::Movement()
+void Movement::Initialise()
+{
+
+	comp = Compute();
+	
+}
+
+void Movement::RunMovement()
 {
 
 
@@ -42,7 +49,7 @@ Movement::Movement()
 
 
 }
-
+/*
 Movement::Movement(Vector2 targetLocation, Vector2 ourRobotLocation)
 {
 
@@ -65,9 +72,10 @@ Movement::Movement(Vector2 targetLocation, Vector2 ourRobotLocation)
 	
 }
 
+*/
 void Movement::IssueSpeed(Vector2 targetLocation, Vector2 ourRobotLocation)
 {
-Compute comp = Compute();
+
 int angleToTurn = comp.ComputeOrientationAngle(targetLocation, ourRobotLocation);
 
 if(angleToTurn>=0)

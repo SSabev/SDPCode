@@ -18,8 +18,10 @@ public:
 	float ComputeDistance(Vector2 targetLocation, Vector2 ourRobotLocation);
 
 	float ComputeAngle(Vector2 targetLocation, Vector2 ourRobotLocation);
-	
+
 	float ComputeOrientationAngle(Vector2 targetLocation, Vector2 ourRobotLocation);
+	
+    float ComputeAngleToTurnBy(Vector2 targetLocation, Vector2 ourRobotLocation, float orientation);
 	
 	void ComputeMotorSpeeds(int angle);
 	
