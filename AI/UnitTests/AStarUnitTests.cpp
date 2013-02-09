@@ -14,7 +14,6 @@
 AStarUnitTests::AStarUnitTests()
 {
 	TEST_ADD(AStarUnitTests::AStarFindAdjacentNodesZero);
-	//TEST_ADD(AStarUnitTests::AStarFindPath);
 	TEST_ADD(AStarUnitTests::AStarPlot);
 }
 
@@ -29,27 +28,10 @@ void AStarUnitTests::AStarFindAdjacentNodesZero()
 	TEST_ASSERT(adjacentNodes.size() == 3);
 }
 
-void AStarUnitTests::AStarFindPath()
-{
-	AStar aStar;
-
-	aStar.SetPitchDimensions(244, 122);
-	std::list<Vector2> aStarPath = aStar.GeneratePath(Vector2(5,60), Vector2(18,90));
-
-	/*std::list<Vector2>::iterator it;
-
-	for (it = aStarPath.begin(); it != aStarPath.end(); it++)
-	{
-		std::cout << it->ToString() << std::endl;
-	}*/
-
-	//TEST_ASSERT(aStarPath.size() == 11);
-}
-
 void AStarUnitTests::AStarPlot()
 {
-	Vector2 ourRobotCurrent(5,20);
-	Vector2 ballCurrent(180, 68);
+	Vector2 ourRobotCurrent(15,15);
+	Vector2 ballCurrent(230, 65);
 
 	std::vector<Vector2> ourRobotPrevious;
 	ourRobotPrevious.push_back(ourRobotCurrent);
@@ -57,7 +39,7 @@ void AStarUnitTests::AStarPlot()
 
 	std::vector<Vector2> ballPrevious;
 	ballPrevious.push_back(ballCurrent);
-	ballPrevious.push_back(Vector2(160,48));
+	ballPrevious.push_back(Vector2(210,85));
 
 	AIControl aiControl;
 	Foresee foresee;
@@ -75,5 +57,5 @@ void AStarUnitTests::AStarPlot()
 	std::list<Vector2> smoothedPath = impala.SmoothPath(aStarPath, 19);
 
 	// We're passing ballFuture twice as it also happens to be the destination currently.
-	aiControl.Plot(smoothedPath, ourRobotPrevious, ballFuture, ballPrevious, ballFuture);
+	//aiControl.Plot(smoothedPath, ourRobotPrevious, ballFuture, ballPrevious, ballFuture);
 }

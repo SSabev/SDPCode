@@ -10,7 +10,6 @@ public:
 
 private:
 	void AStarFindAdjacentNodesZero();
-	void AStarFindPath();
 	void AStarPlot();
 };
 
