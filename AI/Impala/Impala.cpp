@@ -1,5 +1,7 @@
 #include "Impala.h"
 
+#include <cmath>
+
 Impala::Impala()
 {
 	
@@ -14,7 +16,9 @@ std::list<Vector2> Impala::SmoothPath(std::list<Vector2> aStarPath, int numAddit
 		smoothedPath = RunPass(smoothedPath);
 	}
 
-	return smoothedPath;
+	std::list<Vector2> collapsedPath = CollapsePoints(smoothedPath);
+
+	return collapsedPath;
 }
 
 // New triangle centroid method.
@@ -41,28 +45,41 @@ std::list<Vector2> Impala::RunPass(std::list<Vector2> path)
 	return smoothedPath;
 }
 
-// Original Method
-/*std::list<Vector2> Impala::RunPass(std::list<Vector2> path)
+// This tries to reduce the number of waypoints by collapsing sequential ones 
+// with a sufficiently similar gradient.
+std::list<Vector2> Impala::CollapsePoints(std::list<Vector2> path)
 {
+	const float GRADIENT_THRESHOLD = 0.1;
+
 	std::vector<Vector2> pathVector(path.begin(), path.end());
 
-	// Currently, our smoothing is going to be as simple as finding the centre 
-	// between each pair of points and using that as part of the smoothed path.
-	std::list<Vector2> smoothedPath;
+	std::list<Vector2> collapsedPath;
 
-	smoothedPath.push_front(pathVector.front());
+	collapsedPath.push_back(pathVector[0]);
 
-	// Note the size-1, as we only want pairs.
-	for (int i=0; i<pathVector.size()-1; i++)
+	// Size-3 as we need at least three points to collapse one of them.
+	// And the last one will be added anyway.
+	for (int i=0; i<pathVector.size()-3; i++)
 	{
-		Vector2 midpointOffset = (pathVector[i+1] - pathVector[i])/2;
+		float originalGradient = pathVector[i].Gradient(&pathVector[i+1]);
 
-		Vector2 smoothedPoint = pathVector[i] + midpointOffset;
-	
-		smoothedPath.push_back(smoothedPoint);
+		for (int j=i+1; j < pathVector.size()-2; j++)
+		{
+			float currentGradient = pathVector[j].Gradient(&pathVector[j+1]);
+			float gradientDifference = std::abs(currentGradient - originalGradient);
+
+			if (gradientDifference > GRADIENT_THRESHOLD)
+			{
+				// We can't consume this point, the gradient difference is too large.
+				// Add the last successful point to our list and change i so we can start a new loop.
+				collapsedPath.push_back(pathVector[j]);
+				i=j;
+				break;
+			}
+		}
 	}
 
-	smoothedPath.push_back(pathVector.back());
-
-	return smoothedPath;
-}*/
+	collapsedPath.push_back(pathVector[pathVector.size()-1]);
+	
+	return collapsedPath;
+}

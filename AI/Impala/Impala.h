@@ -15,6 +15,7 @@ public:
 
 private:
 	std::list<Vector2> RunPass(std::list<Vector2> path);
+	std::list<Vector2> CollapsePoints(std::list<Vector2> path);
 };
 
 #endif
