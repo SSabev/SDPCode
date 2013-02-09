@@ -28,6 +28,15 @@ void MainWindow::MoveWithBallSlot()
 void MainWindow::NavToBallSlot()
 {
     sharedMem.systemState = eNavToBall;
+    TEntry *entry = &sharedMem.positioning[sharedMem.currentIdx];
+
+    m_visionComm->ReadData(&entry->visionData);
+    entry->aiData.path[0].position_X = entry->visionData.ball_x;
+    entry->aiData.path[0].position_Y = entry->visionData.ball_y;
+
+    m_nav.GenerateValues();
+
+    m_btComm->SendData(&entry->robotData);
 }
 
 void MainWindow::StopeMvmntSlot()
