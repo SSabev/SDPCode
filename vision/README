@@ -2,9 +2,10 @@
 
 To run vision:
 	> source venv/env/bin/activate
-	> ./vision/runvision.sh -p0 -r
+	> ./vision/runvision.sh OR python firker.py
 
-	"-r" does some magic for automatic respawning....?
+To quit vision:
+	Focus on video window and press 'q'
 
 To tweak matrix for barrel distortion in new terminal tab while vision is running:
 	> cd vision

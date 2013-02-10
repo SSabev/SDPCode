@@ -75,8 +75,7 @@ if __name__ == "__main__":
             req = srv_parent.recv()
             if req == 2:
                 print 'Terminating vision by server request'
-                srv.join()
-                print 'yeh'
+                # srv.join()
                 vis.join()
                 srv_parent.close()
                 srv_child.close()

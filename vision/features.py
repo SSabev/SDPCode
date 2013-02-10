@@ -1,8 +1,8 @@
 import math
 
 import cv
-from SimpleCV import Image, Features, DrawingLayer, BlobMaker, Color
-from threshold import Threshold
+from SimpleCV import BlobMaker
+
 
 class Features:
     # Sizes of various features
@@ -13,9 +13,9 @@ class Features:
     #       'dirmarker' : (3,  12, 3,  12),
     #     }
 
-    Sizes = { 'ball'     : (20, 300),
-          'T'         : (100, 800),
-        }
+    Sizes = {'ball': (20, 300),
+             'T': (100, 800),
+            }
 
     def __init__(self, display, threshold):
         self.threshold = threshold
@@ -49,7 +49,7 @@ class Features:
         nonZero = cv.CountNonZero(image.getGrayscaleMatrix())
         if nonZero < 10:
             return Entity()
-        
+
         size = self.Sizes[which]
         blobmaker = BlobMaker()
         blobs = blobmaker.extractFromBinary(image, image, minsize=size[0], maxsize=size[1])
@@ -62,10 +62,10 @@ class Features:
             if self.sizeMatch(blob, which):
                 entityblob = blob
                 break
-        
+
         if entityblob is None:
             return Entity()
-        
+
         isBall = which != 'ball'
         entity = Entity.fromFeature(entityblob, isBall, isBall)
 
@@ -87,15 +87,16 @@ class Features:
         area = feature.area()
         return expected[0] < area < expected[1]
 
+
 class Entity:
 
     @classmethod
-    def fromFeature(cls, feature, hasAngle, useBoundingBox = True):
+    def fromFeature(cls, feature, hasAngle, useBoundingBox=True):
         entity = Entity(hasAngle)
         if useBoundingBox:
             entity._coordinates = feature.coordinates()
         else:
-            entity._coordinates = feature.centroid();
+            entity._coordinates = feature.centroid()
         entity._feature = feature
 
         return entity
@@ -110,7 +111,7 @@ class Entity:
         self._hasAngle = hasAngle
         self._angle = None
         self._feature = None
-    
+
     def coordinates(self):
         return self._coordinates
 
@@ -128,20 +129,20 @@ class Entity:
             # Use moments to do magic things.
             # (finds precise line through blob)
 
-            f = self._feature;
+            f = self._feature
             cx, cy = f.centroid()
             m00 = f.m00
             mu11 = f.m11 - cx * f.m01
             mu20 = f.m20 - cx * f.m10
             mu02 = f.m02 - cy * f.m01
-            
+
             # Compute the blob's covariance matrix
             # | a b |
             # | b c |
-            a = mu20 / m00;
-            b = mu11 / m00;
-            c = mu02 / m00;
- 
+            a = mu20 / m00
+            b = mu11 / m00
+            c = mu02 / m00
+
             # Can derive the formula for the angle from the eigenvector associated with
             # the largest eigenvalue
             self._angle = 0.5 * math.atan2(2 * b, a - c)
@@ -150,7 +151,7 @@ class Entity:
             # using the difference between the center of the shape and the centroid,
             # and flip the previous answer if necessary
             center = (feature.minRectX(), feature.minRectY())
-            roughAngle = math.atan2(center[1] - cy, center[0] - cx) 
+            roughAngle = math.atan2(center[1] - cy, center[0] - cx)
 
             if abs(self._angle - roughAngle) > (math.pi / 2):
                 self._angle += math.pi
@@ -171,11 +172,9 @@ class Entity:
                 #center = (feature.minRectX(), feature.minRectY())
                 center = self._coordinates
                 angle = self.angle()
-                endx = center[0] + 30 * math.cos(angle)
-                endy = center[1] + 30 * math.sin(angle)
+                endx = center[0] + 60 * math.cos(angle)
+                endy = center[1] + 60 * math.sin(angle)
 
-                degrees = abs(self._angle - math.pi)  / math.pi * 180 
+                # degrees = abs(self._angle - math.pi) / math.pi * 180
 
-                layer.line(center, (endx, endy), antialias=False);
-
-
+                layer.line(center, (endx, endy), antialias=False)

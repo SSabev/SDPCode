@@ -1,13 +1,12 @@
-import cv
 import os
 import util
-from SimpleCV import Image
 from operator import sub
 
+
 class Preprocessor:
-    
+
     _filepath = os.path.join('data', 'pitch_size')
-    
+
     def __init__(self, resetPitchSize):
         self._cropRect = None
 
