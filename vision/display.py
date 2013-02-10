@@ -92,7 +92,7 @@ class Gui:
 
         # layer = self._layers['raw'].dl()
 
-        # print fps
+        #print fps
         # layer.ezViewText('{0:.2f} fps'.format(fps), (10, 10))
         # drawingLayer = self.getDrawingLayer()
         # drawingLayer.ezViewText('fps', (10, 10))

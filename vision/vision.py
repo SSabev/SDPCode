@@ -17,8 +17,12 @@ PITCH_SIZE = (243.8, 121.9)
 
 class Vision:
 
-    def __init__(self, pitchnum, stdout, sourcefile, resetPitchSize, pipe):
-
+    def __init__(self, pitchnum, stdout, sourcefile, resetPitchSize, noGui, pipe):
+        
+        self.noGui = noGui
+        self.lastFrameTime = self.begin_time = time.time()
+        self.processed_frames = 0
+        
         self.running = True
         self.stdout = stdout
 
@@ -56,6 +60,16 @@ class Vision:
     def quit(self):
         self.running = False
 
+    def print_fps(self):
+        thisFrameTime = time.time()
+        time_diff = thisFrameTime - self.lastFrameTime
+        fps = 1.0 / time_diff
+        self.processed_frames = self.processed_frames + 1
+        avg_fps = self.processed_frames*1.0/(thisFrameTime - self.begin_time)
+        self.lastFrameTime = thisFrameTime
+        
+        print("Instantaneous fps = %f Average fps = %f" % (fps, avg_fps) )
+
     def doStuff(self):
 
         frame = self.camera.getImageUndistort()
@@ -70,8 +84,11 @@ class Vision:
 
         ents = self.features.extractFeatures(frame)
         self.outputEnts(ents)
-
-        self.gui.loop()
+        
+        self.print_fps()
+        
+        if not self.noGui:
+            self.gui.loop()
 
     def setNextPitchCorner(self, where):
         self.preprocessor.setNextPitchCorner(where)

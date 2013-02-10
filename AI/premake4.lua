@@ -31,6 +31,6 @@ solution "SDP-AI"
 
 	configuration "Test"
 		defines { "DEBUG", "TEST" }
-		flags { "Symbols" }
+		flags { "Optimize" }
 		targetdir "./test"
 
