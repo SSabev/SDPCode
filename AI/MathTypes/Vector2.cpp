@@ -2,6 +2,7 @@
 
 #include <assert.h>
 #include <math.h>
+#include <float.h>
 
 #include <sstream>
 
@@ -52,11 +53,11 @@ void Vector2::Clamp(Vector2 minVector, Vector2 maxVector)
 
 	if (Y() < minVector.Y())
 	{
-		m_x = minVector.Y();
+		m_y = minVector.Y();
 	}
 	else if (Y() > maxVector.Y())
 	{
-		m_x = maxVector.Y();
+		m_y = maxVector.Y();
 	}
 }
 
@@ -80,6 +81,31 @@ const float Vector2::DistanceSquared(Vector2* dest) const
 	float distSquared = pow(xDist,2) + pow(yDist,2);
 	
 	return distSquared;
+}
+
+const float Vector2::Gradient(Vector2* dest) const
+{
+	assert(m_isSet);
+
+	const float xDifference = dest->X() - X();
+	const float yDifference = dest->Y() - Y();
+
+	float gradient;
+	
+	if (yDifference == 0)
+	{
+		gradient = 0;
+	}
+	else if (xDifference == 0)
+	{
+		gradient = FLT_MAX;
+	}
+	else
+	{
+		gradient = yDifference/xDifference;
+	}
+
+	return gradient;
 }
 
 const float Vector2::MagnitudeSquared() const

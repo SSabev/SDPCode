@@ -5,6 +5,7 @@
 
 #define SH_MEM_SIZE 8
 #define SH_MEM_SIZE_MASK (SH_MEM_SIZE - 1)
+#define MAX_PATH_SIZE 30
 
 typedef enum {
     eIDLE,
@@ -33,12 +34,24 @@ typedef struct{
     unsigned pitchHeight;
 } __attribute__ ((packed)) TPitchCfg;
 
+typedef struct {
+    float position_X;
+    float position_Y;
+    float orientation;
+} __attribute__ ((packed)) TAIWaypoint;
+
+typedef struct{
+    unsigned      pathLength;
+    TAIWaypoint    path[MAX_PATH_SIZE];
+    uint32_t      shouldKick    : 1;
+} __attribute__ ((packed)) TAIData;
+
 typedef struct{
     //! TODO: need to identify data that is required
     ///       for robot movement
     /// For testing (Milestone 1) it's size is 2 integers
-    unsigned char motor_1;
-    unsigned char motor_2;
+    unsigned char motor_fl;
+    unsigned char motor_fr;
     unsigned char motor_3;
     unsigned char motor_4;
     uint32_t      kicker    : 1;
@@ -70,6 +83,7 @@ typedef struct
     TVisionData     visionData;
     TRobotData      robotData;
     TRobotState     robotState;
+    TAIData         aiData;
 } __attribute__ ((packed))  TEntry;
 
 typedef enum{

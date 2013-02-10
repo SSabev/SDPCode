@@ -6,6 +6,7 @@
 #include "LoggingWidget.h"
 #include "Comm/BTComm.h"
 #include "Comm/VisionComm.h"
+#include "Navigation/Navigation.h"
 
 #include <AIControl.h>
 
@@ -41,6 +42,7 @@ private:
     CLoggingWidget *m_logWdgt;
     CBtComm        *m_btComm;
     CVisionComm    *m_visionComm;
+    CNavigation     m_nav;
 
     AIControl       aiCtrl;
 
