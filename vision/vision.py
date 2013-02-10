@@ -7,7 +7,8 @@ from SimpleCV import Camera
 from preprocess import Preprocessor
 from features import Features
 from threshold import Threshold
-from display import Gui, ThresholdGui
+from display import Gui
+from threshold_gui import ThresholdGui
 
 from c_types import *
 
