@@ -20,7 +20,7 @@ class OptParser(OptionParser):
 if __name__ == "__main__":
 
     parser = OptParser()
-    parser.add_option('-p', '--pitch', dest='pitch', type='int', metavar='PITCH',
+    parser.add_option('-p', '--pitch', dest='pitch', type='int', metavar='PITCH', default=0,
                       help='PITCH should be 0 for main pitch, 1 for the other pitch')
     parser.add_option('-f', '--file', dest='file', metavar='FILE',
                       help='Use FILE as input instead of capturing from Camera')
@@ -28,8 +28,8 @@ if __name__ == "__main__":
                       help='Send output to stdout instead of using a socket')
     parser.add_option('-r', '--reset', action='store_true', dest='resetPitchSize', default=False,
                       help='Don\'t restore the last run\'s saved pitch size')
-    parser.add_option('-n', '--nogui', action='store_true', dest='noGui', default=False,
-                      help='Not using GUI')
+    parser.add_option('-n', '--nogui', action='store_true', dest='noGui', default=True,
+                      help='Don\'t print info on camera stream')
 
     (options, args) = parser.parse_args()
     if options.pitch not in [0, 1]:

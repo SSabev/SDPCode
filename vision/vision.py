@@ -18,11 +18,11 @@ PITCH_SIZE = (243.8, 121.9)
 class Vision:
 
     def __init__(self, pitchnum, stdout, sourcefile, resetPitchSize, noGui, pipe):
-        
+
         self.noGui = noGui
         self.lastFrameTime = self.begin_time = time.time()
         self.processed_frames = 0
-        
+
         self.running = True
         self.stdout = stdout
 
@@ -35,7 +35,7 @@ class Vision:
             if sourcefile.endswith(('jpg', 'png')):
                 self.filetype = 'image'
 
-        self.gui = Gui()
+        self.gui = Gui(self.noGui)
         self.threshold = Threshold(pitchnum)
         self.thresholdGui = ThresholdGui(self.threshold, self.gui)
         self.preprocessor = Preprocessor(resetPitchSize)
@@ -66,10 +66,11 @@ class Vision:
         time_diff = thisFrameTime - self.lastFrameTime
         fps = 1.0 / time_diff
         self.processed_frames = self.processed_frames + 1
-        avg_fps = self.processed_frames*1.0/(thisFrameTime - self.begin_time)
+        avg_fps = self.processed_frames * 1.0 / (thisFrameTime - self.begin_time)
         self.lastFrameTime = thisFrameTime
-        
-        print("Instantaneous fps = %f Average fps = %f" % (fps, avg_fps) )
+
+        if self.stdout:
+            print("Instantaneous fps = %f Average fps = %f" % (fps, avg_fps))
 
     def doStuff(self):
 
@@ -85,11 +86,10 @@ class Vision:
 
         ents = self.features.extractFeatures(frame)
         self.outputEnts(ents)
-        
+
         self.print_fps()
-        
-        if not self.noGui:
-            self.gui.loop()
+
+        self.gui.loop()
 
     def setNextPitchCorner(self, where):
         self.preprocessor.setNextPitchCorner(where)
