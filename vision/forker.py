@@ -55,11 +55,22 @@ if __name__ == "__main__":
 
     while True:
         data = vis_parent.recv()
+
+        if data == 'q':
+            print 'Terminating processes here'
+            srv.join()
+            vis.join()
+            srv_parent.close()
+            srv_child.close()
+            vis_parent.close()
+            vis_child.close()
+            break
+
         request = srv_parent.poll()
 
         if request:
             req = srv_parent.recv()
-            if req == 2 or data == 'q':
+            if req == 2:
                 print 'Terminating processes'
                 vis.join()
                 srv.join()
