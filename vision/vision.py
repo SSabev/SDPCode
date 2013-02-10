@@ -17,7 +17,7 @@ PITCH_SIZE = (243.8, 121.9)
 
 class Vision:
 
-    def __init__(self, pitchnum, stdout, sourcefile, resetPitchSize, pipe):
+    def __init__(self, pitchnum, stdout, sourcefile, resetPitchSize, GUIlabels, pipe):
 
         self.running = True
         self.stdout = stdout
