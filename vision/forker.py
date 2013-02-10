@@ -28,6 +28,8 @@ if __name__ == "__main__":
                       help='Send output to stdout instead of using a socket')
     parser.add_option('-r', '--reset', action='store_true', dest='resetPitchSize', default=False,
                       help='Don\'t restore the last run\'s saved pitch size')
+    parser.add_option('-n', '--nogui', action='store_true', dest='noGui', default=False,
+                      help='Not using GUI')
 
     (options, args) = parser.parse_args()
     if options.pitch not in [0, 1]:
@@ -41,7 +43,7 @@ if __name__ == "__main__":
 
     srv = Process(target=Server, args=(SOCK_ADDRESS, srv_child, ))
     vis = Process(target=Vision, args=(options.pitch, options.stdout,
-                                         options.file, options.resetPitchSize, vis_child, ))
+                                         options.file, options.resetPitchSize, options.noGui, vis_child, ))
     print 'Starting server'
     srv.start()
     print 'Starting vision'
