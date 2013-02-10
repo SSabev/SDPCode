@@ -55,6 +55,7 @@ class Vision:
 
     def quit(self):
         self.running = False
+        self.pipe.send('q')
 
     def doStuff(self):
 

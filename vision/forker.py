@@ -57,7 +57,7 @@ if __name__ == "__main__":
 
         if request:
             req = srv_parent.recv()
-            if req == 2:
+            if req == 2 or data == 'q':
                 print 'Terminating processes'
                 vis.join()
                 srv.join()
