@@ -215,9 +215,6 @@ class Gui:
         #print 'HSV_min = ', (self.h_min, self.s_min, self.v_min),
         #print 'HSV_max = ', (self.h_max, self.s_max, self.v_max)
 
-    h_min = s_min = v_min = 255
-    h_max = s_max = v_max = 0
-
     def resetMinMax(self):
         self.h_min = self.s_min = self.v_min = 255
         self.h_max = self.s_max = self.v_max = 0
