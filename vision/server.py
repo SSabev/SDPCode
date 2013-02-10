@@ -13,6 +13,7 @@ class Server(object):
             os.unlink(self.address)
         except OSError:
             if os.path.exists(self.address):
+                print "fock"
                 raise
 
         self.sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)

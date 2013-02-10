@@ -19,4 +19,6 @@ AI/Makefile
 AI/SDP-AI.*
 Infinity.pro.user
 
+vision/data/*
+
 *.profile

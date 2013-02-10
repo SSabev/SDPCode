@@ -64,6 +64,7 @@ if __name__ == "__main__":
             srv_child.close()
             vis_parent.close()
             vis_child.close()
+            os.remove(SOCK_ADDRESS)
             break
 
         request = srv_parent.poll()
@@ -72,8 +73,14 @@ if __name__ == "__main__":
             req = srv_parent.recv()
             if req == 2:
                 print 'Terminating processes'
-                vis.join()
                 srv.join()
+                vis.join()
+                srv_parent.close()
+                srv_child.close()
+                vis_parent.close()
+                vis_child.close()
+                os.remove(SOCK_ADDRESS)
+                break
             else:
                 print 'Sending to server'
                 srv_parent.send(data)
