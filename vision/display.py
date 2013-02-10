@@ -200,8 +200,8 @@ class Gui:
         if self.recordPixel:
             self.updateMinMax(h, s, v)
 
-        # drawingLayer = self.getDrawingLayer()
-        # drawingLayer.ezViewText('Pixel ({0}, {1}) HSV = ({2}, {3}, {4})'.format(x,y,h,s,v),(10,10))
+        drawingLayer = self.getDrawingLayer()
+        drawingLayer.text('Pixel ({0}, {1}) HSV = ({2}, {3}, {4})'.format(x,y,h,s,v),(10,10))
         # drawingLayer.ezViewText('HSV_min =  ({0}, {1}, {2}) '.format(self.h_min, self.s_min, self.v_min),(10,30))
         # drawingLayer.ezViewText('HSV_max =  ({0}, {1}, {2}) '.format(self.h_max, self.s_max, self.v_max),(10,50))
         print ('Pixel ({0}, {1}) HSV = ({2}, {3}, {4})'.format(x, y, h, s, v))
