@@ -142,7 +142,7 @@ class Gui:
         return self._eventHandler
 
     def getDrawingLayer(self):
-        return DrawingLayer(self._layers['raw'].dl())
+        return DrawingLayer(self._layers['raw'].size())
 
     def updateLayer(self, name, layer):
         """
@@ -199,8 +199,8 @@ class Gui:
         if self.recordPixel:
             self.updateMinMax(h, s, v)
 
-        drawingLayer = self.getDrawingLayer()
-        drawingLayer.text('Pixel ({0}, {1}) HSV = ({2}, {3}, {4})'.format(x,y,h,s,v),(10,10), fgcolor(255, 255, 255))
+        # drawingLayer = self.getDrawingLayer()
+        # drawingLayer.text('Pixel ({0}, {1}) HSV = ({2}, {3}, {4})'.format(x,y,h,s,v),(10,10), fgcolor(255, 255, 255))
         # drawingLayer.ezViewText('HSV_min =  ({0}, {1}, {2}) '.format(self.h_min, self.s_min, self.v_min),(10,30))
         # drawingLayer.ezViewText('HSV_max =  ({0}, {1}, {2}) '.format(self.h_max, self.s_max, self.v_max),(10,50))
         print ('Pixel ({0}, {1}) HSV = ({2}, {3}, {4})'.format(x, y, h, s, v))

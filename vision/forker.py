@@ -28,6 +28,7 @@ if __name__ == "__main__":
                       help='Send output to stdout instead of using a socket')
     parser.add_option('-r', '--reset', action='store_true', dest='resetPitchSize', default=False,
                       help='Don\'t restore the last run\'s saved pitch size')
+    # TODO: we may not even need that option, nothing is drawn on top of video feed
     parser.add_option('-n', '--nogui', action='store_true', dest='noGui', default=True,
                       help='Don\'t print info on camera stream')
 
@@ -41,10 +42,11 @@ if __name__ == "__main__":
     srv_parent, srv_child = Pipe()
     vis_parent, vis_child = Pipe()
 
-    srv = Process(target=Server, args=(SOCK_ADDRESS, srv_child, ))
+    srv = Process(target=Server, args=(SOCK_ADDRESS, srv_child, options.stdout, ))
     vis = Process(target=Vision, args=(options.pitch, options.stdout,
                                          options.file, options.resetPitchSize, options.noGui, vis_child, ))
     print 'Starting server'
+    srv.daemon = True
     srv.start()
     print 'Starting vision'
     vis.start()
@@ -57,14 +59,14 @@ if __name__ == "__main__":
         data = vis_parent.recv()
 
         if data == 'q':
-            print 'Terminating processes here'
-            srv.join()
+            print 'Terminating vision by keyboard command'
+            # srv.join()
             vis.join()
             srv_parent.close()
             srv_child.close()
             vis_parent.close()
             vis_child.close()
-            os.remove(SOCK_ADDRESS)
+            # os.remove(SOCK_ADDRESS)
             break
 
         request = srv_parent.poll()
@@ -72,8 +74,9 @@ if __name__ == "__main__":
         if request:
             req = srv_parent.recv()
             if req == 2:
-                print 'Terminating processes'
+                print 'Terminating vision by server request'
                 srv.join()
+                print 'yeh'
                 vis.join()
                 srv_parent.close()
                 srv_child.close()
@@ -82,7 +85,8 @@ if __name__ == "__main__":
                 os.remove(SOCK_ADDRESS)
                 break
             else:
-                print 'Sending to server'
+                if options.stdout:
+                    print 'Sending to server'
                 srv_parent.send(data)
 
         del(data)
