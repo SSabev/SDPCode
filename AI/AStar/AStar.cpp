@@ -174,6 +174,8 @@ std::list<Vector2> AStar::GeneratePath(Vector2 startingVector, Vector2 destinati
 
 	// If we get here, we've tried all points, but haven't been able to get 
 	// from the starting point to the destination.
+	CleanUp();
+
 	std::list<Vector2> blankList;
 	return blankList;
 }
