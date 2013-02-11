@@ -51,6 +51,7 @@ void CNavigation::GenerateValues()
     }
 
     memset(&entry->robotData, 0, sizeof(TRobotData));
+    GenerateLinear(entry);
 
     /*
     // check if we have to rotate before we can move straight
@@ -86,15 +87,15 @@ void CNavigation::GenerateLinear(TEntry *entry)
     float theta;
     int dOmega;
 
-    if (entry->aiData.path[0].orientation - m_ourOrientation > 0)
-        turnDir = eTurnLeft;
-    else
-        turnDir = eTurnRight;
-
     dx = (int)entry->aiData.path[0].position_X - m_ourPos_x;
     dy = (int)entry->aiData.path[0].position_Y - m_ourPos_y;
 
     theta = atan2(dy,dx);
+
+    if (theta - m_ourOrientation > 0)
+        turnDir = eTurnLeft;
+    else
+        turnDir = eTurnRight;
 
     dOmega = int (theta * (float)SPEED_COEFFICIENT);
 
