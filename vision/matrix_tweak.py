@@ -39,6 +39,9 @@ root = Tk()
 w = Label(root, text="Tweak that bi*ch!")
 w.pack()
 
+t = Text(root)
+t.pack()
+
 spinboxes = []
 
 for i in range(4):
