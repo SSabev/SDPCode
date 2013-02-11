@@ -61,6 +61,15 @@ void AIControl::RunAI()
 	// Using A*, generate the best path to the target.
 	m_aStar.SetPitchDimensions(sharedMem.pitchCfg.pitchWidth, sharedMem.pitchCfg.pitchHeight);
 	std::list<Vector2> aStarPath = m_aStar.GeneratePath(futurePositions[0], targetPosition);
+
+	// If the A* has returned a blank path, it found it impossible to complete.
+	if (aStarPath.size() == 0)
+	{
+		std::string logMessage = "AI could not path-find between " + futurePositions[0].ToString() + " and " + targetPosition.ToString();
+	
+		loggingObj->ShowMsg(logMessage.c_str());
+		return;
+	}
 	
 	// Smooth and optimise the path using knowledge of our bot's capabilities.
 	std::list<Vector2> smoothedPath = m_impala.SmoothPath(aStarPath, 9);
