@@ -43,33 +43,3 @@ Ball:   	 16/16 	 100.000000 percents
 List of files with objects not recognized:
 ['P0-00001.jpg', 'P0-00002.jpg', 'P0-00003.jpg', 'P0-00004.jpg', 'P0-00005.jpg', 'P0-00006.jpg', 'P0-00007.jpg', 'P0-00008.jpg', 'P0-00009.jpg', 'P0-00010.jpg', 'P0-00011.jpg', 'P0-00012.jpg', 'P0-00013.jpg', 'P0-00014.jpg', 'P0-00015.jpg', 'P0-00016.jpg']
 
----------------------------------------------------------------------
-
-2013-02-10 14:19:57
-Results of test on pitch 0 
-The current thresholds are:
-{'blue': [[83, 54, 74], [115, 255, 255]], 'ball': [[0, 159, 134], [13, 246, 255]], 'yellow': [[29, 39, 144], [37, 56, 148]]}
-
-Percent recognized (not percent correct): 
-Yellow: 	 0/16 	 0.000000 percents 
-Blue:   	 16/16 	 100.000000 percents 
-Ball:   	 16/16 	 100.000000 percents 
-
-List of files with objects not recognized:
-['P0-00001.jpg', 'P0-00002.jpg', 'P0-00003.jpg', 'P0-00004.jpg', 'P0-00005.jpg', 'P0-00006.jpg', 'P0-00007.jpg', 'P0-00008.jpg', 'P0-00009.jpg', 'P0-00010.jpg', 'P0-00011.jpg', 'P0-00012.jpg', 'P0-00013.jpg', 'P0-00014.jpg', 'P0-00015.jpg', 'P0-00016.jpg']
-
----------------------------------------------------------------------
-
-2013-02-10 15:26:56
-Results of test on pitch 0 
-The current thresholds are:
-{'blue': [[83, 54, 74], [115, 255, 255]], 'ball': [[0, 159, 134], [13, 246, 255]], 'yellow': [[29, 17, 144], [37, 56, 148]]}
-
-Percent recognized (not percent correct): 
-Yellow: 	 0/16 	 0.000000 percents 
-Blue:   	 16/16 	 100.000000 percents 
-Ball:   	 16/16 	 100.000000 percents 
-
-List of files with objects not recognized:
-['P0-00001.jpg', 'P0-00002.jpg', 'P0-00003.jpg', 'P0-00004.jpg', 'P0-00005.jpg', 'P0-00006.jpg', 'P0-00007.jpg', 'P0-00008.jpg', 'P0-00009.jpg', 'P0-00010.jpg', 'P0-00011.jpg', 'P0-00012.jpg', 'P0-00013.jpg', 'P0-00014.jpg', 'P0-00015.jpg', 'P0-00016.jpg']
-

@@ -43,11 +43,15 @@ void CNavigation::GenerateValues()
 
     memset(&entry->robotData, 0, sizeof(TRobotData));
     //generate our orientation as it was previously blank
-    float targetx = entry->visionData.ball_x - m_ourPos_x;
-    float targety = entry->visionData.ball_y - m_ourPos_y;
+    float targetx = entry->aiData.path[sharedMem.currentIdx].position_X - m_ourPos_x;
+    float targety =entry->aiData.path[sharedMem.currentIdx].position_Y - m_ourPos_y;
     float newAngle = atan2(targety, targetx);
-    newAngle = m_ourOrientation - newAngle;
-    entry->aiData.path[0].orientation = newAngle/2;
+    //entry->aiData.path[1].orientation = newAngle;
+    entry->aiData.path[sharedMem.currentIdx].orientation = (m_ourOrientation -newAngle)/2;
+    //newAngle = m_ourOrientation - newAngle;
+   // if(newAngle<0) newAngle = 2*M_PI + newAngle;
+
+
     if(std::abs(m_ourOrientation - entry->aiData.path[0].orientation) > ANGULAR_THRESHOLD){
         loggingObj->ShowMsg("Just rotate");
         GenerateMaxAngular(entry);
@@ -61,9 +65,8 @@ void CNavigation::GenerateValues()
 
 void CNavigation::GenerateMaxAngular(TEntry *entry)
 {   //rotate the wrong way so that nav work for most cases
-    if((true))
-    {
-    if((m_ourOrientation - entry->aiData.path[0].orientation) < 0){
+
+    if((m_ourOrientation - entry->aiData.path[0].orientation) > 0){
         // turn right
         loggingObj->ShowMsg("Just rotate right");
         entry->robotData.motor_fl = MAX_ONLY_ANGULAR_MSPEED;
@@ -75,7 +78,7 @@ void CNavigation::GenerateMaxAngular(TEntry *entry)
         entry->robotData.motor_fl = -MAX_ONLY_ANGULAR_MSPEED;
         entry->robotData.motor_fr = MAX_ONLY_ANGULAR_MSPEED;
     }
-    }
+
     /*else
     {
         if((m_ourOrientation - entry->aiData.path[0].orientation) > 0){

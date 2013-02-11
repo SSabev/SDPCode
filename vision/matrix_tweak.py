@@ -39,13 +39,10 @@ root = Tk()
 w = Label(root, text="Tweak that bi*ch!")
 w.pack()
 
-t = Text(root)
-t.pack()
-
 spinboxes = []
 
 for i in range(4):
-    spinboxes.append(Scale(root, from_=-3, to=3, resolution=0.00000000001, \
+    spinboxes.append(Scale(root, from_=-5, to=5, resolution=0.00000000001, \
         orient=HORIZONTAL, length=800, command=writeVal))
     spinboxes[i].set(float(vals[i]))
     spinboxes[i].pack()

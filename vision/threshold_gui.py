@@ -1,5 +1,6 @@
 import cv
 
+
 class ThresholdGui:
 
     def __init__(self, thresholdinstance, gui, window=None):

@@ -62,8 +62,17 @@ void AIControl::RunAI()
 	m_aStar.SetPitchDimensions(sharedMem.pitchCfg.pitchWidth, sharedMem.pitchCfg.pitchHeight);
 	std::list<Vector2> aStarPath = m_aStar.GeneratePath(futurePositions[0], targetPosition);
 	
-	// Smooth and optimise the path using knowledge of our bot's capabilities.
-	std::list<Vector2> smoothedPath = m_impala.SmoothPath(aStarPath, 9);
+    std::list<Vector2> smoothedPath;
+
+    if (aStarPath.size() != 0)
+    {
+        // Smooth and optimise the path using knowledge of our bot's capabilities.
+        smoothedPath = m_impala.SmoothPath(aStarPath, 9);
+    }
+    else
+    {
+        smoothedPath = aStarPath;
+    }
 
 	// Results should be written to shared memory.
 	currentEntry.aiData.pathLength = smoothedPath.size();

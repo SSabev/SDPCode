@@ -2,7 +2,7 @@
 from SimpleCV import *
 from features import Features
 from threshold import Threshold
-from display import Gui
+from display import Gui, ThresholdGui
 from preprocess import Preprocessor
 import os
 import sys
@@ -53,7 +53,7 @@ else:
     pitchnum = 0
 
 threshold = Threshold(pitchnum)
-gui = Gui(True)
+gui = Gui()
 features = Features(gui, threshold)
 #preprocessor = Preprocessor(False)
 INPUT_DIR = './input_images'

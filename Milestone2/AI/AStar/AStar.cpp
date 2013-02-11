@@ -172,6 +172,9 @@ std::list<Vector2> AStar::GeneratePath(Vector2 startingVector, Vector2 destinati
 		}
 	}
 
+    std::list<Vector2> blankList;
+    return blankList;
+
 	assert(false);
 }
 

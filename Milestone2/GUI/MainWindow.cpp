@@ -128,7 +128,6 @@ void MainWindow::ShowLogWin()
 
 void MainWindow::TimerCallBack()
 {
-    sharedMem.systemState = eNavToBall;
     TEntry *entry = &sharedMem.positioning[sharedMem.currentIdx];
 
     m_visionComm->ReadData(&entry->visionData);
@@ -158,14 +157,13 @@ void MainWindow::TimerCallBack()
                         .arg(entry->aiData.path[1].orientation)
             .arg(entry->aiData.path[2].orientation)
             );
-    entry->aiData.path[0].position_X = entry->visionData.ball_x;
-    entry->aiData.path[0].position_Y = entry->visionData.ball_y;
+//    entry->aiData.path[0].position_X = entry->visionData.ball_x;
+//    entry->aiData.path[0].position_Y = entry->visionData.ball_y;
 
 
 
-    //Vector2 normalisedLocation = ourRobotLocation - targetLocation;
-    //float newAngle = atan2(normalisedLocation.Y(), normalisedLocation.X())));
 
+    aiCtrl.RunAI();
     m_nav.GenerateValues();
 
     m_btComm->SendData(&entry->robotData);

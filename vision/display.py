@@ -18,6 +18,14 @@ class Gui:
             'ball': ['threshR', 'ball']
             }
 
+    h_min = s_min = v_min = 255
+    h_max = s_max = v_max = 0
+
+    # Show pixel mode: turn on/off by 'p', show the HSV of the pixel at the mouse
+    showPixel = False
+    # Record pixel mode: use the current pixel to update threshold
+    recordPixel = False
+
     def __init__(self, noGui):
         self._layers = {
                 # Base layers
@@ -46,9 +54,7 @@ class Gui:
         self._lastFrameTime = time.time()
 
     def __draw(self):
-
         iterator = iter(self._currentLayerset)
-
         # First element is the base layer
         baseLayer = self._layers[iterator.next()]
 
@@ -61,10 +67,8 @@ class Gui:
             toDraw = self._layers[key]
             if toDraw is None:
                 continue
-
             elif isinstance(toDraw, DrawingLayer):
                 baseLayer.addDrawingLayer(toDraw)
-
             else:
                 toDraw.draw(entityLayer)
 
@@ -138,7 +142,7 @@ class Gui:
         return self._eventHandler
 
     def getDrawingLayer(self):
-        return DrawingLayer(self._layers['raw'].dl())
+        return DrawingLayer(self._layers['raw'].size())
 
     def updateLayer(self, name, layer):
         """
@@ -163,13 +167,8 @@ class Gui:
 
         self._showMouse = showMouse
 
-    # Show pixel mode: turn on/off by 'p', show the HSV of the pixel at the mouse
-    showPixel = False
-
     def toggleShowPixel(self):
         self.showPixel = not self.showPixel
-    # Record pixel mode: use the current pixel to update threshold
-    recordPixel = False
 
     def toggleRecordPixel(self):
         self.recordPixel = not self.recordPixel
@@ -201,7 +200,7 @@ class Gui:
             self.updateMinMax(h, s, v)
 
         # drawingLayer = self.getDrawingLayer()
-        # drawingLayer.text('Pixel ({0}, {1}) HSV = ({2}, {3}, {4})'.format(x,y,h,s,v),(10,10)
+        # drawingLayer.text('Pixel ({0}, {1}) HSV = ({2}, {3}, {4})'.format(x,y,h,s,v),(10,10), fgcolor(255, 255, 255))
         # drawingLayer.ezViewText('HSV_min =  ({0}, {1}, {2}) '.format(self.h_min, self.s_min, self.v_min),(10,30))
         # drawingLayer.ezViewText('HSV_max =  ({0}, {1}, {2}) '.format(self.h_max, self.s_max, self.v_max),(10,50))
         print ('Pixel ({0}, {1}) HSV = ({2}, {3}, {4})'.format(x, y, h, s, v))
