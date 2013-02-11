@@ -5,8 +5,8 @@ Eagle::Eagle()
 	
 }
 
-Vector2 Eagle::IdentifyTarget(std::vector<Vector2> positions)
+Vector2 Eagle::IdentifyTarget(Vector2 ourRobotPos, Vector2 enemyRobotPos, Vector2 ballPos)
 {
 	// For now, this is just the ball position.
-	return positions[2];
+	return ballPos;
 }
