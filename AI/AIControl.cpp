@@ -49,23 +49,27 @@ void AIControl::RunAI()
 
 	Vector2 ballPos(currentEntry.visionData.ball_x, currentEntry.visionData.ball_y);
 
+	RobotState ourRobotFuture;
+	RobotState enemyRobotFuture;
+	Vector2 ballFuture;
+
 	// Given the current position and a certain number of previous positions, 
 	// approximate where the bot will be when it receives our next transmission.
 	m_foresee.SetPitchDimensions(sharedMem.pitchCfg.pitchWidth, sharedMem.pitchCfg.pitchHeight);
-	std::vector<Vector2> futurePositions = m_foresee.ExtrapolateState(ourRobot.Position(), enemyRobot.Position(), ballPos);
+	m_foresee.ExtrapolateState(ourRobot, enemyRobot, ballPos, ourRobotFuture, enemyRobotFuture, ballFuture);
 
 	// Given the positions of the robots and ball, identify the ideal position 
 	// and orientation for us to reach.
-	Vector2 targetPosition = m_eagle.IdentifyTarget(futurePositions);
+	Vector2 targetPosition = m_eagle.IdentifyTarget(ourRobotFuture.Position(), enemyRobotFuture.Position(), ballFuture);
 	
 	// Using A*, generate the best path to the target.
 	m_aStar.SetPitchDimensions(sharedMem.pitchCfg.pitchWidth, sharedMem.pitchCfg.pitchHeight);
-	std::list<Vector2> aStarPath = m_aStar.GeneratePath(futurePositions[0], targetPosition);
+	std::list<Vector2> aStarPath = m_aStar.GeneratePath(ourRobotFuture.Position(), targetPosition);
 
 	// If the A* has returned a blank path, it found it impossible to complete.
 	if (aStarPath.size() == 0)
 	{
-		std::string logMessage = "AI could not path-find between " + futurePositions[0].ToString() + " and " + targetPosition.ToString();
+		std::string logMessage = "AI could not path-find between " + ourRobotFuture.Position().ToString() + " and " + targetPosition.ToString();
 	
 		loggingObj->ShowMsg(logMessage.c_str());
 		return;
