@@ -6,6 +6,8 @@
 
 #include <sstream>
 
+#define _USE_MATH_DEFINES
+
 Vector2::Vector2()
 {
 	m_isSet = false;
@@ -81,6 +83,18 @@ const float Vector2::DistanceSquared(Vector2* dest) const
 	float distSquared = pow(xDist,2) + pow(yDist,2);
 	
 	return distSquared;
+}
+
+const float Vector2::GetAngleTo(Vector2* dest) const
+{
+	assert(m_isSet);
+
+	float xDist = dest->X() - X();
+	float yDist = dest->Y() - Y();
+
+	float angleRadians = atan2(yDist, xDist);
+
+	return angleRadians;
 }
 
 const float Vector2::Gradient(Vector2* dest) const
