@@ -31,7 +31,7 @@ if __name__ == "__main__":
     # TODO: we may not even need that option, nothing is drawn on top of video feed
     parser.add_option('-n', '--nogui', action='store_true', dest='noGui', default=True,
                       help='Don\'t print info on camera stream')
-    parser.add_option('-d', '--debug', action='debug', dest='debug_window', default=True,
+    parser.add_option('-d', '--debug', action='store_true', dest='debug_window', default=True,
                       help='Add a debug window with the latest info')
 
     (options, args) = parser.parse_args()
