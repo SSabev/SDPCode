@@ -9,6 +9,7 @@ from features import Features
 from threshold import Threshold
 from display import Gui
 from threshold_gui import ThresholdGui
+from debug_window import DebugWindow
 
 from c_types import *
 
@@ -18,7 +19,7 @@ from c_types import *
 
 class Vision:
 
-    def __init__(self, pitchnum, stdout, sourcefile, resetPitchSize, noGui, pipe):
+    def __init__(self, pitchnum, stdout, sourcefile, resetPitchSize, noGui, debug_window,  pipe):
 
         self.noGui = noGui
         self.lastFrameTime = self.begin_time = time.time()
@@ -41,6 +42,10 @@ class Vision:
         self.thresholdGui = ThresholdGui(self.threshold, self.gui)
         self.preprocessor = Preprocessor(resetPitchSize)
         self.features = Features(self.gui, self.threshold)
+        if self.debug_window:
+            self.debug_window = DebugWindow()
+        else:
+            self.debug_window = None
 
         calibrationPath = os.path.join('calibration', 'pitch{0}'.format(pitchnum))
         self.camera.loadCalibration(os.path.join(sys.path[0], calibrationPath))
@@ -117,6 +122,8 @@ class Vision:
     def outputPitchSize(self):
         if self.stdout:
             print ("Pitch size:\t %i\t %i\n" % tuple(self.preprocessor.pitch_size))
+        if self.debug_window:
+            self.debug_window.insert_text("Pitch size:\t %i\t %i\n" % tuple(self.preprocessor.pitch_size))
         self.pipe.send(InitSignal(self.preprocessor.pitch_size[0], self.preprocessor.pitch_size[1]))
 
     def addCoordinates(self, entity, coordinates):
@@ -165,5 +172,8 @@ class Vision:
 
         if self.stdout:
             print ("Yellow:\t %i\t %i\t Angle:\t %s\nBlue:\t %i\t %i\t Angle:\t %s\nBall:\t %i\t %i\t\nTime:\t %i\n" % tuple(msg_data))
+        if debug_window:
+            debug_window.insert_text("Yellow:\t %i\t %i\t Angle:\t %s\nBlue:\t %i\t %i\t Angle:\t %s\nBall:\t %i\t %i\t\nTime:\t %i\n" % tuple(msg_data))
+
 
         self.pipe.send(data)
