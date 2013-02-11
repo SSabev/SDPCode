@@ -9,6 +9,7 @@ from features import Features
 from threshold import Threshold
 from display import Gui
 from threshold_gui import ThresholdGui
+from debug_window import DebugWindow
 
 from c_types import *
 
@@ -18,7 +19,7 @@ PITCH_SIZE = (243.8, 121.9)
 
 class Vision:
 
-    def __init__(self, pitchnum, stdout, sourcefile, resetPitchSize, noGui, pipe):
+    def __init__(self, pitchnum, stdout, sourcefile, resetPitchSize, noGui, debug_window,  pipe):
 
         self.noGui = noGui
         self.lastFrameTime = self.begin_time = time.time()
@@ -41,6 +42,10 @@ class Vision:
         self.thresholdGui = ThresholdGui(self.threshold, self.gui)
         self.preprocessor = Preprocessor(resetPitchSize)
         self.features = Features(self.gui, self.threshold)
+        if self.debug_window:
+            self.debug_window = DebugWindow()
+        else:
+            self.debug_window = None
 
         calibrationPath = os.path.join('calibration', 'pitch{0}'.format(pitchnum))
         self.camera.loadCalibration(os.path.join(sys.path[0], calibrationPath))
@@ -134,5 +139,8 @@ class Vision:
 
         if self.stdout:
             print ("Yellow:\t %i\t %i\t Angle:\t %s\nBlue:\t %i\t %i\t Angle:\t %s\nBall:\t %i\t %i\t\nTime:\t %i\n" % tuple(msg_data))
+        if debug_window:
+            debug_window.insert_text("Yellow:\t %i\t %i\t Angle:\t %s\nBlue:\t %i\t %i\t Angle:\t %s\nBall:\t %i\t %i\t\nTime:\t %i\n" % tuple(msg_data))
+
 
         self.pipe.send(data)
