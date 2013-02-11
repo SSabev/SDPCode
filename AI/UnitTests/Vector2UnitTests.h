@@ -37,6 +37,13 @@ private:
     	void Vector2ClampInsideY();
     	void Vector2ClampBothOnBoundaries();
     	void Vector2ClampBothOutwithBoundaries();
+    	void Vector2GetAngleTo();
+    	void Vector2GetAngleToNegative();
+    	void Vector2GetAngleToZero();
+    	void Vector2Gradient();
+    	void Vector2GradientNegative();
+    	void Vector2GradientZero();
+    	void Vector2GradientDivideByZero();
 };
 
 #endif
