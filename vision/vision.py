@@ -110,6 +110,8 @@ class Vision:
     def outputPitchSize(self):
         if self.stdout:
             print ("Pitch size:\t %i\t %i\n" % tuple(self.preprocessor.pitch_size))
+        if self.debug_window:
+            self.debug_window.insert_text("Pitch size:\t %i\t %i\n" % tuple(self.preprocessor.pitch_size))
         self.pipe.send(InitSignal(self.preprocessor.pitch_size[0], self.preprocessor.pitch_size[1]))
 
     def outputEnts(self, ents):
