@@ -1,5 +1,6 @@
 .DS_Store
 *.swp
+*.swo
 *.un~
 *.pyc
 *.py~
@@ -17,5 +18,7 @@ AI/premake4
 AI/Makefile
 AI/SDP-AI.*
 Infinity.pro.user
+
+vision/data/*
 
 *.profile

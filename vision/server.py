@@ -6,13 +6,15 @@ from c_types import *
 
 class Server(object):
 
-    def __init__(self, address, pipe):
+    def __init__(self, address, pipe, stdout):
         self.address = address
+        self.stdout = stdout
 
         try:
             os.unlink(self.address)
         except OSError:
             if os.path.exists(self.address):
+                print "fock"
                 raise
 
         self.sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
@@ -20,7 +22,6 @@ class Server(object):
         self.sock.listen(1)
         self.pipe = pipe
 
-        # TODO: Dunno, kinda seems redundant :?
         self.run()
 
     def run(self):
@@ -28,15 +29,16 @@ class Server(object):
         print 'Waiting for a connection'
         self.connection, _ = self.sock.accept()
         print 'Connection established'
+        # readable, _, _ = select.select([self.sock], [], [], 100)
 
         while True:
             request = self.connection.recv(8)
-            print str(request)
             if request == 'a':
                 print 'Sending initial data to client'
                 self.connection.send(pitch_data)
             elif request == 'b':
-                print 'Sending data to the client'
+                if self.stdout:
+                    print 'Sending data to the client'
                 self.pipe.send(1)
                 data = self.pipe.recv()
                 self.connection.send(data)
