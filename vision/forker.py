@@ -1,5 +1,6 @@
 from multiprocessing import Process, Pipe
 from optparse import OptionParser
+import os
 
 from vision import *
 from server import *

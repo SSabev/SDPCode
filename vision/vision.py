@@ -42,10 +42,10 @@ class Vision:
         self.thresholdGui = ThresholdGui(self.threshold, self.gui)
         self.preprocessor = Preprocessor(resetPitchSize)
         self.features = Features(self.gui, self.threshold)
-        if self.debug_window:
-            self.debug_window = DebugWindow()
-        else:
-            self.debug_window = None
+        # if self.debug_window:
+        #     self.debug_window = DebugWindow()
+        # else:
+        #     self.debug_window = None
 
         calibrationPath = os.path.join('calibration', 'pitch{0}'.format(pitchnum))
         self.camera.loadCalibration(os.path.join(sys.path[0], calibrationPath))
@@ -122,8 +122,8 @@ class Vision:
     def outputPitchSize(self):
         if self.stdout:
             print ("Pitch size:\t %i\t %i\n" % tuple(self.preprocessor.pitch_size))
-        if self.debug_window:
-            self.debug_window.insert_text("Pitch size:\t %i\t %i\n" % tuple(self.preprocessor.pitch_size))
+        # if self.debug_window:
+        #     self.debug_window.insert_text("Pitch size:\t %i\t %i\n" % tuple(self.preprocessor.pitch_size))
         self.pipe.send(InitSignal(self.preprocessor.pitch_size[0], self.preprocessor.pitch_size[1]))
 
     def addCoordinates(self, entity, coordinates):
@@ -165,15 +165,15 @@ class Vision:
             else:
                 self.addAngle(name, entity.angle())
 
-                msg_data += [int(x), int(y), self.smoothAngle(name)]
+                msg_data += [int(x), int(y), entity.angle()]
+		# self.smoothAngle(name)]
 
         msg_data.append(int(time.time() * 1000))
         data = FrameData(*msg_data)
 
         if self.stdout:
             print ("Yellow:\t %i\t %i\t Angle:\t %s\nBlue:\t %i\t %i\t Angle:\t %s\nBall:\t %i\t %i\t\nTime:\t %i\n" % tuple(msg_data))
-        if debug_window:
-            debug_window.insert_text("Yellow:\t %i\t %i\t Angle:\t %s\nBlue:\t %i\t %i\t Angle:\t %s\nBall:\t %i\t %i\t\nTime:\t %i\n" % tuple(msg_data))
-
+        # if debug_window:
+        #     debug_window.insert_text("Yellow:\t %i\t %i\t Angle:\t %s\nBlue:\t %i\t %i\t Angle:\t %s\nBall:\t %i\t %i\t\nTime:\t %i\n" % tuple(msg_data))
 
         self.pipe.send(data)
