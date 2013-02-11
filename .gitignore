@@ -20,3 +20,5 @@ AI/SDP-AI.*
 Infinity.pro.user
 
 *.profile
+Infinity-debug-Desktop-Debug/*                                                  
+Infinity-debug-Desktop-Release/*                                                
