@@ -19,6 +19,17 @@
 #define MAX_ANGULAR_MSPEED      (30)
 #define ANGULAR_RATIO           (MAX_ANGULAR_MSPEED / MAX_ALGULAR_VEL_100ms)
 
+#define ROBOT_D                 (13) // cm
+#define WEEL_D                  (3)  // cm
+#define SPEED_COEFFICIENT       (2*ROBOT_D*10/WEEL_D)
+#define MAX_SPEED               (300)
+#define SCALING_FACTOR          (10)
+
+typedef enum{
+    eTurnLeft,
+    eTurnRight
+} TTurnDir;
+
 CNavigation::CNavigation()
 {
     memset(&m_target, 0, sizeof(TTarget));
@@ -41,14 +52,16 @@ void CNavigation::GenerateValues()
 
     memset(&entry->robotData, 0, sizeof(TRobotData));
 
+    /*
     // check if we have to rotate before we can move straight
     if(std::abs(m_ourOrientation - entry->aiData.path[0].orientation) > ANGULAR_THRESHOLD){
-        GenerateMaxAngular(entry);
+        GenerateMaxAngular(entry);diff
     }
     else{
         GenerateLinear(entry);
         GenerateAngular(entry);
     }
+    */
 }
 
 void CNavigation::GenerateMaxAngular(TEntry *entry)
@@ -67,6 +80,33 @@ void CNavigation::GenerateMaxAngular(TEntry *entry)
 
 void CNavigation::GenerateLinear(TEntry *entry)
 {
+    TTurnDir turnDir;
+    int dx;
+    int dy;
+    float theta;
+    int dOmega;
+
+    if (entry->aiData.path[0].orientation - m_ourOrientation > 0)
+        turnDir = eTurnLeft;
+    else
+        turnDir = eTurnRight;
+
+    dx = (int)entry->aiData.path[0].position_X - m_ourPos_x;
+    dy = (int)entry->aiData.path[0].position_Y - m_ourPos_y;
+
+    theta = atan2(dy,dx);
+
+    dOmega = int (theta * (float)SPEED_COEFFICIENT);
+
+    if (eTurnLeft){
+        entry->robotData.motor_fl = (MAX_SPEED - dOmega) / SCALING_FACTOR;
+        entry->robotData.motor_fr = MAX_SPEED;
+    }
+    else{
+        entry->robotData.motor_fr = (MAX_SPEED - dOmega) / SCALING_FACTOR;
+        entry->robotData.motor_fl = MAX_SPEED;
+    }
+
     /*
     float ourPos_x;
     float ourPos_y;
@@ -94,8 +134,6 @@ void CNavigation::GenerateLinear(TEntry *entry)
 
     }
     */
-    entry->robotData.motor_fl = MAX_FORWARD_MSPEED;
-    entry->robotData.motor_fr = MAX_FORWARD_MSPEED;
 }
 
 void CNavigation::GenerateAngular(TEntry *entry)

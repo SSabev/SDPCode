@@ -6,7 +6,7 @@
 
 #include <string.h>
 
-#define TIMER_INTERVAL_MS 20
+#define TIMER_INTERVAL_MS 100
 
 MainWindow::MainWindow()
     : m_timer(this)
@@ -119,9 +119,9 @@ void MainWindow::TimerCallBack()
                                 sharedMem.currentIdx]
                            .visionData);
 
-    /// TODO: Call AI
+    aiCtrl.RunAI();
 
-    /// TODO: Call Navigation
+    m_nav.GenerateValues();
 
     // Send new data to the robot
     m_btComm->SendData(&sharedMem.positioning[
