@@ -176,5 +176,4 @@ class Vision:
         # if debug_window:
         #     debug_window.insert_text("Yellow:\t %i\t %i\t Angle:\t %s\nBlue:\t %i\t %i\t Angle:\t %s\nBall:\t %i\t %i\t\nTime:\t %i\n" % tuple(msg_data))
 
-
         self.pipe.send(data)

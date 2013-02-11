@@ -39,7 +39,7 @@ if __name__ == "__main__":
     if options.pitch not in [0, 1]:
         parser.error('Pitch must be 0 or 1')
 
-    SOCK_ADDRESS = '/tmp/vision_sock2'
+    SOCK_ADDRESS = '~/vision_sock'
 
     # TODO: perhaps a shared array may be quicker than all those pipes. Research!
     srv_parent, srv_child = Pipe()

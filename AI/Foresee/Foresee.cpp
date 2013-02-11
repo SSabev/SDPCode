@@ -38,13 +38,13 @@ std::vector<Vector2> Foresee::ExtrapolateState(Vector2 ourRobotPos, Vector2 enem
 	m_ballPositions.push_front(ballPos);
 
 	std::vector<Vector2> ourRobotVector(m_ourRobotPositions.begin(), m_ourRobotPositions.end());
-	std::vector<Vector2> enemyRobotVector(m_enemyRobotPositions.begin(), m_ourRobotPositions.end());
-	std::vector<Vector2> ballVector(m_ourRobotPositions.begin(), m_ballPositions.end());
+	std::vector<Vector2> enemyRobotVector(m_enemyRobotPositions.begin(), m_enemyRobotPositions.end());
+	std::vector<Vector2> ballVector(m_ballPositions.begin(), m_ballPositions.end());
 	
 	std::vector<Vector2> futurePositions;
-	futurePositions[0] = ExtrapolatePositionFromPoints(ourRobotVector);
-	futurePositions[1] = ExtrapolatePositionFromPoints(enemyRobotVector);
-	futurePositions[2] = ExtrapolatePositionFromPoints(ballVector);
+	futurePositions.push_back(ExtrapolatePositionFromPoints(ourRobotVector));
+	futurePositions.push_back(ExtrapolatePositionFromPoints(enemyRobotVector));
+	futurePositions.push_back(ExtrapolatePositionFromPoints(ballVector));
 	
 	return futurePositions;
 }
