@@ -19,8 +19,13 @@ public:
 		return m_orientation;
 	}
 
+	void SetPosition(float posX, float posY);
+	void SetPosition(Vector2 pos);
+	void SetOrientation(float orientation);
+
 private:
-	bool m_isSet;
+	bool m_isPositionSet;
+	bool m_isOrientationSet;
 
 	Vector2 m_position;
 	float m_orientation;
