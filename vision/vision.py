@@ -13,7 +13,7 @@ from threshold_gui import ThresholdGui
 from c_types import *
 
 
-PITCH_SIZE = (243.8, 121.9)
+# PITCH_SIZE = (243.8, 121.9)
 
 
 class Vision:
@@ -48,6 +48,18 @@ class Vision:
         eventHandler = self.gui.getEventHandler()
         eventHandler.addListener('q', self.quit)
 
+        # Ugly stuff for smoothing coordinates - should probably move it
+        self._pastSize = 5
+        self._pastCoordinates = {
+                            'yellow': [(-1, -1)] * self._pastSize,
+                            'blue': [(-1, -1)] * self._pastSize,
+                            'ball': [(-1, -1)] * self._pastSize
+                            }
+        self._pastAngles = {
+                            'yellow': [1.0] * self._pastSize,
+                            'blue': [1.0] * self._pastSize
+                           }
+
         while self.running:
             if self.preprocessor.hasPitchSize:
                 self.outputPitchSize()
@@ -78,8 +90,8 @@ class Vision:
         frame = self.camera.getImageUndistort()
 
         # Uncomment to see changes in barrell distortion matrix
-        # calibrationPath = os.path.join('calibration', 'pitch{0}'.format(0))
-        # self.camera.loadCalibration(os.path.join(sys.path[0], calibrationPath))
+        calibrationPath = os.path.join('calibration', 'pitch{0}'.format(0))
+        self.camera.loadCalibration(os.path.join(sys.path[0], calibrationPath))
 
         frame = self.preprocessor.preprocess(frame)
 
@@ -107,8 +119,23 @@ class Vision:
             print ("Pitch size:\t %i\t %i\n" % tuple(self.preprocessor.pitch_size))
         self.pipe.send(InitSignal(self.preprocessor.pitch_size[0], self.preprocessor.pitch_size[1]))
 
-    def outputEnts(self, ents):
+    def addCoordinates(self, entity, coordinates):
+            self._pastCoordinates[entity].pop(0)
+            self._pastCoordinates[entity].append(coordinates)
 
+    def smoothCoordinates(self, entity):
+            x = sum(map(lambda (x, _): x, self._pastCoordinates[entity])) / self._pastSize
+            y = sum(map(lambda (_, y): y, self._pastCoordinates[entity])) / self._pastSize
+            return (x, y)
+
+    def addAngle(self, entity, angle):
+            self._pastAngles[entity].pop(0)
+            self._pastAngles[entity].append(angle)
+
+    def smoothAngle(self, entity):
+        return sum(self._pastAngles[entity]) / self._pastSize
+
+    def outputEnts(self, ents):
         # Messyyy
         if not self.preprocessor.hasPitchSize:
             return
@@ -117,7 +144,9 @@ class Vision:
 
         for name in ['yellow', 'blue', 'ball']:
             entity = ents[name]
-            x, y = entity.coordinates()
+            coordinates = entity.coordinates()
+            self.addCoordinates(name, coordinates)
+            x, y = self.smoothCoordinates(name)
 
             # TODO: The system needs (0, 0) at top left!
             if y != -1:
@@ -127,7 +156,9 @@ class Vision:
                 # self.send('{0} {1} '.format(x, y))
                 msg_data += [int(x), int(y)]
             else:
-                msg_data += [int(x), int(y), entity.angle()]
+                self.addAngle(name, entity.angle())
+
+                msg_data += [int(x), int(y), self.smoothAngle(name)]
 
         msg_data.append(int(time.time() * 1000))
         data = FrameData(*msg_data)

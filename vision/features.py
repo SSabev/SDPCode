@@ -72,11 +72,11 @@ class Features:
         return entity
 
     def sizeMatch(self, feature, which):
-        width = feature.width()
-        length = feature.length()
 
         expected = self.Sizes[which]
 
+        # width = feature.width()
+        # length = feature.length()
         # return expected[0] < width < expected[1] \
         #     and expected[2] < length < expected[3]
 
@@ -90,17 +90,6 @@ class Features:
 
 class Entity:
 
-    @classmethod
-    def fromFeature(cls, feature, hasAngle, useBoundingBox=True):
-        entity = Entity(hasAngle)
-        if useBoundingBox:
-            entity._coordinates = feature.coordinates()
-        else:
-            entity._coordinates = feature.centroid()
-        entity._feature = feature
-
-        return entity
-
     def __init__(self, hasAngle=True):
         """
         hasAngle = True if it makes sense for this entity to have an angle
@@ -111,6 +100,17 @@ class Entity:
         self._hasAngle = hasAngle
         self._angle = None
         self._feature = None
+
+    @classmethod
+    def fromFeature(cls, feature, hasAngle, useBoundingBox=True):
+        entity = Entity(hasAngle)
+        if useBoundingBox:
+            entity._coordinates = feature.coordinates()
+        else:
+            entity._coordinates = feature.centroid()
+        entity._feature = feature
+
+        return entity
 
     def coordinates(self):
         return self._coordinates
