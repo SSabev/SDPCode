@@ -11,8 +11,7 @@ HEADERS += \
     ../Shared/Sockets.h \
     Comm/BTComm.h \
     Comm/VisionComm.h \
-    Tools/TeamCfgDlg.h \
-    ../Navigation/Navigation.h
+    Tools/TeamCfgDlg.h
 
 SOURCES += \
     MainWindow.cpp \
@@ -22,8 +21,7 @@ SOURCES += \
     Logging.cpp \
     Comm/BTComm.cpp \
     Comm/VisionComm.cpp \
-    Tools/TeamCfgDlg.cpp \
-    ../Navigation/Navigation.cpp
+    Tools/TeamCfgDlg.cpp
 
 INCLUDEPATH += \
         Shared \

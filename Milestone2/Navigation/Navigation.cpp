@@ -1,7 +1,5 @@
 #include "Navigation.h"
 
-#include <QString>
-
 
 #include <Logging.h>
 
@@ -15,11 +13,22 @@
 #define MAX_DISPLACEMENT_PX_SQ  (MAX_DISPLACEMENT_PX * MAX_DISPLACEMENT_PX)
 #define ANGULAR_THRESHOLD       (M_PI_4) // 45 degrees
 
-#define MAX_ONLY_ANGULAR_MSPEED (40)
+#define MAX_ONLY_ANGULAR_MSPEED (60)
 #define MAX_ALGULAR_VEL_100ms   (0.12)
 #define MAX_FORWARD_MSPEED      (50)
-#define MAX_ANGULAR_MSPEED      (20)
+#define MAX_ANGULAR_MSPEED      (30)
 #define ANGULAR_RATIO           (MAX_ANGULAR_MSPEED / MAX_ALGULAR_VEL_100ms)
+
+#define ROBOT_D                 (13) // cm
+#define WEEL_D                  (3)  // cm
+#define SPEED_COEFFICIENT       (2*ROBOT_D*10/WEEL_D)
+#define MAX_SPEED               (300)
+#define SCALING_FACTOR          (10)
+
+typedef enum{
+    eTurnLeft,
+    eTurnRight
+} TTurnDir;
 
 CNavigation::CNavigation()
 {
@@ -42,63 +51,63 @@ void CNavigation::GenerateValues()
     }
 
     memset(&entry->robotData, 0, sizeof(TRobotData));
-    //generate our orientation as it was previously blank
-    float targetx = entry->aiData.path[sharedMem.currentIdx].position_X - m_ourPos_x;
-    float targety =entry->aiData.path[sharedMem.currentIdx].position_Y - m_ourPos_y;
-    float newAngle = atan2(targety, targetx);
-    //entry->aiData.path[1].orientation = newAngle;
-    entry->aiData.path[sharedMem.currentIdx].orientation = (m_ourOrientation -newAngle)/2;
-    //newAngle = m_ourOrientation - newAngle;
-   // if(newAngle<0) newAngle = 2*M_PI + newAngle;
+    GenerateLinear(entry);
 
-
+    /*
+    // check if we have to rotate before we can move straight
     if(std::abs(m_ourOrientation - entry->aiData.path[0].orientation) > ANGULAR_THRESHOLD){
-        loggingObj->ShowMsg("Just rotate");
-        GenerateMaxAngular(entry);
+        GenerateMaxAngular(entry);diff
     }
     else{
-        loggingObj->ShowMsg("Move with rotation");
         GenerateLinear(entry);
         GenerateAngular(entry);
     }
+    */
 }
 
 void CNavigation::GenerateMaxAngular(TEntry *entry)
-{   //rotate the wrong way so that nav work for most cases
-
+{
     if((m_ourOrientation - entry->aiData.path[0].orientation) > 0){
         // turn right
-        loggingObj->ShowMsg("Just rotate right");
         entry->robotData.motor_fl = MAX_ONLY_ANGULAR_MSPEED;
         entry->robotData.motor_fr = -MAX_ONLY_ANGULAR_MSPEED;
     }
     else{
         // turn left
-        loggingObj->ShowMsg("Just rotate left");
         entry->robotData.motor_fl = -MAX_ONLY_ANGULAR_MSPEED;
         entry->robotData.motor_fr = MAX_ONLY_ANGULAR_MSPEED;
     }
-
-    /*else
-    {
-        if((m_ourOrientation - entry->aiData.path[0].orientation) > 0){
-            // turn right
-            loggingObj->ShowMsg("Just rotate right");
-            entry->robotData.motor_fl = MAX_ONLY_ANGULAR_MSPEED;
-            entry->robotData.motor_fr = -MAX_ONLY_ANGULAR_MSPEED;
-        }
-        else{
-            // turn left
-            loggingObj->ShowMsg("Just rotate left");
-            entry->robotData.motor_fl = -MAX_ONLY_ANGULAR_MSPEED;
-            entry->robotData.motor_fr = MAX_ONLY_ANGULAR_MSPEED;
-        }
-    }*/
-    }
-
+}
 
 void CNavigation::GenerateLinear(TEntry *entry)
 {
+    TTurnDir turnDir;
+    int dx;
+    int dy;
+    float theta;
+    int dOmega;
+
+    dx = (int)entry->aiData.path[1].position_X - m_ourPos_x;
+    dy = (int)entry->aiData.path[1].position_Y - m_ourPos_y;
+
+    theta = atan2(dy,dx);
+
+    if (theta - m_ourOrientation > 0)
+        turnDir = eTurnLeft;
+    else
+        turnDir = eTurnRight;
+
+    dOmega = int (theta * (float)SPEED_COEFFICIENT);
+
+    if (eTurnLeft){
+        entry->robotData.motor_fl = (MAX_SPEED - dOmega) / SCALING_FACTOR;
+        entry->robotData.motor_fr = MAX_SPEED;
+    }
+    else{
+        entry->robotData.motor_fr = (MAX_SPEED - dOmega) / SCALING_FACTOR;
+        entry->robotData.motor_fl = MAX_SPEED;
+    }
+
     /*
     float ourPos_x;
     float ourPos_y;
@@ -126,34 +135,25 @@ void CNavigation::GenerateLinear(TEntry *entry)
 
     }
     */
-    entry->robotData.motor_fl = MAX_FORWARD_MSPEED;
-    entry->robotData.motor_fr = MAX_FORWARD_MSPEED;
 }
 
 void CNavigation::GenerateAngular(TEntry *entry)
 {
-    float diff = entry->aiData.path[0].orientation - m_ourOrientation;
+    float diff = m_ourOrientation - entry->aiData.path[0].orientation;
 
     if(std::abs(diff) > MAX_ALGULAR_VEL_100ms){
         if(diff > 0){
             // turn right
-            loggingObj->ShowMsg("Turn right max");
             entry->robotData.motor_fl += MAX_ANGULAR_MSPEED;
             entry->robotData.motor_fr -= MAX_ANGULAR_MSPEED;
         }
         else{
             // turn left
-            loggingObj->ShowMsg("Turn left max");
             entry->robotData.motor_fl -= MAX_ANGULAR_MSPEED;
             entry->robotData.motor_fr += MAX_ANGULAR_MSPEED;
         }
     }
     else{
-        if(diff >0)
-            loggingObj->ShowMsg("Turn right");
-        else
-            loggingObj->ShowMsg("Turn left");
-
         entry->robotData.motor_fl += diff*ANGULAR_RATIO;
         entry->robotData.motor_fr -= diff*ANGULAR_RATIO;
     }

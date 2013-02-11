@@ -2,13 +2,9 @@
 #include "Tools/TeamCfgDlg.h"
 
 #include <SharedMem.h>
-#include <../Navigation/Navigation.h>
 #include <Logging.h>
 
 #include <string.h>
-#include <cmath>
-
-#define _USE_MATH_DEFINES
 
 #define TIMER_INTERVAL_MS 100
 
@@ -26,17 +22,14 @@ MainWindow::~MainWindow()
 
 void MainWindow::MoveWithBallSlot()
 {
-    sharedMem.teamColor = eBlueTeam;
+    TEntry *entry = &sharedMem.positioning[sharedMem.currentIdx];
+    m_visionComm->ReadData(&entry->visionData);
 
     sharedMem.systemState = eDribbleBall;
 
-    TEntry *entry = &sharedMem.positioning[sharedMem.currentIdx];
-
-    m_visionComm->ReadData(&entry->visionData);
-    m_logWdgt->ShowMsg(QString("Received data: yellow: x = %1 y = %2 orientation = %3\n"
-                               "blue: x = %4 y = %5 orientation = %6 \n"
-                               "ball: x = %7 y= %8\n"
-                               "timestamp %9\n\n")
+    m_logWdgt->ShowMsg(QString("yellow: x = %1 y = %2 angle = %3\n"
+                               "blue:   x = %4 y = %5 angle = %6\n"
+                               "ball:   x = %7 y = %8")
                        .arg(entry->visionData.yellow_x)
                        .arg(entry->visionData.yellow_y)
                        .arg(entry->visionData.yellow_angle)
@@ -44,26 +37,37 @@ void MainWindow::MoveWithBallSlot()
                        .arg(entry->visionData.blue_y)
                        .arg(entry->visionData.blue_angle)
                        .arg(entry->visionData.ball_x)
-                       .arg(entry->visionData.ball_y)
-                       .arg(entry->visionData.timestamp));
+                       .arg(entry->visionData.ball_y));
 }
 
 void MainWindow::NavToBallSlot()
 {
-
-
+    sharedMem.systemState = eNavToBall;
     m_timer.start(TIMER_INTERVAL_MS);
+    /*
+    TEntry *entry = &sharedMem.positioning[sharedMem.currentIdx];
+
+    m_visionComm->ReadData(&entry->visionData);
+   // entry->aiData.path[0].position_X = entry->visionData.ball_x;
+  //  entry->aiData.path[0].position_Y = entry->visionData.ball_y;
+
+    m_nav.GenerateValues();
+
+    m_btComm->SendData(&entry->robotData);
+    */
 }
 
 void MainWindow::StopeMvmntSlot()
 {
-    m_timer.stop();
     sharedMem.systemState = eStop;
-
+    m_timer.stop();
     TEntry *entry = &sharedMem.positioning[sharedMem.currentIdx];
-    entry->robotData.motor_fl = 0;
     entry->robotData.motor_fr = 0;
-    m_btComm->SendData(&entry->robotData);
+    entry->robotData.motor_fl = 0;
+    m_btComm->SendData(&sharedMem.positioning[
+                            sharedMem.currentIdx]
+                       .robotData);
+
 }
 
 void MainWindow::SetupGUI()
@@ -102,6 +106,9 @@ void MainWindow::InitSytem()
 
     aiCtrl.Initialise();
 
+    sharedMem.pitchCfg.pitchWidth = 560;
+    sharedMem.pitchCfg.pitchHeight = 306;
+
     loggingObj->ShowMsg("Configured...");
 }
 
@@ -128,46 +135,6 @@ void MainWindow::ShowLogWin()
 
 void MainWindow::TimerCallBack()
 {
-    TEntry *entry = &sharedMem.positioning[sharedMem.currentIdx];
-
-    m_visionComm->ReadData(&entry->visionData);
-    if(entry->visionData.yellow_angle > M_PI)
-        entry->visionData.yellow_angle =   (-M_PI*2 +entry->visionData.yellow_angle);
-    if(entry->visionData.blue_angle > M_PI)
-        entry->visionData.blue_angle =   (-M_PI*2 +entry->visionData.blue_angle);
-
-    //if(entry->visionData.blue_angle < 0)
-    //    entry->visionData.blue_angle =   (M_PI*2 +entry->visionData.blue_angle);
-    //if(entry->visionData.yellow_angle < 0)
-    //    entry->visionData.yellow_angle =   (M_PI*2 +entry->visionData.yellow_angle);
-
-    m_logWdgt->ShowMsg(QString("Received data: yellow: x = %1 y = %2 orientation = %3\n"
-                               "blue: x = %4 y = %5 orientation = %6 \n"
-                               "ball: x = %7 y= %8\n"
-                               "newOrientation %9 %10 %11\n\n")
-                       .arg(entry->visionData.yellow_x)
-                       .arg(entry->visionData.yellow_y)
-                       .arg(entry->visionData.yellow_angle)
-                       .arg(entry->visionData.blue_x)
-                       .arg(entry->visionData.blue_y)
-                       .arg(entry->visionData.blue_angle)
-                       .arg(entry->visionData.ball_x)
-                       .arg(entry->visionData.ball_y)
-                       .arg(entry->aiData.path[0].orientation)
-                        .arg(entry->aiData.path[1].orientation)
-            .arg(entry->aiData.path[2].orientation)
-            );
-//    entry->aiData.path[0].position_X = entry->visionData.ball_x;
-//    entry->aiData.path[0].position_Y = entry->visionData.ball_y;
-
-
-
-
-    aiCtrl.RunAI();
-    m_nav.GenerateValues();
-
-    m_btComm->SendData(&entry->robotData);
-    /*
     if(!sharedMem.systemStatus == eOperational){
         return;
     }
@@ -181,9 +148,36 @@ void MainWindow::TimerCallBack()
                                 sharedMem.currentIdx]
                            .visionData);
 
-    /// TODO: Call AI
+    TEntry *entry = &sharedMem.positioning[sharedMem.currentIdx];
 
-    /// TODO: Call Navigation
+
+    m_logWdgt->ShowMsg(QString("yellow: x = %1 y = %2 angle = %3\n"
+                               "blue:   x = %4 y = %5 angle = %6\n"
+                               "ball:   x = %7 y = %8")
+                       .arg(entry->visionData.yellow_x)
+                       .arg(entry->visionData.yellow_y)
+                       .arg(entry->visionData.yellow_angle)
+                       .arg(entry->visionData.blue_x)
+                       .arg(entry->visionData.blue_y)
+                       .arg(entry->visionData.blue_angle)
+                       .arg(entry->visionData.ball_x)
+                       .arg(entry->visionData.ball_y));
+
+    aiCtrl.RunAI();
+
+
+
+    m_nav.GenerateValues();
+
+    m_logWdgt->ShowMsg(QString("our: x = %1 y = %2 \n"
+                                "next: x = %3 y = %4 \n"
+                               "motor:   left = %5 right = %6")
+                       .arg(entry->aiData.path[0].position_X)
+                       .arg(entry->aiData.path[0].position_Y)
+                       .arg(entry->aiData.path[1].position_X)
+                       .arg(entry->aiData.path[1].position_Y)
+                       .arg(entry->robotData.motor_fl)
+                       .arg(entry->robotData.motor_fl));
 
     // Send new data to the robot
     m_btComm->SendData(&sharedMem.positioning[
@@ -192,5 +186,4 @@ void MainWindow::TimerCallBack()
 
     // increment index
     sharedMem.currentIdx = (sharedMem.currentIdx+1) & SH_MEM_SIZE_MASK;
-    */
 }
