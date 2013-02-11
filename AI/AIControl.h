@@ -2,6 +2,7 @@
 #define AICONTROL_H
 
 #include "../Shared/SharedMem.h"
+#include "../Shared/Logging.h"
 
 #include "MathTypes/Vector2.h"
 #include "RobotState.h"
@@ -36,6 +37,7 @@ private:
 #if defined(STANDALONE)
 	// Simulate the shared memory if we're running standalone.
 	TShMem sharedMem;
+	ILogging* loggingObj;
 #endif
 };
 
