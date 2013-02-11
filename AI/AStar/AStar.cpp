@@ -35,27 +35,30 @@ void AStar::SetPitchDimensions(int pitchSizeX, int pitchSizeY)
 
 std::list<Vector2> AStar::GeneratePath(Vector2 startingVector, Vector2 destinationVector)
 {
+	std::list< std::pair<Vector2, AStarNode*> > openSet;
+	std::list< std::pair<Vector2, AStarNode*> > closedSet;
+
+	std::list< std::pair<Vector2, AStarNode*> >::iterator openSetIt;
+	std::list< std::pair<Vector2, AStarNode*> >::iterator closedSetIt;
+
 	m_costTravelled = 0;
 	
 	// First, let's add the starting node to the open set.
 	AStarNode* p_startingNode = new AStarNode();
-	m_openSet.push_front(std::make_pair(startingVector, p_startingNode));
+	openSet.push_front(std::make_pair(startingVector, p_startingNode));
 	p_startingNode->setGScore(0.0f);
 	p_startingNode->setHScore(startingVector.Distance(&destinationVector));
 
 	// If the open set's not empty, that means we still have some nodes to explore.
-	while (!m_openSet.empty())
+	while (!openSet.empty())
 	{
 		Vector2 currentVector;
 		AStarNode* currentNode;
 		float lowestFScore = FLT_MAX;
 
-		std::list< std::pair<Vector2, AStarNode*> >::iterator openSetIt;
-		std::list< std::pair<Vector2, AStarNode*> >::iterator closedSetIt;
-
 		// Find the node in the open set with the lowest f-score. 
 		// This is the node we want to expand next.
-		for (openSetIt = m_openSet.begin(); openSetIt != m_openSet.end(); openSetIt++)
+		for (openSetIt = openSet.begin(); openSetIt != openSet.end(); openSetIt++)
 		{
 			const float currentFScore = openSetIt->second->getFScore();
 
@@ -70,13 +73,13 @@ std::list<Vector2> AStar::GeneratePath(Vector2 startingVector, Vector2 destinati
 		m_costTravelled = currentNode->getGScore();
 
 		// Add the current node to the closed set & remove it from the open set.
-		m_closedSet.push_front(std::make_pair(currentVector, currentNode));
+		closedSet.push_front(std::make_pair(currentVector, currentNode));
 
-		for (openSetIt = m_openSet.begin(); openSetIt != m_openSet.end(); openSetIt++)
+		for (openSetIt = openSet.begin(); openSetIt != openSet.end(); openSetIt++)
 		{
 			if (openSetIt->first == currentVector)
 			{
-				m_openSet.erase(openSetIt);
+				openSet.erase(openSetIt);
 				break;
 			}
 		}
@@ -96,7 +99,7 @@ std::list<Vector2> AStar::GeneratePath(Vector2 startingVector, Vector2 destinati
 			{
 				nodesOnPath.push_front(previousVector);
 
-				for (closedSetIt = m_closedSet.begin(); closedSetIt != m_closedSet.end(); closedSetIt++)
+				for (closedSetIt = closedSet.begin(); closedSetIt != closedSet.end(); closedSetIt++)
 				{
 					if (closedSetIt->first == previousVector)
 					{
@@ -109,7 +112,17 @@ std::list<Vector2> AStar::GeneratePath(Vector2 startingVector, Vector2 destinati
 			// Finally, add the starting node to the path.
 			nodesOnPath.push_front(startingVector);
 
-			CleanUp();
+			for (openSetIt = openSet.begin(); openSetIt != openSet.end(); openSetIt++)
+			{
+				delete(openSetIt->second);
+				openSetIt->second = NULL;
+			}
+
+			for (closedSetIt = closedSet.begin(); closedSetIt != closedSet.end(); closedSetIt++)
+			{
+				delete(closedSetIt->second);
+				closedSetIt->second = NULL;
+			}
 
 			return nodesOnPath;
 		}
@@ -125,7 +138,7 @@ std::list<Vector2> AStar::GeneratePath(Vector2 startingVector, Vector2 destinati
 			bool isVectorInClosedSet = false;
 
 			// Check if the node is in the closed set.
-			for (closedSetIt=m_closedSet.begin(); closedSetIt != m_closedSet.end(); closedSetIt++)
+			for (closedSetIt=closedSet.begin(); closedSetIt != closedSet.end(); closedSetIt++)
 			{
 				if (closedSetIt->first == currentAdjacentVector)
 				{
@@ -140,7 +153,7 @@ std::list<Vector2> AStar::GeneratePath(Vector2 startingVector, Vector2 destinati
 
 			bool isVectorInOpenSet = false;
 			
-			for (openSetIt = m_openSet.begin(); openSetIt != m_openSet.end(); openSetIt++)
+			for (openSetIt = openSet.begin(); openSetIt != openSet.end(); openSetIt++)
 			{
 				if (openSetIt->first == currentAdjacentVector)
 				{
@@ -164,7 +177,7 @@ std::list<Vector2> AStar::GeneratePath(Vector2 startingVector, Vector2 destinati
 			if (!isVectorInOpenSet)
 			{
 				AStarNode* p_newAStarNode = new AStarNode();
-				m_openSet.push_front(std::make_pair(currentAdjacentVector, p_newAStarNode));
+				openSet.push_front(std::make_pair(currentAdjacentVector, p_newAStarNode));
 				p_newAStarNode->setGScore(m_costTravelled + currentVector.Distance(&currentAdjacentVector));
 				p_newAStarNode->setHScore(currentAdjacentVector.Distance(&destinationVector) * HEURISTIC_PENALTY);
 				p_newAStarNode->setPreviousNode(currentVector);
@@ -174,7 +187,17 @@ std::list<Vector2> AStar::GeneratePath(Vector2 startingVector, Vector2 destinati
 
 	// If we get here, we've tried all points, but haven't been able to get 
 	// from the starting point to the destination.
-	CleanUp();
+	for (openSetIt = openSet.begin(); openSetIt != openSet.end(); openSetIt++)
+	{
+		delete(openSetIt->second);
+		openSetIt->second = NULL;
+	}
+
+	for (closedSetIt = closedSet.begin(); closedSetIt != closedSet.end(); closedSetIt++)
+	{
+		delete(closedSetIt->second);
+		closedSetIt->second = NULL;
+	}
 
 	std::list<Vector2> blankList;
 	return blankList;
@@ -220,28 +243,4 @@ std::list<Vector2> AStar::FindAdjacentNodes(Vector2 currentNode)
 bool AStar::CanTerminateEarly()
 {
 	return EARLY_TERMINATION_ENABLED;
-}
-
-// Clean up various objects so the algo is ready for another run.
-void AStar::CleanUp()
-{
-	std::list< std::pair<Vector2, AStarNode*> >::iterator it;
-
-	for (it = m_openSet.begin(); it != m_openSet.end(); it++)
-	{
-		delete(it->second);
-		it->second = NULL;
-	}
-
-	m_openSet.empty();
-
-	for (it = m_closedSet.begin(); it != m_closedSet.end(); it++)
-	{
-		delete(it->second);
-		it->second = NULL;
-	}
-
-	m_closedSet.empty();
-
-	m_costTravelled = 0;
 }
