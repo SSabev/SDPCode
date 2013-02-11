@@ -18,7 +18,8 @@ AI/premake4
 AI/Makefile
 AI/SDP-AI.*
 Infinity.pro.user
-
+Infinity-debug-Desktop-Debug/*
+Infinity-debug-Desktop-Release/*
 vision/data/*
 
 *.profile
