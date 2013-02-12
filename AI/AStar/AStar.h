@@ -1,6 +1,7 @@
 #if !defined(ASTAR_H)
 #define ASTAR_H
 
+#include "../RobotState.h"
 #include "../MathTypes/Vector2.h"
 #include "AStarNode.h"
 
@@ -18,7 +19,7 @@ public:
 	AStar();
 	
 	void SetPitchDimensions(int pitchSizeX, int pitchSizeY);
-	std::list<Vector2> GeneratePath(Vector2 startingNode, Vector2 destinationNode);
+	std::list<RobotState> GeneratePath(RobotState startingState, RobotState destinationState);
 
 private:
 	std::list<Vector2> FindAdjacentNodes(Vector2 currentNode);

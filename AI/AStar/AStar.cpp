@@ -4,6 +4,8 @@
 #include <assert.h>
 #include <iostream>
 
+#include <vector>
+
 // (244,122) is one waypoint per cm^2.
 //const int GRID_SIZE_X = 244;
 //const int GRID_SIZE_Y = 122;
@@ -33,8 +35,11 @@ void AStar::SetPitchDimensions(int pitchSizeX, int pitchSizeY)
 	m_gridSizeY = pitchSizeY;
 }
 
-std::list<Vector2> AStar::GeneratePath(Vector2 startingVector, Vector2 destinationVector)
+std::list<RobotState> AStar::GeneratePath(RobotState startingState, RobotState destinationState)
 {
+	Vector2 startingVector = startingState.Position();
+	Vector2 destinationVector = destinationState.Position();
+
 	std::list< std::pair<Vector2, AStarNode*> > openSet;
 	std::list< std::pair<Vector2, AStarNode*> > closedSet;
 
@@ -91,13 +96,13 @@ std::list<Vector2> AStar::GeneratePath(Vector2 startingVector, Vector2 destinati
 		if ((currentVector == destinationVector) || ((CanTerminateEarly()) && (m_costTravelled > EARLY_TERMINATION_COST)))
 		{
 			// We now want to reconstruct the complete A* path.
-			std::list<Vector2> nodesOnPath;
+			std::vector<Vector2> nodesOnPath;
 
 			Vector2 previousVector = currentVector;
 
 			while (previousVector != startingVector)
 			{
-				nodesOnPath.push_front(previousVector);
+				nodesOnPath.insert(nodesOnPath.begin(), previousVector);
 
 				for (closedSetIt = closedSet.begin(); closedSetIt != closedSet.end(); closedSetIt++)
 				{
@@ -110,7 +115,7 @@ std::list<Vector2> AStar::GeneratePath(Vector2 startingVector, Vector2 destinati
 			}
 
 			// Finally, add the starting node to the path.
-			nodesOnPath.push_front(startingVector);
+			nodesOnPath.insert(nodesOnPath.begin(), startingVector);
 
 			for (openSetIt = openSet.begin(); openSetIt != openSet.end(); openSetIt++)
 			{
@@ -124,7 +129,28 @@ std::list<Vector2> AStar::GeneratePath(Vector2 startingVector, Vector2 destinati
 				closedSetIt->second = NULL;
 			}
 
-			return nodesOnPath;
+			// statesOnPath describes both the positions and orientations on the path.
+			std::list<RobotState> statesOnPath;
+
+			for (int i=0; i<nodesOnPath.size(); i++)
+			{
+				float angleToNextPoint;
+
+				// If this is the last point, we want to face the target direction.
+				// Otherwise, just face towards the next point.
+				if (i >= nodesOnPath.size()-1)
+				{
+					angleToNextPoint = destinationState.Orientation();
+				}
+				else
+				{
+					angleToNextPoint = nodesOnPath[i].GetAngleTo(&nodesOnPath[i+1]);
+				}
+
+				statesOnPath.push_back(RobotState(nodesOnPath[i], angleToNextPoint));
+			}
+	
+			return statesOnPath;
 		}
 
 		// Get all nodes adjacent to the current one (i.e. the nodes we can travel to from here).
@@ -199,7 +225,7 @@ std::list<Vector2> AStar::GeneratePath(Vector2 startingVector, Vector2 destinati
 		closedSetIt->second = NULL;
 	}
 
-	std::list<Vector2> blankList;
+	std::list<RobotState> blankList;
 	return blankList;
 }
 
@@ -239,7 +265,7 @@ std::list<Vector2> AStar::FindAdjacentNodes(Vector2 currentNode)
 	return adjacentNodes;
 }
 
-// Decides if it's appropriate to terminate path calculation early. For now, let's just return true.
+// Decides if it's appropriate to terminate path calculation early. For now, let's just return the define.
 bool AStar::CanTerminateEarly()
 {
 	return EARLY_TERMINATION_ENABLED;
