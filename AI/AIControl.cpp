@@ -69,22 +69,22 @@ void AIControl::RunAI()
 
 	// Given the positions of the robots and ball, identify the ideal position 
 	// and orientation for us to reach.
-	Vector2 targetPosition = m_eagle.IdentifyTarget(ourRobotFuture.Position(), enemyRobotFuture.Position(), ballFuture);
+	RobotState targetState = m_eagle.IdentifyTarget(ourRobotFuture, enemyRobotFuture, ballFuture);
 	
 	// Using A*, generate the best path to the target.
 	m_aStar.SetPitchDimensions(sharedMem.pitchCfg.pitchWidth, sharedMem.pitchCfg.pitchHeight);
-	std::list<Vector2> aStarPath = m_aStar.GeneratePath(ourRobotFuture.Position(), targetPosition);
+	std::list<RobotState> aStarPath = m_aStar.GeneratePath(ourRobotFuture, targetState);
 
 	// If the A* has returned a blank path, it found it impossible to complete.
 	if (aStarPath.size() == 0)
 	{
-		std::string logMessage = "AI could not path-find between " + ourRobotFuture.Position().ToString() + " and " + targetPosition.ToString();
+		std::string logMessage = "AI could not path-find between " + ourRobotFuture.Position().ToString() + " and " + targetState.Position().ToString();
 	
 		loggingObj->ShowMsg(logMessage.c_str());
 		return;
 	}
 
-	std::list<Vector2> smoothedPath; 
+	std::list<RobotState> smoothedPath; 
 	
 	// Ensure that the path is long enough to do some smoothing to it.
 	if (aStarPath.size() > 2)
@@ -105,7 +105,7 @@ void AIControl::RunAI()
 	const int pointsToWrite = std::min((int)smoothedPath.size(), maxPathSize);
 	int pointsWritten = 0;
 
-	std::list<Vector2>::iterator it;
+	std::list<RobotState>::iterator it;
 
 	for (it = smoothedPath.begin(); it!=smoothedPath.end(); it++)
 	{
@@ -114,10 +114,9 @@ void AIControl::RunAI()
 			break;
 		}
 
-		currentEntry->aiData.path[pointsWritten].position_X = it->X();
-		currentEntry->aiData.path[pointsWritten].position_Y = it->Y();
-		// For now AI just returns orientation=0.
-		currentEntry->aiData.path[pointsWritten].orientation = 0;
+		currentEntry->aiData.path[pointsWritten].position_X = it->Position().X();
+		currentEntry->aiData.path[pointsWritten].position_Y = it->Position().Y();
+		currentEntry->aiData.path[pointsWritten].orientation = it->Orientation();
 
 		pointsWritten++;
 	}
