@@ -7,16 +7,47 @@ Impala::Impala()
 	
 }
 
-std::list<Vector2> Impala::SmoothPath(std::list<Vector2> aStarPath, int numAdditionalPasses)
+std::list<RobotState> Impala::SmoothPath(std::list<RobotState> aStarPath, int numAdditionalPasses)
 {
-	std::list<Vector2> smoothedPath = RunPass(aStarPath);
+	std::list<Vector2> aStarPositions;
+	std::list<RobotState>::iterator it;
+
+	for (it = aStarPath.begin(); it != aStarPath.end(); it++)
+	{
+		aStarPositions.push_back(it->Position());
+	}
+
+	std::list<Vector2> smoothedPath = RunPass(aStarPositions);
 
 	for (int i=0; i<numAdditionalPasses; i++)
 	{
 		smoothedPath = RunPass(smoothedPath);
 	}
 
-	std::list<Vector2> collapsedPath = CollapsePoints(smoothedPath);
+	std::vector<Vector2> collapsedPositions = CollapsePoints(smoothedPath);
+
+	// Now we want to add the orientations back in.
+	std::list<RobotState> collapsedPath;
+
+	std::list<Vector2>::iterator positionIt;
+
+	for (int i=0; i<collapsedPositions.size(); i++)
+	{
+		float angleToNextPoint;
+
+		// If this is the last point, we want to face the target direction.
+		// Otherwise, just face towards the next point.
+		if (i >= collapsedPositions.size()-1)
+		{
+			angleToNextPoint = aStarPath.back().Orientation();
+		}
+		else
+		{
+			angleToNextPoint = collapsedPositions[i].GetAngleTo(&collapsedPositions[i+1]);
+		}
+
+		collapsedPath.push_back(RobotState(collapsedPositions[i], angleToNextPoint));
+	}
 
 	return collapsedPath;
 }
@@ -47,13 +78,13 @@ std::list<Vector2> Impala::RunPass(std::list<Vector2> path)
 
 // This tries to reduce the number of waypoints by collapsing sequential ones 
 // with a sufficiently similar gradient.
-std::list<Vector2> Impala::CollapsePoints(std::list<Vector2> path)
+std::vector<Vector2> Impala::CollapsePoints(std::list<Vector2> path)
 {
 	const float GRADIENT_THRESHOLD = 0.1;
 
 	std::vector<Vector2> pathVector(path.begin(), path.end());
 
-	std::list<Vector2> collapsedPath;
+	std::vector<Vector2> collapsedPath;
 
 	collapsedPath.push_back(pathVector[0]);
 
