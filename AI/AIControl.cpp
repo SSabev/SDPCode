@@ -71,6 +71,26 @@ void AIControl::RunAI()
 	// and orientation for us to reach.
 	RobotState targetState = m_eagle.IdentifyTarget(ourRobotFuture, enemyRobotFuture, ballFuture);
 	
+	// Check if the robot has reached its destination (MILESTONE 2)
+	bool hasReachedDestination = false;
+
+	if (ourRobotFuture.Position().Distance(&ballFuture) < 10)
+	{
+		hasReachedDestination = true;
+	}
+
+	if (hasReachedDestination)
+	{
+		currentEntry->aiData.pathLength = 1;
+		currentEntry->aiData.shouldKick = 0;
+
+		currentEntry->aiData.path[0].position_X = ourRobotFuture.Position().X();
+		currentEntry->aiData.path[0].position_Y = ourRobotFuture.Position().Y();
+		currentEntry->aiData.path[0].orientation = ourRobotFuture.Orientation();
+
+		return;
+	}
+
 	// Using A*, generate the best path to the target.
 	m_aStar.SetPitchDimensions(sharedMem.pitchCfg.pitchWidth, sharedMem.pitchCfg.pitchHeight);
 	std::list<RobotState> aStarPath = m_aStar.GeneratePath(ourRobotFuture, targetState);
