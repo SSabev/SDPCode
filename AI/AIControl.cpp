@@ -70,6 +70,8 @@ void AIControl::RunAI()
 	// Given the positions of the robots and ball, identify the ideal position 
 	// and orientation for us to reach.
 	RobotState targetState = m_eagle.IdentifyTarget(ourRobotFuture, enemyRobotFuture, ballFuture);
+
+	targetState.Position().Clamp(Vector2(0,0), Vector2(sharedMem.pitchCfg.pitchWidth, sharedMem.pitchCfg.pitchHeight));
 	
 	// Check if the robot has reached its destination (MILESTONE 2)
 	bool hasReachedDestination = false;
