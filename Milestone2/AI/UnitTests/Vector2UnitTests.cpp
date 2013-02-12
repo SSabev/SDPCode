@@ -25,12 +25,20 @@ Vector2UnitTests::Vector2UnitTests()
 	TEST_ADD(Vector2UnitTests::Vector2DistanceSquared);
 	TEST_ADD(Vector2UnitTests::Vector2MagnitudeSquared);
 	TEST_ADD(Vector2UnitTests::Vector2MagnitudeSquaredZero);
-    	TEST_ADD(Vector2UnitTests::Vector2ClampOutsideX);
-    	TEST_ADD(Vector2UnitTests::Vector2ClampInsideX);
-    	TEST_ADD(Vector2UnitTests::Vector2ClampOutsideY);
-    	TEST_ADD(Vector2UnitTests::Vector2ClampInsideY);
-    	TEST_ADD(Vector2UnitTests::Vector2ClampBothOnBoundaries);
-    	TEST_ADD(Vector2UnitTests::Vector2ClampBothOutwithBoundaries);
+	TEST_ADD(Vector2UnitTests::Vector2ClampOutsideX);
+        TEST_ADD(Vector2UnitTests::Vector2ClampInsideX);
+        TEST_ADD(Vector2UnitTests::Vector2ClampOutsideY);
+        TEST_ADD(Vector2UnitTests::Vector2ClampInsideY);
+        TEST_ADD(Vector2UnitTests::Vector2ClampBothOnBoundaries);
+        TEST_ADD(Vector2UnitTests::Vector2ClampBothOutwithBoundaries);
+        TEST_ADD(Vector2UnitTests::Vector2GetAngleTo);
+        TEST_ADD(Vector2UnitTests::Vector2GetAngleToNegative);
+        TEST_ADD(Vector2UnitTests::Vector2GetAngleToZero);
+        TEST_ADD(Vector2UnitTests::Vector2Gradient);
+        TEST_ADD(Vector2UnitTests::Vector2GradientNegative);
+        TEST_ADD(Vector2UnitTests::Vector2GradientZero);
+        TEST_ADD(Vector2UnitTests::Vector2GradientDivideByZero);
+
 }
 
 void Vector2UnitTests::Vector2Equals()
@@ -265,3 +273,68 @@ void Vector2UnitTests::Vector2ClampBothOutwithBoundaries()
     TEST_ASSERT(v1 == Vector2(8,15));
 
 }
+
+void Vector2UnitTests::Vector2GetAngleTo()
+{
+    Vector2 v1 (10, 10);        
+    Vector2 v2 (20, 20);    
+
+    TEST_ASSERT(v1.GetAngleTo(&v2) == 0.7853981633974483f);
+
+}
+
+void Vector2UnitTests::Vector2GetAngleToNegative()
+{
+    Vector2 v1 (20, 20);        
+    Vector2 v2 (10, 10);    
+
+    TEST_ASSERT(v1.GetAngleTo(&v2) == -2.356194490192345f);
+
+}
+
+void Vector2UnitTests::Vector2GetAngleToZero()
+{
+    Vector2 v1 (20, 20);        
+    Vector2 v2 (20, 20);    
+
+    TEST_ASSERT(v1.GetAngleTo(&v2) == 0.0f);
+
+}
+
+
+void Vector2UnitTests::Vector2Gradient()
+{
+    Vector2 v1 (5, 5);        
+    Vector2 v2 (10, 10);    
+
+    TEST_ASSERT(v1.Gradient(&v2) == 1.0f);
+
+}
+
+void Vector2UnitTests::Vector2GradientNegative()
+{
+    Vector2 v1 (5, 10);        
+    Vector2 v2 (10, 6);    
+
+    TEST_ASSERT(v1.Gradient(&v2) == -0.8f);
+
+}
+
+void Vector2UnitTests::Vector2GradientZero()
+{
+    Vector2 v1 (2, 10);        
+    Vector2 v2 (5, 10);    
+
+    TEST_ASSERT(v1.Gradient(&v2) == 0.0f);
+
+}
+
+void Vector2UnitTests::Vector2GradientDivideByZero()
+{
+    Vector2 v1 (5, 1);        
+    Vector2 v2 (5, 12);      
+
+    TEST_ASSERT(v1.Gradient(&v2) == 340282346638528859811704183484516925440.000000f);
+
+}
+
