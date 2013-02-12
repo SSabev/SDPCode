@@ -11,27 +11,34 @@
 
 void AIControl::Initialise()
 {
-#if defined(STANDALONE)
-	// zero-out the shared memory
-    memset(&sharedMem, 0, sizeof(TShMem));
-    // set current state as IDLE
-    sharedMem.systemState = eIDLE;
-#endif
-
 	m_foresee = Foresee();
 	m_eagle = Eagle();
 	m_aStar = AStar();
 	m_impala = Impala();
 }
 
+void AIControl::Initialise(TShMem* pSharedMemory)
+{
+	m_pSharedMemory = pSharedMemory;
+	
+	Initialise();
+}
+
 void AIControl::RunAI()
 {	
+#if defined(STANDALONE)
+
+	// Simulate the shared memory.
+	TShMem sharedMem = *m_pSharedMemory;
+
+#endif
+
 	int currentFrameIndex = sharedMem.currentIdx;
 
-	TEntry currentEntry = sharedMem.positioning[currentFrameIndex];
+	TEntry* currentEntry = &sharedMem.positioning[currentFrameIndex];
 
-	RobotState blueRobotState(currentEntry.visionData.blue_x, currentEntry.visionData.blue_y,currentEntry.visionData.blue_angle);
-	RobotState yellowRobotState(currentEntry.visionData.yellow_x, currentEntry.visionData.yellow_y, currentEntry.visionData.yellow_angle);
+	RobotState blueRobotState(currentEntry->visionData.blue_x, currentEntry->visionData.blue_y,currentEntry->visionData.blue_angle);
+	RobotState yellowRobotState(currentEntry->visionData.yellow_x, currentEntry->visionData.yellow_y, currentEntry->visionData.yellow_angle);
 
 	RobotState ourRobot;
 	RobotState enemyRobot;
@@ -47,7 +54,7 @@ void AIControl::RunAI()
 		enemyRobot = blueRobotState;
 	}
 
-	Vector2 ballPos(currentEntry.visionData.ball_x, currentEntry.visionData.ball_y);
+	Vector2 ballPos(currentEntry->visionData.ball_x, currentEntry->visionData.ball_y);
 
 	RobotState ourRobotFuture;
 	RobotState enemyRobotFuture;
@@ -89,8 +96,8 @@ void AIControl::RunAI()
 	}
 
 	// Results should be written to shared memory.
-	currentEntry.aiData.pathLength = smoothedPath.size();
-	currentEntry.aiData.shouldKick = 0;
+	currentEntry->aiData.pathLength = smoothedPath.size();
+	currentEntry->aiData.shouldKick = 0;
 
 	const int maxPathSize = 30;
 	const int pointsToWrite = std::min((int)smoothedPath.size(), maxPathSize);
@@ -105,10 +112,10 @@ void AIControl::RunAI()
 			break;
 		}
 
-		currentEntry.aiData.path[pointsWritten].position_X = it->X();
-		currentEntry.aiData.path[pointsWritten].position_X = it->Y();
+		currentEntry->aiData.path[pointsWritten].position_X = it->X();
+		currentEntry->aiData.path[pointsWritten].position_Y = it->Y();
 		// For now AI just returns orientation=0.
-		currentEntry.aiData.path[pointsWritten].orientation = 0;
+		currentEntry->aiData.path[pointsWritten].orientation = 0;
 
 		pointsWritten++;
 	}
