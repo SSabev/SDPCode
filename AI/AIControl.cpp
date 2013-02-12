@@ -17,12 +17,14 @@ void AIControl::Initialise()
 	m_impala = Impala();
 }
 
+#if defined(STANDALONE)
 void AIControl::Initialise(TShMem* pSharedMemory)
 {
 	m_pSharedMemory = pSharedMemory;
 	
 	Initialise();
 }
+#endif
 
 void AIControl::RunAI()
 {	

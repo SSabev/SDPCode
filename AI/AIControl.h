@@ -24,7 +24,11 @@ class AIControl
 
 public:
 	void Initialise();
+
+#if defined(STANDALONE)
 	void Initialise(TShMem* pSharedMemory);
+#endif
+
 	void RunAI();
 	
 private:
