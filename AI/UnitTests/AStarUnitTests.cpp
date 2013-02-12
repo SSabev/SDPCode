@@ -30,7 +30,7 @@ void AStarUnitTests::AStarFindAdjacentNodesZero()
 
 void AStarUnitTests::AStarPlot()
 {
-	Vector2 ourRobotCurrent(15,15);
+	/*Vector2 ourRobotCurrent(15,15);
 	Vector2 ballCurrent(230, 65);
 
 	std::vector<Vector2> ourRobotPrevious;
@@ -57,5 +57,5 @@ void AStarUnitTests::AStarPlot()
 	std::list<Vector2> smoothedPath = impala.SmoothPath(aStarPath, 19);
 
 	// We're passing ballFuture twice as it also happens to be the destination currently.
-	aiControl.Plot(smoothedPath, ourRobotPrevious, ballFuture, ballPrevious, ballFuture);
+	aiControl.Plot(smoothedPath, ourRobotPrevious, ballFuture, ballPrevious, ballFuture);*/
 }
