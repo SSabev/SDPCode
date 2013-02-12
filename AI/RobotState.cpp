@@ -15,6 +15,15 @@ RobotState::RobotState(float posX, float posY, float orientation)
 	m_isOrientationSet = true;
 }
 
+RobotState::RobotState(Vector2 pos, float orientation)
+{
+	m_position = pos;
+	m_orientation = orientation;
+
+	m_isPositionSet = true;
+	m_isOrientationSet = true;
+}
+
 void RobotState::SetPosition(float posX, float posY)
 {
 	m_position.Set(posX, posY);

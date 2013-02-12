@@ -8,6 +8,7 @@ class RobotState
 public:
 	RobotState();
 	RobotState(float posX, float posY, float orientation);
+	RobotState(Vector2 pos, float orientation);
 
 	Vector2 Position()
 	{
