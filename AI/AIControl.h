@@ -24,6 +24,7 @@ class AIControl
 
 public:
 	void Initialise();
+	void Initialise(TShMem* pSharedMemory);
 	void RunAI();
 	
 private:
@@ -36,7 +37,7 @@ private:
 
 #if defined(STANDALONE)
 	// Simulate the shared memory if we're running standalone.
-	TShMem sharedMem;
+	TShMem* m_pSharedMemory;
 	ILogging* loggingObj;
 #endif
 };
