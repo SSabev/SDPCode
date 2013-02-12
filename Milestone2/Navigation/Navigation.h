@@ -21,6 +21,8 @@ private:
     void GenerateAngular(TEntry *entry);
     void GenerateMaxAngular(TEntry *entry);
 
+    void GenerateMStone2();
+
     TTarget m_target;
 
     float m_ourPos_x;

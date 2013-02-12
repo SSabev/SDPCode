@@ -193,11 +193,71 @@
 #define MAX_ANGULAR_MSPEED      (10)
 #define ANGULAR_RATIO           (MAX_ANGULAR_MSPEED / MAX_ALGULAR_VEL_100ms)
 
+
+#define ROBOT_D                 (13) // cm
+#define WEEL_D                  (3)  // cm
+#define SPEED_COEFFICIENT       (2*ROBOT_D*10/WEEL_D)
+#define MAX_SPEED               (300)
+#define SCALING_FACTOR          (10)
+
+
+typedef enum{
+    eTurnLeft,
+    eTurnRight
+} TTurnDir;
+
 static float prevOrientation;
 
 CNavigation::CNavigation()
 {
     memset(&m_target, 0, sizeof(TTarget));
+}
+
+void CNavigation::GenerateMStone2()
+{
+    int dx;
+    int dy;
+    float theta;
+    TTurnDir turnDir;
+    int dOmega;
+
+    TEntry *entry = &sharedMem.positioning[sharedMem.currentIdx];
+
+    if(sharedMem.teamColor == eYellowTeam){
+        m_ourPos_x = (float) entry->visionData.yellow_x;
+        m_ourPos_y = (float) entry->visionData.yellow_y;
+        m_ourOrientation = entry->visionData.yellow_angle;
+    }
+    else{
+        m_ourPos_x = (float) entry->visionData.blue_x;
+        m_ourPos_y = (float) entry->visionData.blue_y;
+        m_ourOrientation = entry->visionData.blue_angle;
+    }
+
+    memset(&entry->robotData, 0, sizeof(TRobotData));
+
+    if((entry->aiData.path[1].orientation>0 && prevOrientation<0)||(entry->aiData.path[1].orientation<0 && prevOrientation>0))
+        entry->aiData.path[1].orientation =  prevOrientation;
+
+    dx = (int)entry->aiData.path[1].position_X - m_ourPos_x;
+    dy = (int)entry->aiData.path[1].position_Y - m_ourPos_y;
+    theta = atan2(dy,dx);
+
+    if (theta - m_ourOrientation > 0)
+        turnDir = eTurnLeft;
+    else
+        turnDir = eTurnRight;
+
+        dOmega = int (theta * (float)SPEED_COEFFICIENT);
+
+    if (eTurnLeft){
+        entry->robotData.motor_fl = (MAX_SPEED - dOmega) / SCALING_FACTOR;
+        entry->robotData.motor_fr = MAX_SPEED;
+    }
+    else{
+        entry->robotData.motor_fr = (MAX_SPEED - dOmega) / SCALING_FACTOR;
+        entry->robotData.motor_fl = MAX_SPEED;
+    }
 }
 
 void CNavigation::GenerateValues()
@@ -216,25 +276,20 @@ void CNavigation::GenerateValues()
     }
 
     memset(&entry->robotData, 0, sizeof(TRobotData));
-    //generate our orientation as it was previously blank
-    //float targetx = entry->visionData.ball_x - m_ourPos_x;
-    //float targety = entry->visionData.ball_y - m_ourPos_y;
-    //float newAngle = atan2(targety, targetx);
-    //newAngle = m_ourOrientation - newAngle;
-    //entry->aiData.path[0].orientation = newAngle/2;
+
     if((entry->aiData.path[1].orientation>0 && prevOrientation<0)||(entry->aiData.path[1].orientation<0 && prevOrientation>0))
-                entry->aiData.path[1].orientation =  prevOrientation;
+        entry->aiData.path[1].orientation =  prevOrientation;
     int dx;
-        int dy;
-        float theta;
+    int dy;
+    float theta;
 
 
-        dx = (int)entry->aiData.path[1].position_X - m_ourPos_x;
-        dy = (int)entry->aiData.path[1].position_Y - m_ourPos_y;
+    dx = (int)entry->aiData.path[1].position_X - m_ourPos_x;
+    dy = (int)entry->aiData.path[1].position_Y - m_ourPos_y;
 
-        theta = atan2(dy,dx);
-        entry->aiData.path[1].orientation = theta - m_ourOrientation;
-        entry->aiData.path[0].orientation = theta;
+    theta = atan2(dy,dx);
+    entry->aiData.path[1].orientation = theta - m_ourOrientation;
+    entry->aiData.path[0].orientation = theta;
 
 
     if(std::abs(entry->aiData.path[1].orientation) > ANGULAR_THRESHOLD){
@@ -246,7 +301,7 @@ void CNavigation::GenerateValues()
         GenerateLinear(entry);
         GenerateAngular(entry);
     }
-    prevOrientation =theta - m_ourOrientation;
+    prevOrientation = theta - m_ourOrientation;
 }
 
 void CNavigation::GenerateMaxAngular(TEntry *entry)

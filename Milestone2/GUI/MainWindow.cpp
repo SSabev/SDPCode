@@ -197,7 +197,8 @@ void MainWindow::TimerCallBack()
     //entry->aiData.path[1].position_X = entry->visionData.ball_x;
     //entry->aiData.path[1].position_Y = entry->visionData.ball_y;
 
-    m_nav.GenerateValues();
+//    m_nav.GenerateValues();
+    m_nav.GenerateMStone2();
 
 
     m_logWdgt->ShowMsg(QString("target: x = %1 y = %2 \n"
