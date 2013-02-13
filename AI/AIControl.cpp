@@ -76,7 +76,7 @@ void AIControl::RunAI()
 	// Check if the robot has reached its destination (MILESTONE 2)
 	bool hasReachedDestination = false;
 
-	if (ourRobotFuture.Position().Distance(&ballFuture) < 10)
+	if (ourRobotFuture.Position().Distance(&ballFuture) < 50)
 	{
 		hasReachedDestination = true;
 	}
