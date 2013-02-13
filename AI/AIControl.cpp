@@ -73,7 +73,7 @@ void AIControl::RunAI()
 	RobotState targetState = m_eagle.IdentifyTarget(ourRobotFuture, enemyRobotFuture, ballFuture);
 
 	Vector2 tempPos = targetState.Position();
-	tempPos.Clamp(Vector2(0,0), Vector2(sharedMem.pitchCfg.pitchWidth, sharedMem.pitchCfg.pitchHeight));
+	tempPos.Clamp(Vector2(0,0), Vector2(sharedMem.pitchCfg.pitchWidth-1, sharedMem.pitchCfg.pitchHeight-1));
 	targetState.SetPosition(tempPos);
 
 	// Check if the robot has reached its destination (MILESTONE 2)
