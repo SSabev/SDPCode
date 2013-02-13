@@ -7,6 +7,11 @@ Eagle::Eagle()
 	
 }
 
+void Eagle::SharedMemPointer(TShMem* pSharedMem)
+{
+	m_pSharedMem = pSharedMem;
+}
+
 void Eagle::SetState(TSystemState state)
 {
 	m_state = state;
@@ -20,9 +25,10 @@ RobotState Eagle::IdentifyTarget(RobotState ourRobotState, RobotState enemyRobot
 	if (m_state == eDribbleBall)
 	{
 		// Try to work out if we're in position to start dribbling.
-		if (fabs(ourRobotState.Position().Y() - ballPos.Y()) < 40)
+		if (fabs(ourRobotState.Position().Y() - ballPos.Y()) < 20)
 		{
-			targetState.SetPosition(ballPos + Vector2(25,0));
+			// Hack to indicate that the AI's happy with where we've arrived.
+			m_pSharedMem->systemState = eLeftPenalty;
 		}
 		else
 		{

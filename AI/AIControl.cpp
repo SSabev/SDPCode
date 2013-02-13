@@ -69,6 +69,7 @@ void AIControl::RunAI()
 
 	// Given the positions of the robots and ball, identify the ideal position 
 	// and orientation for us to reach.
+	m_eagle.SharedMemPointer(&sharedMem);
 	m_eagle.SetState(sharedMem.systemState);
 	RobotState targetState = m_eagle.IdentifyTarget(ourRobotFuture, enemyRobotFuture, ballFuture);
 
