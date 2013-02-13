@@ -5,6 +5,8 @@
 #include "../MathTypes/Vector2.h"
 #include "AStarNode.h"
 
+#include "../Shared/SharedMem.h"
+
 #include <list>
 
 class AStar
@@ -19,16 +21,24 @@ public:
 	AStar();
 	
 	void SetPitchDimensions(int pitchSizeX, int pitchSizeY);
+	void SetState(TSystemState state);
 	std::list<RobotState> GeneratePath(RobotState startingState, RobotState destinationState);
+
+	// MILESTONE 2 only
+	void SetBallPosition(Vector2 ballPos);
 
 private:
 	std::list<Vector2> FindAdjacentNodes(Vector2 currentNode);
 	bool CanTerminateEarly();
 
 	float m_costTravelled;
+	
+	TSystemState m_state;
 
 	int m_gridSizeX;
 	int m_gridSizeY;
+
+	Vector2 m_ballPos;
 };
 
 #endif

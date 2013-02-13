@@ -29,10 +29,21 @@ AStar::AStar()
 
 }
 
+void AStar::SetState(TSystemState state)
+{
+	m_state = state;
+}
+
 void AStar::SetPitchDimensions(int pitchSizeX, int pitchSizeY)
 {
 	m_gridSizeX = pitchSizeX;
 	m_gridSizeY = pitchSizeY;
+}
+
+// MILESTONE 2 only
+void AStar::SetBallPosition(Vector2 ballPos)
+{
+	m_ballPos = ballPos;
 }
 
 std::list<RobotState> AStar::GeneratePath(RobotState startingState, RobotState destinationState)
@@ -207,6 +218,16 @@ std::list<RobotState> AStar::GeneratePath(RobotState startingState, RobotState d
 				p_newAStarNode->setGScore(m_costTravelled + currentVector.Distance(&currentAdjacentVector));
 				p_newAStarNode->setHScore(currentAdjacentVector.Distance(&destinationVector) * HEURISTIC_PENALTY);
 				p_newAStarNode->setPreviousNode(currentVector);
+
+				// MILESTONE 2: 
+				// If our current X is greater than that of the ball, penalise the positions around the ball.
+				if (startingVector.X() > destinationVector.X())
+				{
+					if (currentAdjacentVector.Distance(m_ballPos) < 25)
+					{
+						p_newAStarNode->setBias(100000);
+					}
+				}
 			}
 		}
 	}
