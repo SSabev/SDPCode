@@ -69,6 +69,7 @@ void AIControl::RunAI()
 
 	// Given the positions of the robots and ball, identify the ideal position 
 	// and orientation for us to reach.
+	m_eagle.SetState(sharedMem.systemState);
 	RobotState targetState = m_eagle.IdentifyTarget(ourRobotFuture, enemyRobotFuture, ballFuture);
 
 	Vector2 tempPos = targetState.Position();
@@ -78,11 +79,15 @@ void AIControl::RunAI()
 	// Check if the robot has reached its destination (MILESTONE 2)
 	bool hasReachedDestination = false;
 
-	if (ourRobotFuture.Position().Distance(&ballFuture) < 50)
+	if (sharedMem.systemState == eNavToBall)
 	{
-		hasReachedDestination = true;
+		if (ourRobotFuture.Position().Distance(&ballFuture) < 50)
+		{
+			hasReachedDestination = true;
+		}
 	}
 
+	// Returning a path of length 1 tells the Nav that we're done.
 	if (hasReachedDestination)
 	{
 		currentEntry->aiData.pathLength = 1;
