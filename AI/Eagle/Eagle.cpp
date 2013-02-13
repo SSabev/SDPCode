@@ -26,7 +26,7 @@ RobotState Eagle::IdentifyTarget(RobotState ourRobotState, RobotState enemyRobot
 		}
 		else
 		{
-			targetState.SetPosition(ballPos - Vector2(40,0));
+			targetState.SetPosition(ballPos - Vector2(100,0));
 		}
 	}
 	else

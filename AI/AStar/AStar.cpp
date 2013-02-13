@@ -223,11 +223,13 @@ std::list<RobotState> AStar::GeneratePath(RobotState startingState, RobotState d
 				// If our current X is greater than that of the ball, penalise the positions around the ball.
 				if (m_state == eDribbleBall)
 				{
-					if (startingVector.X() > destinationVector.X())
+					if (startingVector.X() > m_ballPos.X())
 					{
-						if (currentAdjacentVector.Distance(&m_ballPos) < 25)
+						float distanceToBall = currentAdjacentVector.Distance(&m_ballPos);
+
+						if (distanceToBall < 60)
 						{
-							p_newAStarNode->setBias(100000);
+							p_newAStarNode->setBias((1/distanceToBall) * 1000000);
 						}
 					}
 				}
