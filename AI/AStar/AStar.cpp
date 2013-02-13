@@ -223,7 +223,7 @@ std::list<RobotState> AStar::GeneratePath(RobotState startingState, RobotState d
 				// If our current X is greater than that of the ball, penalise the positions around the ball.
 				if (startingVector.X() > destinationVector.X())
 				{
-					if (currentAdjacentVector.Distance(m_ballPos) < 25)
+					if (currentAdjacentVector.Distance(&m_ballPos) < 25)
 					{
 						p_newAStarNode->setBias(100000);
 					}
