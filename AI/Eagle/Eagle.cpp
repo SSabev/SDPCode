@@ -7,21 +7,34 @@ Eagle::Eagle()
 	
 }
 
+void Eagle::SetState(TSystemState state)
+{
+	m_state = state;
+}
+
 RobotState Eagle::IdentifyTarget(RobotState ourRobotState, RobotState enemyRobotState, Vector2 ballPos)
 {
 	// For now, this is just the ball position.
 	RobotState targetState;
 
-	// Try to work out if we're in position to start dribbling.
-	if (fabs(ourRobotState.Position().Y() - ballPos.Y()) < 10)
+	if (m_state == eDribbleBall)
 	{
-		targetState.SetPosition(ballPos + Vector2(25,0));
+		// Try to work out if we're in position to start dribbling.
+		if (fabs(ourRobotState.Position().Y() - ballPos.Y()) < 20)
+		{
+			targetState.SetPosition(ballPos + Vector2(25,0));
+		}
+		else
+		{
+			targetState.SetPosition(ballPos - Vector2(25,0));
+		}
 	}
 	else
 	{
-		targetState.SetPosition(ballPos - Vector2(25,0));
+		// Else we're navving to the ball.
+		targetState.SetPosition(ballPos);
 	}
-	
+
 	targetState.SetOrientation(0);
 
 	return targetState;
