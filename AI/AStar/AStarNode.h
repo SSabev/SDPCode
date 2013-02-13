@@ -12,6 +12,7 @@ public:
 	const float getGScore();
 	void setGScore(float gScore);
 	void setHScore(float hScore);
+	void setBias(float bias);
 
 	const Vector2 getPreviousNode();
 	void setPreviousNode(Vector2 previousNode);
@@ -25,6 +26,9 @@ private:
 	float m_hScore;
 	// This is the path node which lead us to this one.
 	Vector2 m_previousNode;
+	// This is used to make a node more or less attractive to the A*.	
+	// Positive values here make the node less attractive, negative values make it more attractive.
+	float m_bias;
 };
 
 #endif
