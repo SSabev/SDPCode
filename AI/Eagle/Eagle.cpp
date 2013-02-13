@@ -20,13 +20,13 @@ RobotState Eagle::IdentifyTarget(RobotState ourRobotState, RobotState enemyRobot
 	if (m_state == eDribbleBall)
 	{
 		// Try to work out if we're in position to start dribbling.
-		if (fabs(ourRobotState.Position().Y() - ballPos.Y()) < 20)
+		if (fabs(ourRobotState.Position().Y() - ballPos.Y()) < 40)
 		{
 			targetState.SetPosition(ballPos + Vector2(25,0));
 		}
 		else
 		{
-			targetState.SetPosition(ballPos - Vector2(25,0));
+			targetState.SetPosition(ballPos - Vector2(40,0));
 		}
 	}
 	else
