@@ -6,27 +6,29 @@ import lejos.util.Delay;
 
 public class RobotTracks implements Runnable {
 
-  private static NXTConnection connection;
+	private static NXTConnection connection;
 	private static DataInputStream dataIn;
 	private static DataOutputStream dataOut;
 	
 	private static boolean listening = true;
 	private static boolean connected = false;
+	private static boolean reset     = false;
 	
 	public static void main(String[] args) throws Exception {
 
+		new Thread( new RobotTracks() ).start();
+
 		LCD.drawString("Waiting...",0,0);
 		connection = Bluetooth.waitForConnection();
+		dataIn = connection.openDataInputStream();
+		dataOut = connection.openDataOutputStream();
+		
 		connected = true;
+		Sound.beep();
 		
 		LCD.clear();
 		LCD.drawString("Connected", 0, 0);
-		
-		dataIn = connection.openDataInputStream();
-		dataOut = connection.openDataOutputStream();
 
-		new Thread( new RobotTracks() ).start();
-	
 		try {
 			while (listening) {
 				
@@ -54,9 +56,15 @@ public class RobotTracks implements Runnable {
 						Motor.C.backward();
 					}
 					
+					if(b[4] == 1) {
+						reset = true;
+						Motor.A.resetTachoCount();
+						Motor.C.resetTachoCount();
+					}
+					
 					LCD.drawString("Motor A: " + b[0]*10, 0, 0);
 					LCD.drawString("Motor C: " + b[1]*10, 0, 1);
-					LCD.drawString("Kick:    " + b[4], 0, 3);
+					LCD.drawString("Reset:   " + b[4], 0, 3);
 
 				}
 				
@@ -72,48 +80,44 @@ public class RobotTracks implements Runnable {
 	}
 	
 	public void run() {
-		// Feedback byte signals
-		byte disconnect = (byte) 99;
-		byte sensorData = (byte) 1;
-		
-		TouchSensor sensorA = new TouchSensor(SensorPort.S1);
-		TouchSensor sensorB = new TouchSensor(SensorPort.S2);
 
-		boolean reacting = false;
+		int frequency = 100;
+		
+		int lastSendA = 0;
+		int lastSendC = 0;
 		
 		while (true) {
 			try {
-				if(connected) {
-					boolean touchA = sensorA.isPressed();
-					boolean touchB = sensorB.isPressed();
-	
-					byte sensorAval = touchA ? (byte) 1 : (byte) 0;
-					byte sensorBval = touchB ? (byte) 1 : (byte) 0;
-					
-					if (!reacting && (touchA || touchB)) {
-						// If sensor A or B are pressed, activate start reacting
-						reacting = true;
-						Sound.beep();
-						LCD.drawString("Sensor A: " +  sensorAval, 0, 6);
-						LCD.drawString("Sensor B: " +  sensorBval, 0, 7);
-						sendPacket(sensorData, sensorAval, sensorBval);
-						
-					} else if (reacting && !(touchA || touchB)) {
-						// If we're reacting, but no sensors are pressed, stop reacting
-						reacting = false;
-						
-						LCD.drawString("Sensor A: 0", 0, 6);
-						LCD.drawString("Sensor B: 0", 0, 7);
-						sendPacket(sensorData, sensorAval, sensorBval);
-					}
-				}
 				
 				if(Button.ESCAPE.isDown()) {
 					LCD.drawString("            ", 0, 6);
 					LCD.drawString("Shutting down", 0, 7);
-					if(connected) { sendPacket(disconnect, (byte) 0, (byte) 0); }					
+					if(connected) { sendPacket(99, 0); } // send disconnect notice to server					
 					Delay.msDelay(1000);
 					shutdown(false);
+				}
+				
+				if(connected) {
+					int tachoA = Motor.A.getTachoCount();
+					int tachoC = Motor.C.getTachoCount();
+	
+					if(reset) {
+						lastSendA = 0;
+						lastSendC = 0;
+						reset = false;
+					}
+					
+					if ((tachoA - lastSendA) > frequency) {
+						lastSendA = tachoA;
+						sendPacket(1, tachoA);
+						LCD.drawString("Tacho A: " + tachoA, 0, 4);					
+					}
+					
+					if ((tachoC - lastSendC) > frequency) {
+						lastSendC = tachoC;
+						sendPacket(-1, tachoC);
+						LCD.drawString("Tacho C: " + tachoC, 0, 5);
+					}
 				}
 				
 				Thread.sleep(50);
@@ -143,9 +147,13 @@ public class RobotTracks implements Runnable {
 		NXT.shutDown();
 	}
 	
-	private void sendPacket(byte opcode, byte val1, byte val2) throws IOException {
-		byte[] packet = new byte[] { opcode, val1, val2 };
-		dataOut.write(packet, 0, 3);
+	private void sendPacket(int motor, int tachoCount) throws IOException {
+		
+		if(motor != 99) {
+			motor = motor * tachoCount;
+		}
+		
+		dataOut.writeInt(motor);
 		dataOut.flush();
 	}
 	
