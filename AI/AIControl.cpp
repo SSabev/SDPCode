@@ -101,6 +101,7 @@ void AIControl::RunAI()
 	}
 
 	// Using A*, generate the best path to the target.
+	m_aStar.SetBallPosition(ballFuture);
 	m_aStar.SetPitchDimensions(sharedMem.pitchCfg.pitchWidth, sharedMem.pitchCfg.pitchHeight);
 	std::list<RobotState> aStarPath = m_aStar.GeneratePath(ourRobotFuture, targetState);
 
