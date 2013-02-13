@@ -5,7 +5,7 @@
 #include <Logging.h>
 
 #include <string.h>
-
+#include <cmath>
 #define TIMER_INTERVAL_MS 100
 
 MainWindow::MainWindow()
@@ -43,7 +43,25 @@ void MainWindow::MoveWithBallSlot()
 void MainWindow::NavToBallSlot()
 {
     sharedMem.systemState = eNavToBall;
+
+    TEntry *entry = &sharedMem.positioning[sharedMem.currentIdx];
+    m_visionComm->ReadData(&entry->visionData);
+
+    m_logWdgt->ShowMsg(QString("ball: x = %1 y = %2 \n")
+                       .arg(entry->visionData.ball_x)
+                       .arg(entry->visionData.ball_y));
+
+        aiCtrl.RunAI();
+    for(int i =0;i<entry->aiData.pathLength;i++)
+    {
+        m_logWdgt->ShowMsg(QString("point %1: x = %2 y = %3 \n")
+                           .arg(i)
+                           .arg(entry->aiData.path[i].position_X)
+                           .arg(entry->aiData.path[i].position_Y));
+    }
+
     m_timer.start(TIMER_INTERVAL_MS);
+
     /*
     TEntry *entry = &sharedMem.positioning[sharedMem.currentIdx];
 
@@ -151,6 +169,19 @@ void MainWindow::TimerCallBack()
     TEntry *entry = &sharedMem.positioning[sharedMem.currentIdx];
 
 
+
+
+    if(entry->visionData.yellow_angle < 0) entry->visionData.yellow_angle = -entry->visionData.yellow_angle;
+    else
+    if(entry->visionData.yellow_angle > 0 &&entry->visionData.yellow_angle<M_PI)  entry->visionData.yellow_angle = -entry->visionData.yellow_angle;
+    else entry->visionData.yellow_angle = 2*M_PI - entry->visionData.yellow_angle ;
+
+
+    if(entry->visionData.blue_angle < 0) entry->visionData.blue_angle = -entry->visionData.blue_angle;
+    else
+    if(entry->visionData.blue_angle > 0 &&entry->visionData.blue_angle<M_PI)  entry->visionData.blue_angle = -entry->visionData.blue_angle;
+    else entry->visionData.blue_angle = 2*M_PI - entry->visionData.blue_angle ;
+
     m_logWdgt->ShowMsg(QString("yellow: x = %1 y = %2 angle = %3\n"
                                "blue:   x = %4 y = %5 angle = %6\n"
                                "ball:   x = %7 y = %8")
@@ -162,14 +193,15 @@ void MainWindow::TimerCallBack()
                        .arg(entry->visionData.blue_angle)
                        .arg(entry->visionData.ball_x)
                        .arg(entry->visionData.ball_y));
-
     aiCtrl.RunAI();
+    //entry->aiData.path[1].position_X = entry->visionData.ball_x;
+    //entry->aiData.path[1].position_Y = entry->visionData.ball_y;
+
+//    m_nav.GenerateValues();
+    m_nav.GenerateMStone2();
 
 
-
-    m_nav.GenerateValues();
-
-    m_logWdgt->ShowMsg(QString("our: x = %1 y = %2 \n"
+    m_logWdgt->ShowMsg(QString("target: x = %1 y = %2 \n"
                                 "next: x = %3 y = %4 \n"
                                "motor:   left = %5 right = %6")
                        .arg(entry->aiData.path[0].position_X)
@@ -177,7 +209,7 @@ void MainWindow::TimerCallBack()
                        .arg(entry->aiData.path[1].position_X)
                        .arg(entry->aiData.path[1].position_Y)
                        .arg(entry->robotData.motor_fl)
-                       .arg(entry->robotData.motor_fl));
+                       .arg(entry->robotData.motor_fr));
 
     // Send new data to the robot
     m_btComm->SendData(&sharedMem.positioning[

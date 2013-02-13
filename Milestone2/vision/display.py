@@ -1,7 +1,8 @@
 import pygame
 import time
 import cv
-from SimpleCV import Display, DrawingLayer, Image, Blob
+from SimpleCV import Display, DrawingLayer
+
 
 class Gui:
 
@@ -17,7 +18,15 @@ class Gui:
             'ball': ['threshR', 'ball']
             }
 
-    def __init__(self):
+    h_min = s_min = v_min = 255
+    h_max = s_max = v_max = 0
+
+    # Show pixel mode: turn on/off by 'p', show the HSV of the pixel at the mouse
+    showPixel = False
+    # Record pixel mode: use the current pixel to update threshold
+    recordPixel = False
+
+    def __init__(self, noGui):
         self._layers = {
                 # Base layers
                 'raw': None,
@@ -45,16 +54,12 @@ class Gui:
         self._lastFrameTime = time.time()
 
     def __draw(self):
-
         iterator = iter(self._currentLayerset)
-        
         # First element is the base layer
         baseLayer = self._layers[iterator.next()]
 
         if baseLayer is None:
             return
-
-        size = baseLayer.size()
 
         # Draw all entities to one layer (for speed)
         entityLayer = baseLayer.dl()
@@ -62,10 +67,8 @@ class Gui:
             toDraw = self._layers[key]
             if toDraw is None:
                 continue
-            
             elif isinstance(toDraw, DrawingLayer):
                 baseLayer.addDrawingLayer(toDraw)
-
             else:
                 toDraw.draw(entityLayer)
 
@@ -85,21 +88,10 @@ class Gui:
             # Smooth values
             thisFrame = thisFrame * (1 - smoothConst) + smoothConst * self._lastFrame
 
-        fps = 1.0 / thisFrame
-
         self._lastFrame = thisFrame
         self._lastFrameTime = thisFrameTime
 
-        # layer = self._layers['raw'].dl()
-
-        # print fps
-        # layer.ezViewText('{0:.2f} fps'.format(fps), (10, 10))
-        # drawingLayer = self.getDrawingLayer()
-        # drawingLayer.ezViewText('fps', (10, 10))
-        # drawingLayer.ezViewText('asd', (10, 10), fgcolor=(255, 255, 255), bgcolor=(0, 0, 0))
-
-
-    def drawCrosshair(self, pos, layerName = None):
+    def drawCrosshair(self, pos, layerName=None):
         size = self._layers['raw'].size()
         if layerName is not None:
             layer = self.getDrawingLayer()
@@ -112,7 +104,6 @@ class Gui:
         if layerName is not None:
             self.updateLayer(layerName, layer)
 
- 
     def loop(self):
         """
         Draw the image to the display, and process any events
@@ -176,13 +167,8 @@ class Gui:
 
         self._showMouse = showMouse
 
-    # Show pixel mode: turn on/off by 'p', show the HSV of the pixel at the mouse
-    showPixel = False
-
     def toggleShowPixel(self):
         self.showPixel = not self.showPixel
-    # Record pixel mode: use the current pixel to update threshold
-    recordPixel = False
 
     def toggleRecordPixel(self):
         self.recordPixel = not self.recordPixel
@@ -204,57 +190,49 @@ class Gui:
 
     # Display the pixel HSV
     def __updatePixel(self):
-        (x,y)   = self.getMousePos()
-        if self.inRange(x,y):
-            (h,s,v) = self.getPixelHSV(x,y)
+        (x, y) = self.getMousePos()
+        if self.inRange(x, y):
+            (h, s, v) = self.getPixelHSV(x, y)
         else:
             return
-        
+
         if self.recordPixel:
-            self.updateMinMax(h,s,v)
-            
-        drawingLayer = self.getDrawingLayer()
-        #drawingLayer.ezViewText('Pixel ({0}, {1}) HSV = ({2}, {3}, {4})'.format(x,y,h,s,v),(10,10))
-        #drawingLayer.ezViewText('HSV_min =  ({0}, {1}, {2}) '.format(self.h_min, self.s_min, self.v_min),(10,30))
-        #drawingLayer.ezViewText('HSV_max =  ({0}, {1}, {2}) '.format(self.h_max, self.s_max, self.v_max),(10,50))
-        print ('Pixel ({0}, {1}) HSV = ({2}, {3}, {4})'.format(x,y,h,s,v))
+            self.updateMinMax(h, s, v)
+
+        # drawingLayer = self.getDrawingLayer()
+        # drawingLayer.text('Pixel ({0}, {1}) HSV = ({2}, {3}, {4})'.format(x,y,h,s,v),(10,10), fgcolor(255, 255, 255))
+        # drawingLayer.ezViewText('HSV_min =  ({0}, {1}, {2}) '.format(self.h_min, self.s_min, self.v_min),(10,30))
+        # drawingLayer.ezViewText('HSV_max =  ({0}, {1}, {2}) '.format(self.h_max, self.s_max, self.v_max),(10,50))
+        print ('Pixel ({0}, {1}) HSV = ({2}, {3}, {4})'.format(x, y, h, s, v))
         print ('HSV_min =  ({0}, {1}, {2}) '.format(self.h_min, self.s_min, self.v_min))
         print ('HSV_max =  ({0}, {1}, {2}) '.format(self.h_max, self.s_max, self.v_max))
         if self.recordPixel:
             print 'Recording Pixel'
             #drawingLayer.ezViewText('Recording Pixel',(10,70))
-        
+
         #print 'pixel ',(x,y), ' HSV = ', (h,s,v), ' RGB = ', (r,g,b),
-        #print 'HSV_min = ', (self.h_min,self.s_min,self.v_min), 
-        #print 'HSV_max = ', (self.h_max,self.s_max,self.v_max)
-        
-        
-    h_min = s_min = v_min = 255
-    h_max = s_max = v_max = 0
-    
+        #print 'HSV_min = ', (self.h_min, self.s_min, self.v_min),
+        #print 'HSV_max = ', (self.h_max, self.s_max, self.v_max)
+
     def resetMinMax(self):
-    	self.h_min = self.s_min = self.v_min = 255
-    	self.h_max = self.s_max = self.v_max = 0
-    
+        self.h_min = self.s_min = self.v_min = 255
+        self.h_max = self.s_max = self.v_max = 0
+
     # use the given HSV to update threshold
-    def updateMinMax(self,h,s,v):        
+    def updateMinMax(self, h, s, v):
         self.h_min = min(self.h_min, h)
         self.s_min = min(self.s_min, s)
         self.v_min = min(self.v_min, v)
         self.h_max = max(self.h_max, h)
         self.s_max = max(self.s_max, s)
         self.v_max = max(self.v_max, v)
-        
-                
-    def getDrawingLayer(self):
-        return self._layers['raw'].dl()
-        
+
     class EventHandler:
-        
+
         def __init__(self):
             self._listeners = {}
             self._clickListener = None
-        
+
         def processKey(self, key):
             if key in self._listeners.keys():
                 self._listeners[key]()
@@ -262,14 +240,13 @@ class Gui:
         def processClick(self, where):
             if self._clickListener is not None:
                 self._clickListener(where)
-            
+
         def addListener(self, key, callback):
             """
             Adds a function callback for a key.
             """
-            
             assert callable(callback), '"callback" must be callable'
-            
+
             self._listeners[key] = callback
 
         def setClickListener(self, callback):
@@ -280,133 +257,5 @@ class Gui:
             Setting a new callback will override the last one (or pass None to clear)
             """
             assert callback is None or callable(callback), '"callback" must be callable'
-            
+
             self._clickListener = callback
-
-
-class ThresholdGui:
-
-    def __init__(self, thresholdinstance, gui, window=None):
-
-        if window is None:
-            self.window = 'thresh_adjust'
-            cv.NamedWindow(self.window, 0)
-        else:
-            self.window = window
-
-        self._gui = gui
-        self.threshold = thresholdinstance
-
-        self._showOnGui = False
-
-        self.__createTrackbars()
-        self.__setupKeyEvents()
-
-        self.changeEntity('yellow')
-        
-    def __setupKeyEvents(self):
-        """
-        Adds key listeners to the main gui for switching between entities
-        """
-        
-        def yellow(): self.changeEntity('yellow')
-        def blue(): self.changeEntity('blue')
-        def ball(): self.changeEntity('ball')
-        
-        keyHandler = self._gui.getEventHandler()
-        keyHandler.addListener('y', yellow)
-        keyHandler.addListener('b', blue)
-        keyHandler.addListener('r', ball)
-
-        keyHandler.addListener('t', self.toggleShowOnGui)
-        keyHandler.addListener('p', self.toggleShowPixel)
-        keyHandler.addListener('o', self.toggleRecordPixel)
-        keyHandler.addListener('i', self.applyMinMax)
-        keyHandler.addListener('u', self.resetMinMax)
-
-
-    def applyMinMax(self):
-        h_min = int (self._gui.h_min)
-        s_min = int (self._gui.s_min)
-        v_min = int (self._gui.v_min)
-        h_max = int (self._gui.h_max)
-        s_max = int (self._gui.s_max)
-        v_max = int (self._gui.v_max)
-        
-        allvalues = [[h_min, s_min, v_min], [h_max, s_max, v_max]]
-        # print allvalues
-        self.threshold.updateValues(self.currentEntity, allvalues)
-        name = self.currentEntity
-        self.setTrackbarValues(self.threshold._values[name])
-
-        # Make sure trackbars update immediately
-        cv.WaitKey(2)
-
-        if self._showOnGui:
-            self._gui.switchLayerset(name)
-            
-    def resetMinMax(self):
-    	self._gui.resetMinMax()
-            
-    
-    def __createTrackbars(self):
-
-        cv.CreateTrackbar('H min', self.window, 0, 255, self.__onTrackbarChanged)
-        cv.CreateTrackbar('S min', self.window, 0, 255, self.__onTrackbarChanged)
-        cv.CreateTrackbar('V min', self.window, 0, 255, self.__onTrackbarChanged)
-
-        cv.CreateTrackbar('H max', self.window, 0, 255, self.__onTrackbarChanged)
-        cv.CreateTrackbar('S max', self.window, 0, 255, self.__onTrackbarChanged)
-        cv.CreateTrackbar('V max', self.window, 0, 255, self.__onTrackbarChanged)
-
-    def __onTrackbarChanged(self, x):
-
-        allvalues = []
-        for which in ['min', 'max']:
-            values = []
-            for channel in ['H', 'S', 'V']:
-                pos = cv.GetTrackbarPos('{0} {1}'.format(channel, which), \
-                        self.window)
-                
-                values.append(pos)
-                
-            allvalues.append(values)
-
-        self.threshold.updateValues(self.currentEntity, allvalues)
-
-    def toggleShowOnGui(self):
-        self._showOnGui = not self._showOnGui
-        
-        if self._showOnGui:
-            self._gui.switchLayerset(self.currentEntity)
-        else:
-            self._gui.switchLayerset('default')
-    
-    def toggleShowPixel(self):
-        self._gui.toggleShowPixel()
-        
-    def toggleRecordPixel(self):
-        self._gui.toggleRecordPixel()
-    
-    def changeEntity(self, name):
-        """
-        Change which entity to adjust thresholding
-        Can be 'blue', 'yellow' or 'ball'
-        """
-        
-        self.currentEntity = name
-        self.setTrackbarValues(self.threshold._values[name])
-
-        # Make sure trackbars update immediately
-        cv.WaitKey(2)
-
-        if self._showOnGui:
-            self._gui.switchLayerset(name)
-
-    def setTrackbarValues(self, values):
-        for i, which in enumerate(['min', 'max']):
-            for j, channel in enumerate(['H', 'S', 'V']):
-                cv.SetTrackbarPos('{0} {1}'.format(channel, which), \
-                        self.window, values[i][j])
-
-

@@ -11,8 +11,8 @@ public class Communicator implements Runnable {
 	private DataInputStream dataIn;
 	private boolean connected;
 	
-	private boolean sensorA;
-	private boolean sensorB;
+	private int tachoA;
+	private int tachoC;
 	
 	public Communicator() throws NXTCommException {
 		this.connected = false;
@@ -98,24 +98,24 @@ public class Communicator implements Runnable {
 	public void run() {
 
 		while (true) {
-			if(connected) { /* do nothing */ }
+			if(connected) {
+				/* do nothing; needed for autorecovery after robot disconnects (somehow?!) */
+			}
+			
 			while(connected) {
 				try {	
-					byte[] b = new byte[3];
-					int bytes_read = dataIn.read(b);
+					int tachoCount = dataIn.readInt();
 			
-					if(b[0] == (byte) 99) {
+					if(tachoCount == 99) {
 						connected = false;
 						
 						System.out.println("Robot invoked shutdown sequence");
-					} else if(b[0] == (byte) 1) {
-						sensorA = b[1] == (byte) 1 ? true : false ;
-						sensorB = b[2] == (byte) 1 ? true : false ;
-					
-						System.out.print("Touch sensor data received: ");
-						System.out.println("A=" + sensorA + " B=" + sensorB);
+					} else if(tachoCount > 0) {
+						tachoA = tachoCount;
+						System.out.println("Tacho count data received: motor A=" + tachoA);
 					} else {
-						System.out.println("Unrecognised feedback received");
+						tachoC = tachoCount * (-1);
+						System.out.println("Tacho count data received: motor C=" + tachoC);
 					}
 				
 					Thread.sleep(50);
@@ -139,4 +139,3 @@ public class Communicator implements Runnable {
 	}
 
 }
-

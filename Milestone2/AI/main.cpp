@@ -2,6 +2,9 @@
 
 #include "RobotState.h"
 #include "MathTypes/Vector2.h"
+#include "../Shared/SharedMem.h"
+
+#include <string.h>
 
 #if defined(TEST)
 #include "cpptest.h"
@@ -12,8 +15,8 @@
 
 int main(int argc, char *argv[])
 {
-#if defined(TEST)
-
+//#if defined(TEST)
+#if 0
 	Test::TextOutput output(Test::TextOutput::Verbose);
 
 	AStarUnitTests aStarUnitTests;
@@ -24,9 +27,28 @@ int main(int argc, char *argv[])
 
 #else
 
+	TShMem sharedMem;
+
 	AIControl aiControl;
+
+	// zero-out the shared memory
+    memset(&sharedMem, 0, sizeof(TShMem));
+    // set current state as IDLE
+    sharedMem.systemState = eIDLE;
+	sharedMem.pitchCfg.pitchWidth = 600;
+	sharedMem.pitchCfg.pitchHeight = 300;
 	
-	aiControl.Initialise();
+	aiControl.Initialise(&sharedMem);
+
+	sharedMem.currentIdx = 0;
+
+	sharedMem.positioning[0].visionData.yellow_x = 540;
+	sharedMem.positioning[0].visionData.yellow_y = 120;
+	sharedMem.positioning[0].visionData.blue_x = 540;
+	sharedMem.positioning[0].visionData.blue_y = 120;
+	sharedMem.positioning[0].visionData.ball_x = 270;
+	sharedMem.positioning[0].visionData.ball_y = 60;
+
 	aiControl.RunAI();	
 
 #endif

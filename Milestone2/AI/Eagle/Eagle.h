@@ -10,7 +10,7 @@ class Eagle
 public:
 	Eagle();
 	
-	Vector2 IdentifyTarget(std::vector<Vector2> positions);
+	Vector2 IdentifyTarget(Vector2 ourRobotPos, Vector2 enemyRobotPos, Vector2 ballPos);
 };
 
 #endif

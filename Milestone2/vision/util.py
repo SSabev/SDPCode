@@ -2,6 +2,7 @@ import sys
 import os
 import cPickle
 
+
 def dumpToFile(obj, path):
     """
     Dump an object to a file specified by path
@@ -21,6 +22,7 @@ def dumpToFile(obj, path):
     finally:
         f.close()
 
+
 def loadFromFile(path):
 
     if not fileExists(path):
@@ -34,8 +36,10 @@ def loadFromFile(path):
     finally:
         f.close()
 
+
 def fileExists(path):
     return os.path.exists(getRealPath(path))
+
 
 def getRealPath(path):
     """
