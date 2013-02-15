@@ -52,13 +52,9 @@ void MainWindow::SetupGUI()
     connect(NavToBallBtn, SIGNAL(clicked()), this, SLOT(NavToBallSlot()));
     connect(stopBtn, SIGNAL(clicked()), this, SLOT(StopeMvmntSlot()));
 
-    m_logWdgt = new CLoggingWidget(this);
-    m_logWdgt->show();
-
     connect(connToVisionBtn, SIGNAL(clicked()), this, SLOT(ConnToVision()));
     connect(btConnectBtn, SIGNAL(clicked()), this, SLOT(ConnToBT()));
     connect(teamSetupBtn, SIGNAL(clicked()), this, SLOT(TeamSetup()));
-    connect(logBtn, SIGNAL(clicked()), this, SLOT(ShowLogWin()));
 
     m_timer.setSingleShot(false);
     connect(&m_timer, SIGNAL(timeout()), this, SLOT(TimerCallBack()));
@@ -66,7 +62,8 @@ void MainWindow::SetupGUI()
 
 void MainWindow::InitSytem()
 {
-    loggingObj = (ILogging *) m_logWdgt;
+//    loggingObj = (ILogging *) m_logWdgt;
+    loggingObj = (ILogging *) LoggingWidget;
 
     // zero-out the shared memory
     memset(&sharedMem, 0, sizeof(TShMem));
@@ -97,11 +94,6 @@ void MainWindow::TeamSetup()
 {
     CTeamCfgDlg dlg(this);
     dlg.exec();
-}
-
-void MainWindow::ShowLogWin()
-{
-    m_logWdgt->show();
 }
 
 void MainWindow::TimerCallBack()

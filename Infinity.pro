@@ -1,6 +1,5 @@
 HEADERS += \
     GUI/MainWindow.h \
-    GUI/LoggingWidget.h \
     GUI/Tools/TeamCfgDlg.h \
     GUI/Comm/VisionComm.h \
     GUI/Comm/BTComm.h \
@@ -15,13 +14,13 @@ HEADERS += \
     Shared/Sockets.h \
     Shared/SharedMem.h \
     Shared/Logging.h \
-    Navigation/Navigation.h
+    Navigation/Navigation.h \
+    GUI/Tools/LoggingWdgt.h
 
 SOURCES += \
     GUI/SharedMem.cpp \
     GUI/MainWindow.cpp \
     GUI/main.cpp \
-    GUI/LoggingWidget.cpp \
     GUI/Logging.cpp \
     GUI/Tools/TeamCfgDlg.cpp \
     GUI/Comm/VisionComm.cpp \
@@ -34,11 +33,11 @@ SOURCES += \
     AI/Impala/Impala.cpp \
     AI/MathTypes/Vector2.cpp \
     AI/RobotState.cpp \
-    Navigation/Navigation.cpp
+    Navigation/Navigation.cpp \
+    GUI/Tools/LoggingWdgt.cpp
 
 FORMS += \
     GUI/mainwindow.ui \
-    GUI/Logging.ui \
     GUI/Tools/TeamCfgDlg.ui
 
 INCLUDEPATH += \

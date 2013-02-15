@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>317</width>
+    <width>887</width>
     <height>271</height>
    </rect>
   </property>
@@ -21,12 +21,30 @@
    <layout class="QHBoxLayout" name="horizontalLayout">
     <item>
      <widget class="QGroupBox" name="groupBox">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
       <property name="title">
        <string>Robot Controls</string>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_2">
        <item>
         <widget class="QPushButton" name="moveWithBallBtn">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>103</width>
+           <height>0</height>
+          </size>
+         </property>
          <property name="text">
           <string>Dribble </string>
          </property>
@@ -34,6 +52,18 @@
        </item>
        <item>
         <widget class="QPushButton" name="NavToBallBtn">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>103</width>
+           <height>0</height>
+          </size>
+         </property>
          <property name="text">
           <string>Move To Ball</string>
          </property>
@@ -41,6 +71,18 @@
        </item>
        <item>
         <widget class="QPushButton" name="stopBtn">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>103</width>
+           <height>0</height>
+          </size>
+         </property>
          <property name="text">
           <string>Stop</string>
          </property>
@@ -71,12 +113,30 @@
     </item>
     <item>
      <widget class="QGroupBox" name="groupBox_2">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
       <property name="title">
        <string>Configuration</string>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout">
        <item>
         <widget class="QPushButton" name="btConnectBtn">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>134</width>
+           <height>0</height>
+          </size>
+         </property>
          <property name="text">
           <string>Connect to BT</string>
          </property>
@@ -84,6 +144,18 @@
        </item>
        <item>
         <widget class="QPushButton" name="connToVisionBtn">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>134</width>
+           <height>0</height>
+          </size>
+         </property>
          <property name="text">
           <string>Connect to Vision</string>
          </property>
@@ -91,15 +163,20 @@
        </item>
        <item>
         <widget class="QPushButton" name="teamSetupBtn">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>134</width>
+           <height>0</height>
+          </size>
+         </property>
          <property name="text">
           <string>Team Setup</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="logBtn">
-         <property name="text">
-          <string>Show Logging</string>
          </property>
         </widget>
        </item>
@@ -119,6 +196,29 @@
       </layout>
      </widget>
     </item>
+    <item>
+     <widget class="Line" name="line_2">
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="CLoggingWdgt" name="LoggingWidget" native="true">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>500</width>
+        <height>0</height>
+       </size>
+      </property>
+     </widget>
+    </item>
    </layout>
   </widget>
   <widget class="QMenuBar" name="menubar">
@@ -126,12 +226,20 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>317</width>
+     <width>887</width>
      <height>29</height>
     </rect>
    </property>
   </widget>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>CLoggingWdgt</class>
+   <extends>QWidget</extends>
+   <header>GUI/Tools/LoggingWdgt.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>
