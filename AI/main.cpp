@@ -11,12 +11,13 @@
 
 #include "UnitTests/AStarUnitTests.h"
 #include "UnitTests/Vector2UnitTests.h"
+#include "UnitTests/ForeseeUnitTests.h
 #endif
 
 int main(int argc, char *argv[])
 {
-//#if defined(TEST)
-#if 0
+#if defined(TEST)
+
 	Test::TextOutput output(Test::TextOutput::Verbose);
 
 	AStarUnitTests aStarUnitTests;
@@ -24,6 +25,9 @@ int main(int argc, char *argv[])
 
 	Vector2UnitTests vector2UnitTests;
 	vector2UnitTests.run(output, true);
+	
+	ForeseeUnitTests foreseeUnitTests;
+    	foreseeUnitTests.run(output, true)
 
 #else
 
