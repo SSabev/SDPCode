@@ -11,7 +11,7 @@ class Foresee
 {
 #if defined(TEST)
 	// This facilitates testing of private and protected functions.
-	friend class AStarUnitTests;
+	friend class ForeseeUnitTests;
 #endif
 
 public:
