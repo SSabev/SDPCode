@@ -2,17 +2,25 @@
 
 # vision
 source venv/env/bin/activate
-./SDPCode/vision/run_vision.sh &
+./SDPCode/vision/runvision.sh &
 
 #Java server
-export NXJ_HOME=/group/teaching/sdp/archive/SDP2012/sdp3/secure/lejo_nxj
+export NXJ_HOME=/group/teaching/sdp/archive/SDP2012/sdp3/secure/lejos_nxj
+export PATH=/group/teaching/sdp/archive/SDP2012/sdp3/secure/lejos_nxj/bin:$PATH
 export LD_LIBRARY_PATH=/group/teaching/sdp/archive/SDP2012/sdp3/secure/bluez/lib:$LD_LIBRARY_PATH
-nxjpcc SDPCode/Comms/Server.java
-nxjpc SDPCode/Comms/Server &
+
+pushd SDPCode/Comms > /dev/null
+
+#nxjpcc Server.java
+nxjpc Server &
+
+popd > /dev/null
 
 #Compile main app
-mkdir ~/Infinity && cd ~/Infinity
-qmake-qt4 SDPCode/Infinity.pro -r -spec  linux-g++
+mkdir ~/Infinity
+cd ~/Infinity
+qmake-qt4 /group/teaching/sdp/sdp8/SDPCode/Infinity.pro -r -spec  linux-g++
 make
+# Start main app
 ./Infinity
 
