@@ -13,6 +13,9 @@ private:
     void ForeseeExtrapolatePositionFromPoints();
     void ForeseeExtrapolatePositionFromPointsOutwithPitchBoundaries();
     void ForeseeExtrapolatePositionFromPointsOnPitchBoundaries();
+    void ForeseeExtrapolateAngle();
+    void ForeseeExtrapolateAngleOver2PI();
+    void ForeseeExtrapolateAngleBothZero();
 
 };
 
