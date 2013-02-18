@@ -15,7 +15,8 @@ HEADERS += \
     Shared/SharedMem.h \
     Shared/Logging.h \
     Navigation/Navigation.h \
-    GUI/Tools/LoggingWdgt.h
+    GUI/Tools/LoggingWdgt.h \
+    GUI/Tools/CVisionMod.h
 
 SOURCES += \
     GUI/SharedMem.cpp \
@@ -34,7 +35,8 @@ SOURCES += \
     AI/MathTypes/Vector2.cpp \
     AI/RobotState.cpp \
     Navigation/Navigation.cpp \
-    GUI/Tools/LoggingWdgt.cpp
+    GUI/Tools/LoggingWdgt.cpp \
+    GUI/Tools/CVisionMod.cpp
 
 FORMS += \
     GUI/mainwindow.ui \
@@ -42,6 +44,7 @@ FORMS += \
 
 INCLUDEPATH += \
     Shared \
+    GUI/Tools \
     $$PWD/AI \
     $$PWD/Navigation
 
