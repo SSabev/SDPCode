@@ -4,7 +4,7 @@
 #include "../RobotState.h"
 #include "../MathTypes/Vector2.h"
 
-#include "../Shared/SharedMem.h"
+#include "../../Shared/SharedMem.h"
 
 #include <vector>
 
@@ -13,14 +13,15 @@ class Eagle
 public:
 	Eagle();
 	
-	void SharedMemPointer(TShMem* pSharedMem);
 	void SetState(TSystemState state);
+	void SetPitchDimensions(int pitchSizeX, int pitchSizeY);
 	RobotState IdentifyTarget(RobotState ourRobotState, RobotState enemyRobotState, Vector2 ballPos);
 
 private:
-	bool m_hasReachedBall;
 	TSystemState m_state;
-	TShMem* m_pSharedMem;
+
+	int m_pitchSizeX;
+	int m_pitchSizeY;
 };
 
 #endif
