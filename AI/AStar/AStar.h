@@ -5,7 +5,7 @@
 #include "../MathTypes/Vector2.h"
 #include "AStarNode.h"
 
-#include "../Shared/SharedMem.h"
+#include "../../Shared/SharedMem.h"
 
 #include <list>
 
@@ -23,9 +23,6 @@ public:
 	void SetPitchDimensions(int pitchSizeX, int pitchSizeY);
 	void SetState(TSystemState state);
 	std::list<RobotState> GeneratePath(RobotState startingState, RobotState destinationState);
-
-	// MILESTONE 2 only
-	void SetBallPosition(Vector2 ballPos);
 
 private:
 	std::list<Vector2> FindAdjacentNodes(Vector2 currentNode);
