@@ -5,6 +5,8 @@
 
 #include "Comm/BTComm.h"
 #include "Comm/VisionComm.h"
+#include "Tools/CVisionMod.h"
+
 #include "Navigation/Navigation.h"
 
 #include <AIControl.h>
@@ -40,6 +42,7 @@ private:
     CBtComm        *m_btComm;
     CVisionComm    *m_visionComm;
     CNavigation     m_nav;
+    CVisionMod     *vision;
 
     AIControl       aiCtrl;
 

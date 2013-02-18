@@ -22,11 +22,24 @@ MainWindow::~MainWindow()
 
 void MainWindow::MoveWithBallSlot()
 {
-    sharedMem.systemState = eDribbleBall;
+//    TEntry *entry = &sharedMem.positioning[sharedMem.currentIdx];
+//    entry->aiData.path[0].position_X = 2;
+//    entry->aiData.path[0].position_Y = 3;
+//    entry->aiData.path[1].position_X = 100;
+//    entry->aiData.path[1].position_Y = 100;
+//    entry->aiData.path[2].position_X = 200;
+//    entry->aiData.path[2].position_Y = 300;
+//    entry->aiData.path[3].position_X = 500;
+//    entry->aiData.path[3].position_Y = 350;
+
+//    entry->aiData.pathLength = 4;
+
+//    vision->UpdateWindow();
 }
 
 void MainWindow::NavToBallSlot()
 {
+    /*
     sharedMem.systemState = eNavToBall;
     TEntry *entry = &sharedMem.positioning[sharedMem.currentIdx];
 
@@ -37,6 +50,7 @@ void MainWindow::NavToBallSlot()
     m_nav.GenerateValues();
 
     m_btComm->SendData(&entry->robotData);
+    */
 }
 
 void MainWindow::StopeMvmntSlot()
@@ -62,7 +76,6 @@ void MainWindow::SetupGUI()
 
 void MainWindow::InitSytem()
 {
-//    loggingObj = (ILogging *) m_logWdgt;
     loggingObj = (ILogging *) LoggingWidget;
 
     // zero-out the shared memory
@@ -76,6 +89,9 @@ void MainWindow::InitSytem()
     sharedMem.currentIdx = 0;
 
     aiCtrl.Initialise();
+
+    vision = new CVisionMod(this);
+    vision->show();
 
     loggingObj->ShowMsg("Configured...");
 }
