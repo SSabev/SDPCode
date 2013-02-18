@@ -69,40 +69,11 @@ void AIControl::RunAI()
 
 	// Given the positions of the robots and ball, identify the ideal position 
 	// and orientation for us to reach.
-	m_eagle.SharedMemPointer(&sharedMem);
+	m_eagle.SetPitchDimensions(sharedMem.pitchCfg.pitchWidth, sharedMem.pitchCfg.pitchHeight);
 	m_eagle.SetState(sharedMem.systemState);
 	RobotState targetState = m_eagle.IdentifyTarget(ourRobotFuture, enemyRobotFuture, ballFuture);
 
-	Vector2 tempPos = targetState.Position();
-	tempPos.Clamp(Vector2(0,0), Vector2(sharedMem.pitchCfg.pitchWidth-1, sharedMem.pitchCfg.pitchHeight-1));
-	targetState.SetPosition(tempPos);
-
-	// Check if the robot has reached its destination (MILESTONE 2)
-	bool hasReachedDestination = false;
-
-	if (sharedMem.systemState == eNavToBall)
-	{
-		if (ourRobotFuture.Position().Distance(&ballFuture) < 50)
-		{
-			hasReachedDestination = true;
-		}
-	}
-
-	// Returning a path of length 1 tells the Nav that we're done.
-	if (hasReachedDestination)
-	{
-		currentEntry->aiData.pathLength = 1;
-		currentEntry->aiData.shouldKick = 0;
-
-		currentEntry->aiData.path[0].position_X = ourRobotFuture.Position().X();
-		currentEntry->aiData.path[0].position_Y = ourRobotFuture.Position().Y();
-		currentEntry->aiData.path[0].orientation = ourRobotFuture.Orientation();
-
-		return;
-	}
-
 	// Using A*, generate the best path to the target.
-	m_aStar.SetBallPosition(ballFuture);
 	m_aStar.SetPitchDimensions(sharedMem.pitchCfg.pitchWidth, sharedMem.pitchCfg.pitchHeight);
 	std::list<RobotState> aStarPath = m_aStar.GeneratePath(ourRobotFuture, targetState);
 
