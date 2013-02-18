@@ -11,7 +11,7 @@
 
 #include "UnitTests/AStarUnitTests.h"
 #include "UnitTests/Vector2UnitTests.h"
-#include "UnitTests/ForeseeUnitTests.h
+#include "UnitTests/ForeseeUnitTests.h"
 #endif
 
 int main(int argc, char *argv[])
@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
 	vector2UnitTests.run(output, true);
 	
 	ForeseeUnitTests foreseeUnitTests;
-    	foreseeUnitTests.run(output, true)
+    	foreseeUnitTests.run(output, true);
 
 #else
 
