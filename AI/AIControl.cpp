@@ -9,6 +9,9 @@
 #include <fstream>
 #include <algorithm>
 
+/*!
+ * Initialises all the components. Called once, either by the GUI or internally.
+*/
 void AIControl::Initialise()
 {
 	m_foresee = Foresee();
@@ -18,6 +21,9 @@ void AIControl::Initialise()
 }
 
 #if defined(STANDALONE)
+/*!
+ * A special Initialise method used when the AI is running standalone. Allows us to simulate shared memory. Only available when STANDALONE is defined.
+*/
 void AIControl::Initialise(TShMem* pSharedMemory)
 {
 	m_pSharedMemory = pSharedMemory;
@@ -124,6 +130,9 @@ void AIControl::RunAI()
 	}
 }
 
+/*!
+ * 
+*/
 void AIControl::Plot(std::list<Vector2> aStarPath, std::vector<Vector2> ourPrevious, Vector2 destination, std::vector<Vector2> ballPrevious, Vector2 ballFuture)
 {
 	std::ofstream myfile;
