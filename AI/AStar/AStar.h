@@ -21,7 +21,6 @@ public:
 	AStar();
 	
 	void SetPitchDimensions(int pitchSizeX, int pitchSizeY);
-	void SetState(TSystemState state);
 	std::list<RobotState> GeneratePath(RobotState startingState, RobotState destinationState);
 
 private:

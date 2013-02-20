@@ -29,11 +29,9 @@ AStar::AStar()
 
 }
 
-void AStar::SetState(TSystemState state)
-{
-	m_state = state;
-}
-
+/*!
+* Sets the dimensions of the pitch. This will be defined in the shared memory, in terms of pixels as seen by the vision module.
+*/
 void AStar::SetPitchDimensions(int pitchSizeX, int pitchSizeY)
 {
 	m_gridSizeX = pitchSizeX;
