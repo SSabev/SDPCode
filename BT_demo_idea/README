@@ -1,0 +1,23 @@
+Arduino sends the message every second:
+"Press 1 to turn Arduino pin 13 LED ON or 0 to turn it OFF:"
+and increments counter
+
+every 8 seconds it also sends following message:
+"Arduino counter: <counter value>\n"
+
+Every second it checks for any incoming data.  If there is,
+we read 1 byte.
+If it is '1', led is ON
+If it is '0', led is OFF
+
+On PC we use non-blocking socket associated with BT connection.
+It wakes up on available data - every second.
+It recives multiple data packages per second (8 packages).
+Every 8 packages we send the led byte and alter its value.
+Thus the led is changing state every second.
+
+Arduino MAC address is hardcoded.  PIN for the Arduino is 1234 (it is fixed).
+
+To compule PC code:
+gcc −o btcomm main.cpp −lbluetooth
+
