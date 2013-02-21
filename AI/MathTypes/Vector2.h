@@ -51,24 +51,4 @@ Vector2 operator*(const Vector2& v, const float& f);
 Vector2 operator/(const Vector2& v, const int& i);
 Vector2 operator/(const Vector2& v, const float& f);
 
-// This is used as the comparer in maps.
-struct Vector2Comparer 
-{
-    bool operator() (const Vector2 &v1, const Vector2 &v2) const 
-	{
-		// We have a problem using the vectors' magnitude here in that:
-		// "Two keys are considered equivalent if the container's comparison object returns false reflexively (i.e., no matter the order in which the elements are passed as arguments)."
-		// So basically, map will treat any two vectors with the same comparison as equal.
-		// eg. it thinks (5,6) == (6,5) because their magnitudes are equal
-        return v1.MagnitudeSquared() < v2.MagnitudeSquared();
-
-		/*if (v1.ToString() != v2.ToString())
-		{
-			return true;
-		}
-
-		return false;*/
-	}
-};
-
 #endif
