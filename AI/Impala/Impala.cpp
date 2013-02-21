@@ -7,6 +7,15 @@ Impala::Impala()
 	
 }
 
+/*!
+ * This is the Impala's only public method and should be called in order to run both the path-smoothing and 
+ * path-reduction. Its purpose is to take a raw A* path, smooth the hard corners and remove redundant points. 
+ * It also recalculates the desired robot orientation for each point. 
+ *
+ * The 'numAdditionalPasses' argument is optional and will default to 0 if not supplied. Note that one run of 
+ * the path smoothing will always be executed, in addition to the number specified in the parameter. This 
+ * parameter can be increased to provide a smoother path, but at the cost of processing time.
+*/
 std::list<RobotState> Impala::SmoothPath(std::list<RobotState> aStarPath, int numAdditionalPasses)
 {
 	std::list<Vector2> aStarPositions;
@@ -52,7 +61,15 @@ std::list<RobotState> Impala::SmoothPath(std::list<RobotState> aStarPath, int nu
 	return collapsedPath;
 }
 
-// New triangle centroid method.
+/*!
+ * Runs a pass of the path-smoothing algorithm. It works by taking each set of 3 consecutive points and 
+ * constructing a triangle from them. The triangle centroid (the point found by at the meeting point of the 
+ * three lines which run from each point to the centre of the opposite edge) then replaces the middle of the 
+ * 3 points in our path. This acts to make changes in direction more gradual.
+ * 
+ * Note that whilst more runs of this algorithm will lead to a smoother path, it will ultimately tend towards 
+ * a straight line between the start point and destination.
+*/
 std::list<Vector2> Impala::RunPass(std::list<Vector2> path)
 {
 	std::vector<Vector2> pathVector(path.begin(), path.end());
@@ -76,8 +93,16 @@ std::list<Vector2> Impala::RunPass(std::list<Vector2> path)
 	return smoothedPath;
 }
 
-// This tries to reduce the number of waypoints by collapsing sequential ones 
-// with a sufficiently similar gradient.
+/*!
+* Reduces the number of waypoints by removing those which are on a straight line (and not the endpoints), making
+* them redundant. This is done by comparing the initial pair of points and finding the gradient between them (the 
+* 'original gradient'). If the next pair of points has a gradient which within a given threshold of the original 
+* gradient, then this is determined to be part of a straight line. The point between the two endpoints can be 
+* removed.
+*
+* Otherwise, if the gradient difference is too high, this is not a straight line, no points can be collapsed and 
+* the second gradient becomes the new 'original gradient'.
+*/
 std::vector<Vector2> Impala::CollapsePoints(std::list<Vector2> path)
 {
 	const float GRADIENT_THRESHOLD = 0.1;
