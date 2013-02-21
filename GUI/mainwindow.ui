@@ -14,8 +14,8 @@
    <string>Robotics</string>
   </property>
   <property name="windowIcon">
-   <iconset>
-    <normaloff>img/robot_icon.gif</normaloff>img/robot_icon.gif</iconset>
+   <iconset resource="rc.qrc">
+    <normaloff>:/img/robot_icon.gif</normaloff>:/img/robot_icon.gif</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QHBoxLayout" name="horizontalLayout">
@@ -236,10 +236,12 @@
   <customwidget>
    <class>CLoggingWdgt</class>
    <extends>QWidget</extends>
-   <header>GUI/Tools/LoggingWdgt.h</header>
+   <header location="global">LoggingWdgt.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
- <resources/>
+ <resources>
+  <include location="rc.qrc"/>
+ </resources>
  <connections/>
 </ui>
