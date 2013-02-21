@@ -16,10 +16,10 @@ typedef struct{
     //! TODO: need to identify data that is required
     ///       for robot movement
     /// For testing (Milestone 1) it's size is 2 integers
-    char motor_left;
-    char motor_right;
-    char motor_front;
-    char motor_rear;
+    unsigned char motor_left;
+    unsigned char motor_right;
+    unsigned char motor_front;
+    unsigned char motor_rear;
     unsigned char kicker;
 } __attribute__ ((packed)) TRobotData;
 
@@ -130,10 +130,10 @@ void CMainWidget::SendVals()
     int status;
     if (m_status != eConnected) return;
 
-    _robotData.motor_left = (char) leftBox->value();
-    _robotData.motor_right = (char) rightBox->value();
-    _robotData.motor_rear = (char) rearBox->value();
-    _robotData.motor_front = (char) frontBox->value();
+    _robotData.motor_left = (unsigned char) leftBox->value();
+    _robotData.motor_right = (unsigned char) rightBox->value();
+    _robotData.motor_rear = (unsigned char) rearBox->value();
+    _robotData.motor_front = (unsigned char) frontBox->value();
 
     status = ::send (m_Socket, (void *) &_robotData, sizeof(_robotData), 0);
 
