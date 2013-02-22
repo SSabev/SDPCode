@@ -7,6 +7,9 @@ Eagle::Eagle()
 	
 }
 
+/*! 
+ * Sets the system state, as defined in shared memory. Eagle uses this to determine its behaviour.
+*/
 void Eagle::SetState(TSystemState state)
 {
 	m_state = state;
