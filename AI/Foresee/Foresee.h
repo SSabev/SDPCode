@@ -21,7 +21,7 @@ public:
 	void SetPitchDimensions(int pitchSizeX, int pitchSizeY);
 	
 private: 
-	RobotState ExtrapolateState(std::vector<RobotState> states);
+	RobotState ExtrapolateRobotState(std::vector<RobotState> states);
 	Vector2 ExtrapolatePosition(std::vector<Vector2> positions);
 	
 	std::vector<RobotState> m_ourRobotStates;

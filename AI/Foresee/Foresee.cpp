@@ -48,8 +48,8 @@ void Foresee::ExtrapolateEnvironment(RobotState ourRobotCurrent, RobotState enem
 	m_enemyRobotStates.insert(m_enemyRobotStates.begin(),enemyRobotCurrent);
 	m_ballPositions.insert(m_ballPositions.begin(),ballCurrent);
 	
-	ourRobotFuture = ExtrapolateState(m_ourRobotStates);
-	enemyRobotFuture = ExtrapolateState(m_enemyRobotStates);
+	ourRobotFuture = ExtrapolateRobotState(m_ourRobotStates);
+	enemyRobotFuture = ExtrapolateRobotState(m_enemyRobotStates);
 	ballFuture = ExtrapolatePosition(m_ballPositions);
 }
 
@@ -59,7 +59,7 @@ void Foresee::ExtrapolateEnvironment(RobotState ourRobotCurrent, RobotState enem
  *
  * If only one state is supplied, extrapolation cannot be performed and this state will be returned.
 */
-RobotState Foresee::ExtrapolateState(std::vector<RobotState> states)
+RobotState Foresee::ExtrapolateRobotState(std::vector<RobotState> states)
 {
 	assert(states.size() > 0);
 	
