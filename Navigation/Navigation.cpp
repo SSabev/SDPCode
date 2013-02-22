@@ -69,13 +69,13 @@ void CNavigation::GenerateMaxAngular(TEntry *entry)
 {
     if((m_ourOrientation - entry->aiData.path[0].orientation) > 0){
         // turn right
-        entry->robotData.motor_fl = MAX_ONLY_ANGULAR_MSPEED;
-        entry->robotData.motor_fr = -MAX_ONLY_ANGULAR_MSPEED;
+        entry->robotData.motor_left = MAX_ONLY_ANGULAR_MSPEED;
+        entry->robotData.motor_right = -MAX_ONLY_ANGULAR_MSPEED;
     }
     else{
         // turn left
-        entry->robotData.motor_fl = -MAX_ONLY_ANGULAR_MSPEED;
-        entry->robotData.motor_fr = MAX_ONLY_ANGULAR_MSPEED;
+        entry->robotData.motor_left = -MAX_ONLY_ANGULAR_MSPEED;
+        entry->robotData.motor_right = MAX_ONLY_ANGULAR_MSPEED;
     }
 }
 
@@ -100,12 +100,12 @@ void CNavigation::GenerateLinear(TEntry *entry)
     dOmega = int (theta * (float)SPEED_COEFFICIENT);
 
     if (eTurnLeft){
-        entry->robotData.motor_fl = (MAX_SPEED - dOmega) / SCALING_FACTOR;
-        entry->robotData.motor_fr = MAX_SPEED;
+        entry->robotData.motor_left = (MAX_SPEED - dOmega) / SCALING_FACTOR;
+        entry->robotData.motor_right = MAX_SPEED;
     }
     else{
-        entry->robotData.motor_fr = (MAX_SPEED - dOmega) / SCALING_FACTOR;
-        entry->robotData.motor_fl = MAX_SPEED;
+        entry->robotData.motor_right = (MAX_SPEED - dOmega) / SCALING_FACTOR;
+        entry->robotData.motor_left = MAX_SPEED;
     }
 
     /*
@@ -144,17 +144,17 @@ void CNavigation::GenerateAngular(TEntry *entry)
     if(std::abs(diff) > MAX_ALGULAR_VEL_100ms){
         if(diff > 0){
             // turn right
-            entry->robotData.motor_fl += MAX_ANGULAR_MSPEED;
-            entry->robotData.motor_fr -= MAX_ANGULAR_MSPEED;
+            entry->robotData.motor_left += MAX_ANGULAR_MSPEED;
+            entry->robotData.motor_right -= MAX_ANGULAR_MSPEED;
         }
         else{
             // turn left
-            entry->robotData.motor_fl -= MAX_ANGULAR_MSPEED;
-            entry->robotData.motor_fr += MAX_ANGULAR_MSPEED;
+            entry->robotData.motor_left -= MAX_ANGULAR_MSPEED;
+            entry->robotData.motor_right += MAX_ANGULAR_MSPEED;
         }
     }
     else{
-        entry->robotData.motor_fl += diff*ANGULAR_RATIO;
-        entry->robotData.motor_fr -= diff*ANGULAR_RATIO;
+        entry->robotData.motor_left += diff*ANGULAR_RATIO;
+        entry->robotData.motor_right -= diff*ANGULAR_RATIO;
     }
 }
