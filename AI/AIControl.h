@@ -32,7 +32,10 @@ public:
 	void RunAI();
 	
 private:
+
+#if defined(TEST)
 	void Plot(std::list<Vector2> aStarPath, std::vector<Vector2> ourPrevious, Vector2 destination, std::vector<Vector2> ballPrevious, Vector2 ballFuture);
+#endif
 
 	Foresee m_foresee;
 	Eagle m_eagle;

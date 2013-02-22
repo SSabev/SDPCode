@@ -32,6 +32,11 @@ void AIControl::Initialise(TShMem* pSharedMemory)
 }
 #endif
 
+/*!
+ * The key method of AIControl, RunAI should be called to run the entirety of the AI: Foresee, Eagle, AStar and 
+ * Impala. It reads data from shared memory (written by the Vision system) and writes data back to shared memory 
+ * (for usage by the Navigation system).
+ */
 void AIControl::RunAI()
 {	
 #if defined(STANDALONE)
@@ -130,8 +135,12 @@ void AIControl::RunAI()
 	}
 }
 
+#if defined(TEST)
 /*!
- * 
+ * Outputs several data files containing points, for use by the plotting/plot_path.sh script - this allows us 
+ * to visualise a particular frame of AI output data.
+ *
+ * Only available when TEST is defined.
 */
 void AIControl::Plot(std::list<Vector2> aStarPath, std::vector<Vector2> ourPrevious, Vector2 destination, std::vector<Vector2> ballPrevious, Vector2 ballFuture)
 {
@@ -188,3 +197,4 @@ void AIControl::Plot(std::list<Vector2> aStarPath, std::vector<Vector2> ourPrevi
 
 	myfile.close();
 }
+#endif
