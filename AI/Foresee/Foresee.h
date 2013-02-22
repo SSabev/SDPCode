@@ -9,7 +9,7 @@
 
 class Foresee
 {
-#if defined(TEST)
+#if defined(STANDALONE)
 	// This facilitates testing of private and protected functions.
 	friend class ForeseeUnitTests;
 #endif

@@ -12,7 +12,7 @@
 class AStar
 {
 
-#if defined(TEST)
+#if defined(STANDALONE)
 	// This facilitates testing of private and protected functions.
 	friend class AStarUnitTests;
 #endif
