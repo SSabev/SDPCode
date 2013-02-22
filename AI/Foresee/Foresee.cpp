@@ -9,12 +9,23 @@ Foresee::Foresee()
 	
 }
 
+/*!
+* Sets the dimensions of the pitch. This will be defined in the shared memory, in terms of pixels as seen by the vision module.
+*/
 void Foresee::SetPitchDimensions(int pitchSizeX, int pitchSizeY)
 {
 	m_pitchSizeX = pitchSizeX;
 	m_pitchSizeY = pitchSizeY;
 }
 
+/*!
+ * Extrapolates to a predicated future state based on the current and previous states. The purpose of this is to 
+ * ascertain the position which the robot is likely to be in when it receives the instructions calculated in 
+ * this pass.
+ *
+ * Note that if this is the first run of this method and there is no previous data, extrapolation cannot be 
+ * performed and the current state will be returned.
+*/
 void Foresee::ExtrapolateState(RobotState ourRobotPos, RobotState enemyRobotPos, Vector2 ballPos, RobotState &ourRobotFuture, RobotState &enemyRobotFuture, Vector2 &ballFuture)
 {
 	// Limit the amount of positions we're keeping.
@@ -63,6 +74,12 @@ void Foresee::ExtrapolateState(RobotState ourRobotPos, RobotState enemyRobotPos,
 	enemyRobotFuture.SetOrientation(ExtrapolateAngle(enemyRobotAnglesVector));
 }
 
+/*!
+ * Extrapolates a future position based on the supplied set of points. The points should be supplied in reverse 
+ * chronological order. 
+ *
+ * If only one point is supplied, extrapolation cannot be performed and this point will be returned.
+*/
 Vector2 Foresee::ExtrapolatePositionFromPoints(std::vector<Vector2> positions)
 {
 	assert(positions.size() > 0);
@@ -83,6 +100,12 @@ Vector2 Foresee::ExtrapolatePositionFromPoints(std::vector<Vector2> positions)
 	return extrapolatedPosition;
 }
 
+/*!
+ * Extrapolates a future angle based on the supplied set of angles. The angles should be supplied in 
+ * reverse chronological order. 
+ *
+ * If only one angle is supplied, extrapolation cannot be performed and this angle will be returned.
+*/
 float Foresee::ExtrapolateAngle(std::vector<float> angles)
 {
 	assert(angles.size() > 0);
