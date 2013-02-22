@@ -21,6 +21,16 @@ In addition, when the AI is initialised, it should receive the co-ordinates of t
 
 =========================================================================================
 
+DOCUMENTATION
+
+All non-trivial methods in the AI are documented. This documentation can either be read inline with the code or by running doxygen, using the following commands:
+
+doxygen
+cd docs
+xdg-open index.html
+
+=========================================================================================
+
 COMPILING
 
 The AI can be compiled as a standalone binary, however this is only for debug and development purposes. In practice, it should be included in and compiled as part of the GUI binary.
