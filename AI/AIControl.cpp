@@ -76,7 +76,7 @@ void AIControl::RunAI()
 	// Given the current position and a certain number of previous positions, 
 	// approximate where the bot will be when it receives our next transmission.
 	m_foresee.SetPitchDimensions(sharedMem.pitchCfg.pitchWidth, sharedMem.pitchCfg.pitchHeight);
-	m_foresee.ExtrapolateState(ourRobot, enemyRobot, ballPos, ourRobotFuture, enemyRobotFuture, ballFuture);
+	m_foresee.ExtrapolateEnvironment(ourRobot, enemyRobot, ballPos, ourRobotFuture, enemyRobotFuture, ballFuture);
 
 	// Given the positions of the robots and ball, identify the ideal position 
 	// and orientation for us to reach.
