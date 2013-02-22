@@ -26,13 +26,19 @@ void Vector2::Set(float x, float y)
 	m_isSet = true;
 }
 
+/*! 
+ * Returns the X co-ordinate of the Vector2 object.
+*/
 const float Vector2::X() const 
 {
 	assert(m_isSet);
 
 	return m_x;
 };
-	
+
+/*! 
+ * Returns the Y co-ordinate of the Vector2 object.
+*/	
 const float Vector2::Y() const 
 {
 	assert(m_isSet);
@@ -40,8 +46,12 @@ const float Vector2::Y() const
 	return m_y;
 };
 
-// Restricts this vector to being within a rectangle, the two extreme 
-// corners of which are defined by the min and max vectors.
+/*! 
+ * Restricts this vector to being within a rectangle, the two extreme corners of which are defined by 
+ * the minVector and maxVector arguments. This is an inclusive bound.
+ * 
+ * Note that this method returns void and alters the contents of the object itself.
+*/
 void Vector2::Clamp(Vector2 minVector, Vector2 maxVector)
 {
 	if (X() < minVector.X())
@@ -63,6 +73,9 @@ void Vector2::Clamp(Vector2 minVector, Vector2 maxVector)
 	}
 }
 
+/*!
+ * Gets the distance between the Vector2 object and another Vector2.
+*/
 const float Vector2::Distance(Vector2* dest) const
 {
 	assert(m_isSet);
@@ -72,6 +85,12 @@ const float Vector2::Distance(Vector2* dest) const
 	return dist;
 }
 
+/*!
+ * Gets the distance squared between the Vector2 object and another Vector2. 
+ *
+ * This is used when we want to know which of multiple distances is the greater, but the exact value doesn't 
+ * concern us, so we can avoid calculating a square root.
+*/
 const float Vector2::DistanceSquared(Vector2* dest) const
 {
 	assert(m_isSet);
@@ -85,6 +104,9 @@ const float Vector2::DistanceSquared(Vector2* dest) const
 	return distSquared;
 }
 
+/*!
+ * Gets the angle in radians between the Vector2 object and another Vector2.
+*/
 const float Vector2::GetAngleTo(Vector2* dest) const
 {
 	assert(m_isSet);
@@ -97,6 +119,9 @@ const float Vector2::GetAngleTo(Vector2* dest) const
 	return angleRadians;
 }
 
+/*!
+ * Gets the gradient between the Vector2 object and another Vector2.
+*/
 const float Vector2::Gradient(Vector2* dest) const
 {
 	assert(m_isSet);
@@ -122,6 +147,10 @@ const float Vector2::Gradient(Vector2* dest) const
 	return gradient;
 }
 
+/*!
+ * Gets the magnitude squared of this Vector2 object. This is the equivalent of the distance squared between this 
+ * point and Vector2(0,0).
+*/
 const float Vector2::MagnitudeSquared() const
 {
 	assert(m_isSet);
@@ -131,6 +160,10 @@ const float Vector2::MagnitudeSquared() const
 	return magSquared;
 }
 
+/*!
+ * Produces a string representing the Vector2 object in the form "x y". This can be printed out for debugging 
+ * purposes. The format of this is quite important as it's required when using AIControl::Plot().
+*/
 const std::string Vector2::ToString() const
 {
 	assert(m_isSet);
