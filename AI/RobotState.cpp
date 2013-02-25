@@ -44,3 +44,15 @@ void RobotState::SetOrientation(float orientation)
 	
 	m_isOrientationSet = true;
 }
+
+// OPERATOR OVERLOADS
+
+bool operator ==(const RobotState& rs1, const RobotState& rs2)
+{
+	if ((rs1.Position() == rs2.Position()) && (rs1.Orientation() == rs2.Orientation()))
+	{
+		return true;
+	}
+
+	return false;
+}
