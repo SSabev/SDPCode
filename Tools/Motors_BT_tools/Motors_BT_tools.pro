@@ -3,11 +3,13 @@ FORMS += \
 
 HEADERS += \
     MainWidget.h \
-    ThreadedClasses.h
+    ThreadedClasses.h \
+    KeysWidget.h
 
 SOURCES += \
     MainWidget.cpp \
     ThreadedClasses.cpp \
-    main.cpp
+    main.cpp \
+    KeysWidget.cpp
 
 LIBS += -lbluetooth
