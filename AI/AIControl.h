@@ -34,7 +34,7 @@ public:
 private:
 
 #if defined(TEST)
-	void Plot(std::list<Vector2> aStarPath, std::vector<Vector2> ourPrevious, Vector2 destination, std::vector<Vector2> ballPrevious, Vector2 ballFuture);
+	void Plot(std::list<RobotState> aStarPath, std::vector<RobotState> ourPrevious, RobotState destination, std::vector<Vector2> ballPrevious, Vector2 ballFuture);
 #endif
 
 	Foresee m_foresee;

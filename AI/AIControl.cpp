@@ -142,12 +142,12 @@ void AIControl::RunAI()
  *
  * Only available when TEST is defined.
 */
-void AIControl::Plot(std::list<Vector2> aStarPath, std::vector<Vector2> ourPrevious, Vector2 destination, std::vector<Vector2> ballPrevious, Vector2 ballFuture)
+void AIControl::Plot(std::list<RobotState> aStarPath, std::vector<RobotState> ourPrevious, RobotState destination, std::vector<Vector2> ballPrevious, Vector2 ballFuture)
 {
 	std::ofstream myfile;
 	myfile.open("astar_path.dat");
 
-	std::list<Vector2>::iterator it;
+	std::list<RobotState>::iterator it;
 
 	for (it = aStarPath.begin(); it != aStarPath.end(); it++)
 	{
@@ -158,7 +158,7 @@ void AIControl::Plot(std::list<Vector2> aStarPath, std::vector<Vector2> ourPrevi
 			myfile << std::endl;
 		}
 
-		myfile << it->ToString();
+		myfile << it->Position().ToString();
 	}
 
 	myfile.close();
@@ -179,21 +179,21 @@ void AIControl::Plot(std::list<Vector2> aStarPath, std::vector<Vector2> ourPrevi
 
 	myfile.open("dest_pos.dat");
 
-	myfile << destination.ToString();
+	myfile << destination.Position().ToString();
 
 	myfile.close();
 
 	myfile.open("our_current.dat");
 
-	myfile << ourPrevious[1].ToString() << std::endl;
-	myfile << ourPrevious[0].ToString() << std::endl;
-	myfile << aStarPath.front().ToString();
+	myfile << ourPrevious[1].Position().ToString() << std::endl;
+	myfile << ourPrevious[0].Position().ToString() << std::endl;
+	myfile << aStarPath.front().Position().ToString();
 
 	myfile.close();
 
 	myfile.open("our_future.dat");
 
-	myfile << aStarPath.front().ToString();
+	myfile << aStarPath.front().Position().ToString();
 
 	myfile.close();
 }
