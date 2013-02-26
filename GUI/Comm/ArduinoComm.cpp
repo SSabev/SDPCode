@@ -44,6 +44,11 @@ bool CArduinoComm::ReadData(TRobotState *data)
     return true;
 }
 
+bool CArduinoComm::IsConnected()
+{
+    return m_status == eConnected;
+}
+
 void CArduinoComm::ConnectToRobot()
 {
     int status;

@@ -30,6 +30,11 @@ void CVisionComm::ConnectToVision()
     localSocket.connectToServer(VISION_SOCK_NAME);
 }
 
+bool CVisionComm::IsConnected()
+{
+    return localSocket.state() == QLocalSocket::ConnectedState;
+}
+
 void CVisionComm::ConnLost()
 {
     QMessageBox msgBox(this);

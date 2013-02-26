@@ -48,6 +48,11 @@ void CBtComm::ConnectToRobot()
     m_clientSock.connectToHost("localhost", BT_COMM_SOCKET_PORT);
 }
 
+bool CBtComm::IsConnected()
+{
+    return m_clientSock.state() == QAbstractSocket::ConnectedState;
+}
+
 void CBtComm::SockErr()
 {
     loggingObj->ShowMsg(QString("BTCOMM: socket error: %1")

@@ -17,6 +17,7 @@ public:
     bool ShutdownVision();
 
     void ConnectToVision();
+    bool IsConnected();
 
 private slots:
     void ConnedToServ();

@@ -27,6 +27,7 @@ public:
     virtual bool ReadData(TRobotState *data);
 
     virtual void ConnectToRobot();
+    virtual bool IsConnected();
 
 private slots:
     void ConnResult(bool isConnected);
