@@ -10,12 +10,12 @@ public:
 
 private:
 	
-    void ForeseeExtrapolatePositionFromPoints();
-    void ForeseeExtrapolatePositionFromPointsOutwithPitchBoundaries();
-    void ForeseeExtrapolatePositionFromPointsOnPitchBoundaries();
-    void ForeseeExtrapolateAngle();
-    void ForeseeExtrapolateAngleOver2PI();
-    void ForeseeExtrapolateAngleBothZero();
+    void ForeseeExtrapolatePosition();
+    void ForeseeExtrapolatePositionOutwithPitchBoundaries();
+    void ForeseeExtrapolatePositionOnPitchBoundaries();
+    void ForeseeExtrapolateRobotState();
+    void ForeseeExtrapolateRobotStateOver2PI();
+    void ForeseeExtrapolateRobotStateBothZero();
 
 };
 
