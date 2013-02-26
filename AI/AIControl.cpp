@@ -73,6 +73,10 @@ void AIControl::RunAI()
 	if (IsFailedFrame(ourRobot, enemyRobot, ballPos))
 	{
 		// In this case, the data from vision can't be used.
+		std::string logMessage = "AI believes that data from Vision is bad and can't be used.";
+	
+		loggingObj->ShowMsg(logMessage.c_str());
+
 		currentEntry->aiData.isFailedFrame = 1;
 		return;
 	}
