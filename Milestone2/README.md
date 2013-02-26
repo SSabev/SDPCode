@@ -1,4 +1,0 @@
-SDPCode
-=======
-
-Here be dragons!

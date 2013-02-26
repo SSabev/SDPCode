@@ -95,8 +95,8 @@ class Vision:
         frame = self.camera.getImageUndistort()
 
         # Uncomment to see changes in barrell distortion matrix
-        calibrationPath = os.path.join('calibration', 'pitch{0}'.format(0))
-        self.camera.loadCalibration(os.path.join(sys.path[0], calibrationPath))
+        # calibrationPath = os.path.join('calibration', 'pitch{0}'.format(0))
+        # self.camera.loadCalibration(os.path.join(sys.path[0], calibrationPath))
 
         frame = self.preprocessor.preprocess(frame)
 
@@ -127,17 +127,17 @@ class Vision:
         self.pipe.send(InitSignal(self.preprocessor.pitch_size[0], self.preprocessor.pitch_size[1]))
 
     def addCoordinates(self, entity, coordinates):
-            self._pastCoordinates[entity].pop(0)
-            self._pastCoordinates[entity].append(coordinates)
+        self._pastCoordinates[entity].pop(0)
+        self._pastCoordinates[entity].append(coordinates)
 
     def smoothCoordinates(self, entity):
-            x = sum(map(lambda (x, _): x, self._pastCoordinates[entity])) / self._pastSize
-            y = sum(map(lambda (_, y): y, self._pastCoordinates[entity])) / self._pastSize
-            return (x, y)
+        x = sum(map(lambda (x, _): x, self._pastCoordinates[entity])) / self._pastSize
+        y = sum(map(lambda (_, y): y, self._pastCoordinates[entity])) / self._pastSize
+        return (x, y)
 
     def addAngle(self, entity, angle):
-            self._pastAngles[entity].pop(0)
-            self._pastAngles[entity].append(angle)
+        self._pastAngles[entity].pop(0)
+        self._pastAngles[entity].append(angle)
 
     def smoothAngle(self, entity):
         return sum(self._pastAngles[entity]) / self._pastSize
@@ -166,7 +166,7 @@ class Vision:
                 self.addAngle(name, entity.angle())
 
                 msg_data += [int(x), int(y), entity.angle()]
-		# self.smoothAngle(name)]
+        # self.smoothAngle(name)]
 
         msg_data.append(int(time.time() * 1000))
         data = FrameData(*msg_data)
