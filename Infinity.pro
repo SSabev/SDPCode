@@ -1,6 +1,8 @@
 DEFINES += ARDUINO_BLD
 #DEFINES += NXT_BUILD
 
+#DEFINES += BUILDING_ON_DICE
+
 CONFIG += network
 QT += network
 
@@ -65,6 +67,12 @@ HEADERS += GUI/Comm/ArduinoComm.h
 SOURCES += GUI/Comm/ArduinoComm.cpp
 
 LIBS += -lbluetooth
+
+contains(DEFINES, BUILDING_ON_DICE) {
+INCLUDEPATH += $$PWD/Bluez_DICE/include
+
+LIBS += -L$$PWD/Bluez_DICE/lib64
+}
 
 contains(DEFINES, NXT_BUILD) {
 error(There can be only one communicator)
