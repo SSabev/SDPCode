@@ -24,4 +24,4 @@ vision/data/*
 *.profile
 Infinity-debug-Desktop-Debug/*                                                  
 Infinity-debug-Desktop-Release/* 
-vision/data_not_to_be_touched                                               
+vision/data_not_to_be_touched/*                                              
