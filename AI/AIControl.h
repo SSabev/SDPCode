@@ -20,6 +20,7 @@ class AIControl
 #if defined(STANDALONE)
 	// This facilitates testing of private and protected functions.
 	friend class AStarUnitTests;
+	friend class AIControlUnitTests;
 #endif
 
 public:
