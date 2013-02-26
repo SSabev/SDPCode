@@ -69,6 +69,14 @@ void AIControl::RunAI()
 
 	Vector2 ballPos(currentEntry->visionData.ball_x, currentEntry->visionData.ball_y);
 
+	// Check that the data that's coming in from shared memory is correct and can be used.
+	if (IsFailedFrame(ourRobot, enemyRobot, ballPos))
+	{
+		// In this case, the data from vision can't be used.
+		currentEntry->aiData.isFailedFrame = 1;
+		return;
+	}
+
 	RobotState ourRobotFuture;
 	RobotState enemyRobotFuture;
 	Vector2 ballFuture;
@@ -111,6 +119,7 @@ void AIControl::RunAI()
 	}
 
 	// Results should be written to shared memory.
+	currentEntry->aiData.isFailedFrame = 0;
 	currentEntry->aiData.pathLength = smoothedPath.size();
 	currentEntry->aiData.shouldKick = 0;
 
@@ -133,6 +142,41 @@ void AIControl::RunAI()
 
 		pointsWritten++;
 	}
+}
+
+/*!
+ * Given some Vector2 object, this CoordinatesAreBad method checks whether the X and Y positions are within 0-(pitch dimensions) inclusive. Returns true if some coordinate is invalid, false if coordinates are valid.
+ */
+bool AIControl::CoordinatesAreBad(Vector2 objectPosition)
+{
+#if defined(STANDALONE)
+	
+	// Simulate the shared memory if we're in standalone mode
+	TShMem sharedMem = *m_pSharedMemory;
+
+#endif
+
+	int pitchSizeX = sharedMem.pitchCfg.pitchWidth - 1;
+	int pitchSizeY = sharedMem.pitchCfg.pitchHeight - 1;
+	
+	if(objectPosition.X() < 0 || objectPosition.X() > pitchSizeX || objectPosition.Y() < 0 || objectPosition.Y() > pitchSizeY)
+	{
+		return true;
+	}
+	
+	return false;
+}
+
+/*!
+ * Passes the (X,Y) coordinates of robot1, robot2 and ball objects into the CoordinatesAreBad method, returning true if any one coordinate is invalid.
+ */
+bool AIControl::IsFailedFrame(RobotState robot1, RobotState robot2, Vector2 ball) {
+	
+	bool isInvalidRobot1 = AIControl::CoordinatesAreBad(robot1.Position());
+	bool isInvalidRobot2 = AIControl::CoordinatesAreBad(robot2.Position());
+	bool isInvalidBall = AIControl::CoordinatesAreBad(ball);
+
+	return isInvalidRobot1 || isInvalidRobot2 || isInvalidBall;
 }
 
 #if defined(TEST)

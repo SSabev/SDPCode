@@ -32,6 +32,8 @@ public:
 	void RunAI();
 	
 private:
+	bool CoordinatesAreBad(Vector2 objectPosition);
+	bool IsFailedFrame(RobotState robot1, RobotState robot2, Vector2 ball);
 
 #if defined(TEST)
 	void Plot(std::list<RobotState> aStarPath, std::vector<RobotState> ourPrevious, RobotState destination, std::vector<Vector2> ballPrevious, Vector2 ballFuture);
