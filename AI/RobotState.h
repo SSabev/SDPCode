@@ -10,12 +10,12 @@ public:
 	RobotState(float posX, float posY, float orientation);
 	RobotState(Vector2 pos, float orientation);
 
-	Vector2 Position()
+	const Vector2 Position() const
 	{
 		return m_position;
 	};
 
-	float Orientation()
+	const float Orientation() const
 	{
 		return m_orientation;
 	}
@@ -31,5 +31,8 @@ private:
 	Vector2 m_position;
 	float m_orientation;
 };
+
+// Operator overloads.
+bool operator==(const RobotState& rs1, const RobotState& rs2);
 
 #endif

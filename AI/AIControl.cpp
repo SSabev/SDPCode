@@ -32,6 +32,11 @@ void AIControl::Initialise(TShMem* pSharedMemory)
 }
 #endif
 
+/*!
+ * The key method of AIControl, RunAI should be called to run the entirety of the AI: Foresee, Eagle, AStar and 
+ * Impala. It reads data from shared memory (written by the Vision system) and writes data back to shared memory 
+ * (for usage by the Navigation system).
+ */
 void AIControl::RunAI()
 {	
 #if defined(STANDALONE)
@@ -64,6 +69,18 @@ void AIControl::RunAI()
 
 	Vector2 ballPos(currentEntry->visionData.ball_x, currentEntry->visionData.ball_y);
 
+	// Check that the data that's coming in from shared memory is correct and can be used.
+	if (IsFailedFrame(ourRobot, enemyRobot, ballPos))
+	{
+		// In this case, the data from vision can't be used.
+		std::string logMessage = "AI believes that data from Vision is bad and can't be used.";
+	
+		loggingObj->ShowMsg(logMessage.c_str());
+
+		currentEntry->aiData.isFailedFrame = 1;
+		return;
+	}
+
 	RobotState ourRobotFuture;
 	RobotState enemyRobotFuture;
 	Vector2 ballFuture;
@@ -71,7 +88,7 @@ void AIControl::RunAI()
 	// Given the current position and a certain number of previous positions, 
 	// approximate where the bot will be when it receives our next transmission.
 	m_foresee.SetPitchDimensions(sharedMem.pitchCfg.pitchWidth, sharedMem.pitchCfg.pitchHeight);
-	m_foresee.ExtrapolateState(ourRobot, enemyRobot, ballPos, ourRobotFuture, enemyRobotFuture, ballFuture);
+	m_foresee.ExtrapolateEnvironment(ourRobot, enemyRobot, ballPos, ourRobotFuture, enemyRobotFuture, ballFuture);
 
 	// Given the positions of the robots and ball, identify the ideal position 
 	// and orientation for us to reach.
@@ -106,6 +123,7 @@ void AIControl::RunAI()
 	}
 
 	// Results should be written to shared memory.
+	currentEntry->aiData.isFailedFrame = 0;
 	currentEntry->aiData.pathLength = smoothedPath.size();
 	currentEntry->aiData.shouldKick = 0;
 
@@ -131,14 +149,53 @@ void AIControl::RunAI()
 }
 
 /*!
- * 
+ * Given some Vector2 object, this CoordinatesAreBad method checks whether the X and Y positions are within 0-(pitch dimensions) inclusive. Returns true if some coordinate is invalid, false if coordinates are valid.
+ */
+bool AIControl::CoordinatesAreBad(Vector2 objectPosition)
+{
+#if defined(STANDALONE)
+	
+	// Simulate the shared memory if we're in standalone mode
+	TShMem sharedMem = *m_pSharedMemory;
+
+#endif
+
+	int pitchSizeX = sharedMem.pitchCfg.pitchWidth - 1;
+	int pitchSizeY = sharedMem.pitchCfg.pitchHeight - 1;
+	
+	if(objectPosition.X() < 0 || objectPosition.X() > pitchSizeX || objectPosition.Y() < 0 || objectPosition.Y() > pitchSizeY)
+	{
+		return true;
+	}
+	
+	return false;
+}
+
+/*!
+ * Passes the (X,Y) coordinates of robot1, robot2 and ball objects into the CoordinatesAreBad method, returning true if any one coordinate is invalid.
+ */
+bool AIControl::IsFailedFrame(RobotState robot1, RobotState robot2, Vector2 ball) {
+	
+	bool isInvalidRobot1 = AIControl::CoordinatesAreBad(robot1.Position());
+	bool isInvalidRobot2 = AIControl::CoordinatesAreBad(robot2.Position());
+	bool isInvalidBall = AIControl::CoordinatesAreBad(ball);
+
+	return isInvalidRobot1 || isInvalidRobot2 || isInvalidBall;
+}
+
+#if defined(TEST)
+/*!
+ * Outputs several data files containing points, for use by the plotting/plot_path.sh script - this allows us 
+ * to visualise a particular frame of AI output data.
+ *
+ * Only available when TEST is defined.
 */
-void AIControl::Plot(std::list<Vector2> aStarPath, std::vector<Vector2> ourPrevious, Vector2 destination, std::vector<Vector2> ballPrevious, Vector2 ballFuture)
+void AIControl::Plot(std::list<RobotState> aStarPath, std::vector<RobotState> ourPrevious, RobotState destination, std::vector<Vector2> ballPrevious, Vector2 ballFuture)
 {
 	std::ofstream myfile;
 	myfile.open("astar_path.dat");
 
-	std::list<Vector2>::iterator it;
+	std::list<RobotState>::iterator it;
 
 	for (it = aStarPath.begin(); it != aStarPath.end(); it++)
 	{
@@ -149,7 +206,7 @@ void AIControl::Plot(std::list<Vector2> aStarPath, std::vector<Vector2> ourPrevi
 			myfile << std::endl;
 		}
 
-		myfile << it->ToString();
+		myfile << it->Position().ToString();
 	}
 
 	myfile.close();
@@ -170,21 +227,22 @@ void AIControl::Plot(std::list<Vector2> aStarPath, std::vector<Vector2> ourPrevi
 
 	myfile.open("dest_pos.dat");
 
-	myfile << destination.ToString();
+	myfile << destination.Position().ToString();
 
 	myfile.close();
 
 	myfile.open("our_current.dat");
 
-	myfile << ourPrevious[1].ToString() << std::endl;
-	myfile << ourPrevious[0].ToString() << std::endl;
-	myfile << aStarPath.front().ToString();
+	myfile << ourPrevious[1].Position().ToString() << std::endl;
+	myfile << ourPrevious[0].Position().ToString() << std::endl;
+	myfile << aStarPath.front().Position().ToString();
 
 	myfile.close();
 
 	myfile.open("our_future.dat");
 
-	myfile << aStarPath.front().ToString();
+	myfile << aStarPath.front().Position().ToString();
 
 	myfile.close();
 }
+#endif

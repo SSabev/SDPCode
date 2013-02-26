@@ -17,6 +17,7 @@ AI/test/*
 AI/premake4
 AI/Makefile
 AI/SDP-AI.*
+AI/docs/*
 Infinity.pro.user
 Infinity-debug-Desktop-Debug/*
 Infinity-debug-Desktop-Release/*

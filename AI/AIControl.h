@@ -17,7 +17,7 @@
 class AIControl
 {
 
-#if defined(TEST)
+#if defined(STANDALONE)
 	// This facilitates testing of private and protected functions.
 	friend class AStarUnitTests;
 #endif
@@ -32,7 +32,12 @@ public:
 	void RunAI();
 	
 private:
-	void Plot(std::list<Vector2> aStarPath, std::vector<Vector2> ourPrevious, Vector2 destination, std::vector<Vector2> ballPrevious, Vector2 ballFuture);
+	bool CoordinatesAreBad(Vector2 objectPosition);
+	bool IsFailedFrame(RobotState robot1, RobotState robot2, Vector2 ball);
+
+#if defined(TEST)
+	void Plot(std::list<RobotState> aStarPath, std::vector<RobotState> ourPrevious, RobotState destination, std::vector<Vector2> ballPrevious, Vector2 ballFuture);
+#endif
 
 	Foresee m_foresee;
 	Eagle m_eagle;

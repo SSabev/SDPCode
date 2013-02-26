@@ -5,12 +5,14 @@ char MOTOR_REAR;
 char KINCKER;
 
  int  LED = 13; // LED on pin 13
+ int  PWM1 = 9;
  
  int dataIn = 0;
 
  void setup() {
    Serial.begin(9600); 
    pinMode(LED, OUTPUT);
+   pinMode(PWM1, OUTPUT);
  }
 
  void loop() {
@@ -40,7 +42,8 @@ char KINCKER;
         Serial.println(MOTOR_LEFT, DEC);
      }
    }
+   analogWrite(PWM1, MOTOR_FRONT);
    
-   delay(500);
+   delay(50);
  }
 

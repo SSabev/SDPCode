@@ -50,3 +50,6 @@ INCLUDEPATH += \
 
 CONFIG += network
 QT += network
+
+RESOURCES += \
+    GUI/rc.qrc

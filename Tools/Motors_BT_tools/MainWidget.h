@@ -11,6 +11,8 @@
 
 #include "ui_MainWidget.h"
 
+#include "KeysWidget.h"
+
 class CMainWidget
         : public QWidget
         , public Ui::MainWidget
@@ -38,6 +40,8 @@ private slots:
 
     void ConnResult(bool isConnected);
 
+    void MoveInDir(int dir);
+
 private:
     EStatus m_status;
 
@@ -51,6 +55,7 @@ private:
 
     QThread* m_thread;
 
+    CKeysWidget keysWdgt;
 };
 
 #endif // MAINWIDGET_H

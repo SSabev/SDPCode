@@ -16,10 +16,10 @@ typedef struct{
     //! TODO: need to identify data that is required
     ///       for robot movement
     /// For testing (Milestone 1) it's size is 2 integers
-    char motor_left;
-    char motor_right;
-    char motor_front;
-    char motor_rear;
+    unsigned char motor_left;
+    unsigned char motor_right;
+    unsigned char motor_front;
+    unsigned char motor_rear;
     unsigned char kicker;
 } __attribute__ ((packed)) TRobotData;
 
@@ -28,30 +28,28 @@ TRobotData _robotData;
 CMainWidget::CMainWidget (QWidget *parent)
     : QWidget (parent)
     , m_status (eDisconnected)
+    , keysWdgt(this)
 {
     setupUi (this);
     sendValsBtn->setEnabled(false);
 
     connect (connectBtn,    SIGNAL (clicked()), this, SLOT (BT_Connect()));
     connect (disconnectBtn, SIGNAL (clicked()), this, SLOT (BT_Disconnect()));
-    connect (sendValsBtn,   SIGNAL(clicked()),  this, SLOT (SendVals()));
+    connect (sendValsBtn,   SIGNAL (clicked()),  this, SLOT (SendVals()));
     connect (exitBtn,       SIGNAL (clicked()), this, SLOT (ExitSlot()));
 
-    memcpy (&m_arduinoMAC, ARDUINO_MAC, 18);
+    connect (&keysWdgt,     SIGNAL(Directions(int)), this, SLOT(MoveInDir(int)));
 
-    // allocate a socket
-//    m_Socket = socket(AF_BLUETOOTH, SOCK_STREAM, BTPROTO_RFCOMM);
+    memcpy (&m_arduinoMAC, ARDUINO_MAC, 18);
 
     // set the connection parameters (who to connect to)
     m_arduinoAddr.rc_family = AF_BLUETOOTH;
     m_arduinoAddr.rc_channel = 1;
     str2ba (m_arduinoMAC, &m_arduinoAddr.rc_bdaddr);
 
-//    // put socket in non-blocking mode
-//    socketFlags = fcntl ( m_Socket, F_GETFL, 0 );
-//    fcntl ( m_Socket, F_SETFL, socketFlags | O_NONBLOCK );
-
     memset (&_robotData, 0, sizeof (_robotData));
+
+    keysWdgt.show();
 }
 
 void CMainWidget::BT_Connect()
@@ -130,17 +128,17 @@ void CMainWidget::SendVals()
     int status;
     if (m_status != eConnected) return;
 
-    _robotData.motor_left = (char) leftBox->value();
-    _robotData.motor_right = (char) rightBox->value();
-    _robotData.motor_rear = (char) rearBox->value();
-    _robotData.motor_front = (char) frontBox->value();
+    _robotData.motor_left = (unsigned char) leftBox->value();
+    _robotData.motor_right = (unsigned char) rightBox->value();
+    _robotData.motor_rear = (unsigned char) rearBox->value();
+    _robotData.motor_front = (unsigned char) frontBox->value();
 
     status = ::send (m_Socket, (void *) &_robotData, sizeof(_robotData), 0);
 
     if (status != sizeof(_robotData)) {
          QMessageBox::warning(this,
                               "Sending Values",
-                              QString("Sending: %1 , actually sent: %2")
+                              QString("Sending: %1 bytes, actually sent: %2 bytes")
                                 .arg(sizeof(_robotData))
                                 .arg(status),
                               QMessageBox::Ok);
@@ -151,4 +149,47 @@ void CMainWidget::ExitSlot()
 {
     BT_Disconnect();
     qApp->exit();
+}
+
+void CMainWidget::MoveInDir(int dir)
+{
+    int status;
+    if (m_status != eConnected) return;
+
+    if(dir & CKeysWidget::eLeft)
+        _robotData.motor_left = (unsigned char) leftBox->value();
+    else
+        _robotData.motor_left = 0;
+
+    if(dir & CKeysWidget::eRight)
+         _robotData.motor_right = (unsigned char) rightBox->value();
+    else
+        _robotData.motor_right = 0;
+
+    if(dir & CKeysWidget::eUp)
+        _robotData.motor_front = (unsigned char) frontBox->value();
+    else
+        _robotData.motor_front = 0;
+
+    if(dir & CKeysWidget::eDown)
+        _robotData.motor_rear = (unsigned char) rearBox->value();
+    else
+        _robotData.motor_rear = 0;
+
+//    printf("Front: %d\nRear: %d\nLeft: %d\nRight: %d\n\n\n",
+//           (int)_robotData.motor_front,
+//           (int)_robotData.motor_rear,
+//           (int)_robotData.motor_left,
+//           (int)_robotData.motor_right);
+
+    status = ::send (m_Socket, (void *) &_robotData, sizeof(_robotData), 0);
+
+    if (status != sizeof(_robotData)) {
+         QMessageBox::warning(this,
+                              "Sending Values",
+                              QString("Sending: %1 bytes, actually sent: %2 bytes")
+                                .arg(sizeof(_robotData))
+                                .arg(status),
+                              QMessageBox::Ok);
+    }
 }

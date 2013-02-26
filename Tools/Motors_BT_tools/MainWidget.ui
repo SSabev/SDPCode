@@ -30,10 +30,10 @@
          <item>
           <widget class="QSpinBox" name="frontBox">
            <property name="minimum">
-            <number>-128</number>
+            <number>0</number>
            </property>
            <property name="maximum">
-            <number>127</number>
+            <number>255</number>
            </property>
           </widget>
          </item>
@@ -51,10 +51,10 @@
          <item>
           <widget class="QSpinBox" name="rearBox">
            <property name="minimum">
-            <number>-128</number>
+            <number>0</number>
            </property>
            <property name="maximum">
-            <number>127</number>
+            <number>255</number>
            </property>
           </widget>
          </item>
@@ -72,10 +72,10 @@
          <item>
           <widget class="QSpinBox" name="leftBox">
            <property name="minimum">
-            <number>-128</number>
+            <number>0</number>
            </property>
            <property name="maximum">
-            <number>127</number>
+            <number>255</number>
            </property>
           </widget>
          </item>
@@ -93,10 +93,10 @@
          <item>
           <widget class="QSpinBox" name="rightBox">
            <property name="minimum">
-            <number>-128</number>
+            <number>0</number>
            </property>
            <property name="maximum">
-            <number>127</number>
+            <number>255</number>
            </property>
           </widget>
          </item>
