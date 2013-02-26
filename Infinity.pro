@@ -1,8 +1,16 @@
+DEFINES += ARDUINO_BLD
+#DEFINES += NXT_BUILD
+
+CONFIG += network
+QT += network
+
+RESOURCES += \
+    GUI/rc.qrc
+
 HEADERS += \
     GUI/MainWindow.h \
     GUI/Tools/TeamCfgDlg.h \
     GUI/Comm/VisionComm.h \
-    GUI/Comm/BTComm.h \
     AI/AIControl.h \
     AI/AStar/AStarNode.h \
     AI/AStar/AStar.h \
@@ -16,7 +24,9 @@ HEADERS += \
     Shared/Logging.h \
     Navigation/Navigation.h \
     GUI/Tools/LoggingWdgt.h \
-    GUI/Tools/CVisionMod.h
+    GUI/Tools/CVisionMod.h \
+    GUI/Comm/ThreadedClasses.h \
+    GUI/Comm/IBTComm.h
 
 SOURCES += \
     GUI/SharedMem.cpp \
@@ -25,7 +35,6 @@ SOURCES += \
     GUI/Logging.cpp \
     GUI/Tools/TeamCfgDlg.cpp \
     GUI/Comm/VisionComm.cpp \
-    GUI/Comm/BTComm.cpp \
     AI/AIControl.cpp \
     AI/AStar/AStarNode.cpp \
     AI/AStar/AStar.cpp \
@@ -36,7 +45,8 @@ SOURCES += \
     AI/RobotState.cpp \
     Navigation/Navigation.cpp \
     GUI/Tools/LoggingWdgt.cpp \
-    GUI/Tools/CVisionMod.cpp
+    GUI/Tools/CVisionMod.cpp \
+    GUI/Comm/ThreadedClasses.cpp
 
 FORMS += \
     GUI/mainwindow.ui \
@@ -48,8 +58,25 @@ INCLUDEPATH += \
     $$PWD/AI \
     $$PWD/Navigation
 
-CONFIG += network
-QT += network
 
-RESOURCES += \
-    GUI/rc.qrc
+contains(DEFINES, ARDUINO_BLD) {
+HEADERS += GUI/Comm/ArduinoComm.h
+
+SOURCES += GUI/Comm/ArduinoComm.cpp
+
+LIBS += -lbluetooth
+
+contains(DEFINES, NXT_BUILD) {
+error(There can be only one communicator)
+}
+}
+
+contains(DEFINES, NXT_BUILD) {
+HEADERS += GUI/Comm/BTComm.h
+
+SOURCES += GUI/Comm/BTComm.cpp
+
+contains(DEFINES, ARDUINO_BLD) {
+error(There can be only one communicator)
+}
+}

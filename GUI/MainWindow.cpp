@@ -6,6 +6,16 @@
 
 #include <string.h>
 
+#ifdef ARDUINO_BLD
+#include "Comm/ArduinoComm.h"
+#endif
+#ifdef NXT_BUILD
+#include "Comm/BTComm.h"
+#endif
+#if (!defined ARDUINO_BLD && !defined NXT_BUILD) || (defined ARDUINO_BLD && defined NXT_BUILD)
+#error Must specify which type of communicator to use
+#endif
+
 #define TIMER_INTERVAL_MS 100
 
 MainWindow::MainWindow()
@@ -83,7 +93,16 @@ void MainWindow::InitSytem()
     // set current state as IDLE
     sharedMem.systemState = eIDLE;
 
-    m_btComm = new CBtComm(this);
+//    m_btComm = new CBtComm(this);
+#ifdef ARDUINO_BLD
+    CArduinoComm *btComm = new CArduinoComm(this);
+    mIBtComm = (IBTComm *) btComm;
+#endif
+#ifdef NXT_BUILD
+    CBtComm *btComm = new CBtComm(this);
+    mIBtComm = (IBTComm *) btComm;
+#endif
+
     m_visionComm = new CVisionComm(this);
 
     sharedMem.currentIdx = 0;
@@ -98,7 +117,7 @@ void MainWindow::InitSytem()
 
 void MainWindow::ConnToBT()
 {
-    m_btComm->ConnectToBT();
+    mIBtComm->ConnectToRobot();
 }
 
 void MainWindow::ConnToVision()
@@ -117,6 +136,7 @@ void MainWindow::TimerCallBack()
     if(!sharedMem.systemStatus == eOperational){
         return;
     }
+    /*
 
     // Read Modules new information
     m_btComm->ReadData(
@@ -138,4 +158,5 @@ void MainWindow::TimerCallBack()
 
     // increment index
     sharedMem.currentIdx = (sharedMem.currentIdx+1) & SH_MEM_SIZE_MASK;
+    */
 }

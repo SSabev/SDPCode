@@ -6,18 +6,21 @@
 
 #include <SharedMem.h>
 
+#include "IBTComm.h"
+
 class CBtComm
         : public QWidget
+        , IBTComm
 {
     Q_OBJECT
 public:
     CBtComm(QWidget *parent = 0);
     ~CBtComm();
 
-    void SendData(TRobotData *data);
-    bool ReadData(TRobotState *data);
+    virtual bool SendData(TRobotData *data);
+    virtual bool ReadData(TRobotState *data);
 
-    void ConnectToBT();
+    virtual void ConnectToRobot();
 
 private slots:
     void ConnectedSlot();

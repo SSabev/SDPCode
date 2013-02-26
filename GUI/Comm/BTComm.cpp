@@ -40,7 +40,7 @@ void CBtComm::ConnLost()
         m_clientSock.connectToHost("localhost", BT_COMM_SOCKET_PORT);
 }
 
-void CBtComm::ConnectToBT()
+void CBtComm::ConnectToRobot()
 {
     if(m_clientSock.state() == QAbstractSocket::ConnectedState)
         return;
@@ -56,23 +56,27 @@ void CBtComm::SockErr()
                         .data());
 }
 
-void CBtComm::SendData(TRobotData *data)
+bool CBtComm::SendData(TRobotData *data)
 {
     int written;
 
     if(m_clientSock.state() != QAbstractSocket::ConnectedState){
         loggingObj->ShowMsg("BTCOMM: failed to send data - not connected");
-        return;
+        return false;
     }
 
     written = m_clientSock.write((const char *)data, sizeof(TRobotData));
 
-    if(written != sizeof(TRobotData))
+    if(written != sizeof(TRobotData)){
         loggingObj->ShowMsg(QString("BTCOMM: written size differs from expected: expected %1, written %2")
                             .arg(sizeof(TRobotData))
                             .arg(written)
                             .toAscii()
                             .data());
+        return false;
+    }
+    else
+        return true;
 }
 
 bool CBtComm::ReadData(TRobotState *data)
