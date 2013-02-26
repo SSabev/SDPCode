@@ -12,15 +12,22 @@
 
 #define ARDUINO_MAC "00:12:12:24:71:46"
 
+//! As specified in the Docs/BT_protocol.doc in git repo
+/// Size: 5 bytes
 typedef struct{
-    //! TODO: need to identify data that is required
-    ///       for robot movement
-    /// For testing (Milestone 1) it's size is 2 integers
-    unsigned char motor_left;
-    unsigned char motor_right;
-    unsigned char motor_front;
-    unsigned char motor_rear;
-    unsigned char kicker;
+    unsigned char motor_left_speed  : 7;
+    unsigned char motor_left_dir    : 1;
+
+    unsigned char motor_right_speed : 7;
+    unsigned char motor_right_dir   : 1;
+
+    unsigned char motor_rear_speed  : 7;
+    unsigned char motor_rear_dir    : 1;
+
+    unsigned char motor_front_speed : 7;
+    unsigned char motor_front_dir   : 1;
+
+    unsigned char kicker            : 1;
 } __attribute__ ((packed)) TRobotData;
 
 TRobotData _robotData;
@@ -128,10 +135,15 @@ void CMainWidget::SendVals()
     int status;
     if (m_status != eConnected) return;
 
-    _robotData.motor_left = (unsigned char) leftBox->value();
-    _robotData.motor_right = (unsigned char) rightBox->value();
-    _robotData.motor_rear = (unsigned char) rearBox->value();
-    _robotData.motor_front = (unsigned char) frontBox->value();
+    _robotData.motor_left_speed = (unsigned char) leftBox->value();
+    _robotData.motor_right_speed = (unsigned char) rightBox->value();
+    _robotData.motor_rear_speed = (unsigned char) rearBox->value();
+    _robotData.motor_front_speed = (unsigned char) frontBox->value();
+
+    _robotData.motor_front_dir = frontChBx->isChecked() ? 1 : 0;
+    _robotData.motor_rear_dir = frontChBx->isChecked() ? 1 : 0;
+    _robotData.motor_left_dir = frontChBx->isChecked() ? 1 : 0;
+    _robotData.motor_right_dir = frontChBx->isChecked() ? 1 : 0;
 
     status = ::send (m_Socket, (void *) &_robotData, sizeof(_robotData), 0);
 
@@ -157,24 +169,29 @@ void CMainWidget::MoveInDir(int dir)
     if (m_status != eConnected) return;
 
     if(dir & CKeysWidget::eLeft)
-        _robotData.motor_left = (unsigned char) leftBox->value();
+        _robotData.motor_left_speed = (unsigned char) leftBox->value();
     else
-        _robotData.motor_left = 0;
+        _robotData.motor_left_speed = 0;
 
     if(dir & CKeysWidget::eRight)
-         _robotData.motor_right = (unsigned char) rightBox->value();
+         _robotData.motor_right_speed = (unsigned char) rightBox->value();
     else
-        _robotData.motor_right = 0;
+        _robotData.motor_right_speed = 0;
 
     if(dir & CKeysWidget::eUp)
-        _robotData.motor_front = (unsigned char) frontBox->value();
+        _robotData.motor_front_speed = (unsigned char) frontBox->value();
     else
-        _robotData.motor_front = 0;
+        _robotData.motor_front_speed = 0;
 
     if(dir & CKeysWidget::eDown)
-        _robotData.motor_rear = (unsigned char) rearBox->value();
+        _robotData.motor_rear_speed = (unsigned char) rearBox->value();
     else
-        _robotData.motor_rear = 0;
+        _robotData.motor_rear_speed = 0;
+
+    _robotData.motor_front_dir = frontChBx->isChecked() ? 1 : 0;
+    _robotData.motor_rear_dir = frontChBx->isChecked() ? 1 : 0;
+    _robotData.motor_left_dir = frontChBx->isChecked() ? 1 : 0;
+    _robotData.motor_right_dir = frontChBx->isChecked() ? 1 : 0;
 
 //    printf("Front: %d\nRear: %d\nLeft: %d\nRight: %d\n\n\n",
 //           (int)_robotData.motor_front,
