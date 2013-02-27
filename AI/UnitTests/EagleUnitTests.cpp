@@ -11,9 +11,11 @@ EagleUnitTests::EagleUnitTests()
 	TEST_ADD(EagleUnitTests::EagleIdentifyTargetBallOutOfRangeY);
     TEST_ADD(EagleUnitTests::EagleIdentifyTargetBallOutOfRangeXAndY);
     TEST_ADD(EagleUnitTests::EagleDoWeHaveBall);
-    TEST_ADD(EagleUnitTests::EagleDoWeHaveBallBoundaryPass);
-    TEST_ADD(EagleUnitTests::EagleDoWeHaveBallBoundaryFail);
-    TEST_ADD(EagleUnitTests::EagleDoWeHaveBallWrapTest);
+    TEST_ADD(EagleUnitTests::EagleDoWeHaveBall_OrientationBoundaryPass);
+    TEST_ADD(EagleUnitTests::EagleDoWeHaveBall_OrientationBoundaryFail);
+    TEST_ADD(EagleUnitTests::EagleDoWeHaveBall_OrientationWrapTest);
+    TEST_ADD(EagleUnitTests::EagleDoWeHaveBall_DistanceBoundaryPass);
+    TEST_ADD(EagleUnitTests::EagleDoWeHaveBall_DistanceBoundaryFail);
 }
 
 void EagleUnitTests::EagleIdentifyTarget()
@@ -80,7 +82,7 @@ void EagleUnitTests::EagleDoWeHaveBall()
 	TEST_ASSERT(eagle.DoWeHaveBall(ourRobotState, ball) == true);
 }
 
-void EagleUnitTests::EagleDoWeHaveBallBoundaryPass()
+void EagleUnitTests::EagleDoWeHaveBall_OrientationBoundaryPass()
 {
 	Eagle eagle;
 
@@ -92,7 +94,7 @@ void EagleUnitTests::EagleDoWeHaveBallBoundaryPass()
 	TEST_ASSERT(eagle.DoWeHaveBall(ourRobotState, ball) == true);
 }
 
-void EagleUnitTests::EagleDoWeHaveBallBoundaryFail()
+void EagleUnitTests::EagleDoWeHaveBall_OrientationBoundaryFail()
 {
 	Eagle eagle;
 
@@ -104,7 +106,7 @@ void EagleUnitTests::EagleDoWeHaveBallBoundaryFail()
 	TEST_ASSERT(eagle.DoWeHaveBall(ourRobotState, ball) == false);
 }
 
-void EagleUnitTests::EagleDoWeHaveBallWrapTest()
+void EagleUnitTests::EagleDoWeHaveBall_OrientationWrapTest()
 {
 	Eagle eagle;
 
@@ -114,4 +116,28 @@ void EagleUnitTests::EagleDoWeHaveBallWrapTest()
     Vector2 ball(50, 50);
 
 	TEST_ASSERT(eagle.DoWeHaveBall(ourRobotState, ball) == true);
+}
+
+void EagleUnitTests::EagleDoWeHaveBall_DistanceBoundaryPass()
+{
+	Eagle eagle;
+
+    eagle.SetPitchDimensions(244, 122);
+
+    RobotState ourRobotState(Vector2(10, 10), 7.283185307179586f);    
+    Vector2 ball(63, 63);
+
+	TEST_ASSERT(eagle.DoWeHaveBall(ourRobotState, ball) == true);
+}
+
+void EagleUnitTests::EagleDoWeHaveBall_DistanceBoundaryFail()
+{
+	Eagle eagle;
+
+    eagle.SetPitchDimensions(244, 122);
+
+    RobotState ourRobotState(Vector2(10, 10), 7.283185307179586f);    
+    Vector2 ball(64, 64);
+
+	TEST_ASSERT(eagle.DoWeHaveBall(ourRobotState, ball) == false);
 }
