@@ -1,3 +1,5 @@
+DEFINES += BUILDING_ON_DICE
+
 FORMS += \
     MainWidget.ui
 
@@ -13,3 +15,9 @@ SOURCES += \
     KeysWidget.cpp
 
 LIBS += -lbluetooth
+
+contains(DEFINES, BUILDING_ON_DICE) {
+INCLUDEPATH += $$PWD/../../Bluez_DICE/include
+
+LIBS += -L$$PWD/../../Bluez_DICE/lib64
+}

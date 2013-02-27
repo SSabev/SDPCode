@@ -8,9 +8,12 @@
 class EagleUnitTests : public Test::Suite
 {
 public:
-EagleUnitTests();
+    EagleUnitTests();
 
-//private:
-
+private:
+    void EagleIdentifyTarget();
+    void EagleIdentifyTargetBallOutOfRangeX();
+    void EagleIdentifyTargetBallOutOfRangeY();
+    void EagleIdentifyTargetBallOutOfRangeXAndY();
 };
 #endif
