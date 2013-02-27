@@ -17,13 +17,6 @@
 // probably get away with it. **The speed benefit is insane - factor of 100s**
 const float HEURISTIC_PENALTY = 1.5;
 
-/* This is an experimental optimisation for early termination of paths. As there are few 
- * obstacles on the pitch, in most cases, we can assume that the straightest path is also 
- * optimal. We will decide if this is an appropriate situation in which to terminate early 
- * and if so, terminate after this distance has been travelled. */
-const int EARLY_TERMINATION_COST = 50;
-const bool EARLY_TERMINATION_ENABLED = false;
-
 AStar::AStar()
 {
 
@@ -266,10 +259,4 @@ std::list<Vector2> AStar::FindAdjacentNodes(Vector2 currentNode)
 	}
 
 	return adjacentNodes;
-}
-
-// Decides if it's appropriate to terminate path calculation early. For now, let's just return the define.
-bool AStar::CanTerminateEarly()
-{
-	return EARLY_TERMINATION_ENABLED;
 }

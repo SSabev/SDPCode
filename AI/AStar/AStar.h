@@ -25,7 +25,6 @@ public:
 
 private:
 	std::list<Vector2> FindAdjacentNodes(Vector2 currentNode);
-	bool CanTerminateEarly();
 
 	float m_costTravelled;
 	
