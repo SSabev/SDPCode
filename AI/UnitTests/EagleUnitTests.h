@@ -16,8 +16,10 @@ private:
     void EagleIdentifyTargetBallOutOfRangeY();
     void EagleIdentifyTargetBallOutOfRangeXAndY();
     void EagleDoWeHaveBall();
-    void EagleDoWeHaveBallBoundaryPass();
-    void EagleDoWeHaveBallBoundaryFail();
-    void EagleDoWeHaveBallWrapTest();
+    void EagleDoWeHaveBall_OrientationBoundaryPass();
+    void EagleDoWeHaveBall_OrientationBoundaryFail();
+    void EagleDoWeHaveBall_OrientationWrapTest();
+    void EagleDoWeHaveBall_DistanceBoundaryPass();
+    void EagleDoWeHaveBall_DistanceBoundaryFail();
 };
 #endif
