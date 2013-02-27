@@ -10,6 +10,7 @@
 
 class Eagle
 {
+friend class EagleUnitTests;	
 public:
 	Eagle();
 	
