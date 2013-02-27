@@ -18,6 +18,8 @@ public:
 	RobotState IdentifyTarget(RobotState ourRobotState, RobotState enemyRobotState, Vector2 ballPos);
 
 private:
+	bool DoWeHaveBall(RobotState ourRobotState, Vector2 ballPos); 
+
 	TSystemState m_state;
 
 	int m_pitchSizeX;
