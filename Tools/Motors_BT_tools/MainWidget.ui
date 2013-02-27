@@ -249,6 +249,20 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>frontBox</tabstop>
+  <tabstop>rearBox</tabstop>
+  <tabstop>leftBox</tabstop>
+  <tabstop>rightBox</tabstop>
+  <tabstop>sendValsBtn</tabstop>
+  <tabstop>frontChBx</tabstop>
+  <tabstop>rightChBx</tabstop>
+  <tabstop>leftChBx</tabstop>
+  <tabstop>disconnectBtn</tabstop>
+  <tabstop>connectBtn</tabstop>
+  <tabstop>exitBtn</tabstop>
+  <tabstop>rearChBx</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

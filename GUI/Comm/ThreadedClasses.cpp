@@ -63,7 +63,7 @@ void CReader::process()
     while(true){
         FD_ZERO (&readfds);
         FD_ZERO (&writefds);
-        FD_SET (*m_pSocket, &writefds);
+        FD_SET (*m_pSocket, &readfds);
 
         maxfd = (*m_pSocket) + 1;
 

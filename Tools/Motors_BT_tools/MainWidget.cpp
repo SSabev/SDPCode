@@ -88,7 +88,7 @@ void CMainWidget::BT_Connect()
     m_status = eConnecting;
 
     m_thread = new QThread;
-    connector = new CConnector (&m_arduinoAddr, &m_Socket);
+    connector = new CConnector (&m_Socket);
     connector->moveToThread (m_thread);
 
     connect (connector, SIGNAL (finished (bool)), this, SLOT (ConnResult (bool)));
@@ -104,6 +104,7 @@ void CMainWidget::BT_Connect()
 
 void CMainWidget::ConnResult(bool isConnected)
 {
+    CReader *reader;
     if (!isConnected){
         statLabel->setText("Connection failed");
         m_status = eDisconnected;
@@ -114,7 +115,47 @@ void CMainWidget::ConnResult(bool isConnected)
     sendValsBtn->setEnabled(true);
 
     m_status = eConnected;
+
+    // create reading thread
+    m_thread = new QThread;
+    reader = new CReader(&m_Socket);
+    reader->moveToThread(m_thread);
+
+    connect(reader, SIGNAL(ConnectionLost()), this, SLOT(ConnLost()));
+    connect(reader, SIGNAL(SocketError()), this, SLOT(SocketError()));
+
+    connect(reader, SIGNAL(ConnectionLost()), m_thread, SLOT(quit()));
+    connect(reader, SIGNAL(ConnectionLost()), reader, SLOT(deleteLater()));
+
+    connect(reader, SIGNAL(SocketError()), m_thread, SLOT(quit()));
+    connect(reader, SIGNAL(SocketError()), reader, SLOT(deleteLater()));
+
+    connect(m_thread, SIGNAL(started()), reader, SLOT(process()));
+    connect(m_thread, SIGNAL(finished()), m_thread, SLOT(deleteLater()));
+    connect(m_thread, SIGNAL(terminated()), m_thread, SLOT(deleteLater()));
+
+    m_thread->start();
+
 }
+
+void CMainWidget::ConnLost()
+{
+    printf("BT: Connection lost\n");
+    ::close(m_Socket);
+
+    m_status = eDisconnected;
+    statLabel->setText ("Disconnected");
+}
+
+void CMainWidget::SocketError()
+{
+    printf("BT: Socket error\n");
+    ::close(m_Socket);
+
+    m_status = eDisconnected;
+    statLabel->setText ("Disconnected");
+}
+
 
 void CMainWidget::BT_Disconnect()
 {
@@ -193,11 +234,11 @@ void CMainWidget::MoveInDir(int dir)
     _robotData.motor_left_dir = frontChBx->isChecked() ? 1 : 0;
     _robotData.motor_right_dir = frontChBx->isChecked() ? 1 : 0;
 
-//    printf("Front: %d\nRear: %d\nLeft: %d\nRight: %d\n\n\n",
-//           (int)_robotData.motor_front,
-//           (int)_robotData.motor_rear,
-//           (int)_robotData.motor_left,
-//           (int)_robotData.motor_right);
+    printf("Front: %d\nRear: %d\nLeft: %d\nRight: %d\n\n\n",
+           (int)_robotData.motor_front_speed,
+           (int)_robotData.motor_right_speed,
+           (int)_robotData.motor_left_speed,
+           (int)_robotData.motor_rear_speed);
 
     status = ::send (m_Socket, (void *) &_robotData, sizeof(_robotData), 0);
 
