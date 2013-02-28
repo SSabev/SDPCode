@@ -3,7 +3,7 @@
 
 #include <ui_mainwindow.h>
 
-#include "Comm/BTComm.h"
+#include "Comm/IBTComm.h"
 #include "Comm/VisionComm.h"
 #include "Tools/CVisionMod.h"
 
@@ -25,8 +25,8 @@ public:
     ~MainWindow();
 
 private slots:
-    void NavToBallSlot();
-    void MoveWithBallSlot();
+    void Action1Slot();
+    void Action2Slot();
     void StopeMvmntSlot();
 
     void TeamSetup();
@@ -39,14 +39,14 @@ private:
     void SetupGUI();
     void InitSytem();
 
-    CBtComm        *m_btComm;
+    IBTComm        *mIBtComm;
     CVisionComm    *m_visionComm;
     CNavigation     m_nav;
     CVisionMod     *vision;
 
     AIControl       aiCtrl;
 
-    QTimer         m_timer;
+    QTimer          m_timer;
 };
 
 

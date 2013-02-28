@@ -6,6 +6,16 @@
 
 #include <string.h>
 
+#ifdef ARDUINO_BLD
+#include "Comm/ArduinoComm.h"
+#endif
+#ifdef NXT_BUILD
+#include "Comm/BTComm.h"
+#endif
+#if (!defined ARDUINO_BLD && !defined NXT_BUILD) || (defined ARDUINO_BLD && defined NXT_BUILD)
+#error Must specify which type of communicator to use
+#endif
+
 #define TIMER_INTERVAL_MS 100
 
 MainWindow::MainWindow()
@@ -20,37 +30,21 @@ MainWindow::~MainWindow()
 
 }
 
-void MainWindow::MoveWithBallSlot()
+void MainWindow::Action1Slot()
 {
-//    TEntry *entry = &sharedMem.positioning[sharedMem.currentIdx];
-//    entry->aiData.path[0].position_X = 2;
-//    entry->aiData.path[0].position_Y = 3;
-//    entry->aiData.path[1].position_X = 100;
-//    entry->aiData.path[1].position_Y = 100;
-//    entry->aiData.path[2].position_X = 200;
-//    entry->aiData.path[2].position_Y = 300;
-//    entry->aiData.path[3].position_X = 500;
-//    entry->aiData.path[3].position_Y = 350;
-
-//    entry->aiData.pathLength = 4;
-
-//    vision->UpdateWindow();
-}
-
-void MainWindow::NavToBallSlot()
-{
-    /*
-    sharedMem.systemState = eNavToBall;
+    sharedMem.currentIdx = 0;
     TEntry *entry = &sharedMem.positioning[sharedMem.currentIdx];
 
     m_visionComm->ReadData(&entry->visionData);
-    entry->aiData.path[0].position_X = entry->visionData.ball_x;
-    entry->aiData.path[0].position_Y = entry->visionData.ball_y;
 
-    m_nav.GenerateValues();
+    aiCtrl.RunAI();
 
-    m_btComm->SendData(&entry->robotData);
-    */
+    vision->UpdateWindow();
+}
+
+void MainWindow::Action2Slot()
+{
+
 }
 
 void MainWindow::StopeMvmntSlot()
@@ -62,8 +56,8 @@ void MainWindow::SetupGUI()
 {
     setupUi(this);
 
-    connect(moveWithBallBtn, SIGNAL(clicked()), this, SLOT(MoveWithBallSlot()));
-    connect(NavToBallBtn, SIGNAL(clicked()), this, SLOT(NavToBallSlot()));
+    connect(actionBtn1, SIGNAL(clicked()), this, SLOT(Action1Slot()));
+    connect(actionBtn2, SIGNAL(clicked()), this, SLOT(Action2Slot()));
     connect(stopBtn, SIGNAL(clicked()), this, SLOT(StopeMvmntSlot()));
 
     connect(connToVisionBtn, SIGNAL(clicked()), this, SLOT(ConnToVision()));
@@ -83,7 +77,16 @@ void MainWindow::InitSytem()
     // set current state as IDLE
     sharedMem.systemState = eIDLE;
 
-    m_btComm = new CBtComm(this);
+//    m_btComm = new CBtComm(this);
+#ifdef ARDUINO_BLD
+    CArduinoComm *btComm = new CArduinoComm(this);
+    mIBtComm = (IBTComm *) btComm;
+#endif
+#ifdef NXT_BUILD
+    CBtComm *btComm = new CBtComm(this);
+    mIBtComm = (IBTComm *) btComm;
+#endif
+
     m_visionComm = new CVisionComm(this);
 
     sharedMem.currentIdx = 0;
@@ -98,7 +101,7 @@ void MainWindow::InitSytem()
 
 void MainWindow::ConnToBT()
 {
-    m_btComm->ConnectToBT();
+    mIBtComm->ConnectToRobot();
 }
 
 void MainWindow::ConnToVision()
@@ -117,6 +120,7 @@ void MainWindow::TimerCallBack()
     if(!sharedMem.systemStatus == eOperational){
         return;
     }
+    /*
 
     // Read Modules new information
     m_btComm->ReadData(
@@ -138,4 +142,5 @@ void MainWindow::TimerCallBack()
 
     // increment index
     sharedMem.currentIdx = (sharedMem.currentIdx+1) & SH_MEM_SIZE_MASK;
+    */
 }

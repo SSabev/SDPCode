@@ -40,3 +40,25 @@ RobotState Eagle::IdentifyTarget(RobotState ourRobotState, RobotState enemyRobot
 
 	return targetState;
 }
+
+
+bool Eagle::DoWeHaveBall(RobotState ourRobotState, Vector2 ballPos) {
+	Vector2 robotPos = ourRobotState.Position();
+
+	float angleThresh = M_PI_4;
+	float distanceThresh = 75.0;
+	
+	float angleToBall = fmod(robotPos.GetAngleTo(&ballPos), (2*M_PI));
+	float robotOrientation = fmod(ourRobotState.Orientation(), (2*M_PI));
+
+	float distanceToBall = robotPos.Distance(&ballPos);
+	
+	bool withinOrientationThresh = fabs(robotOrientation - angleToBall) < angleThresh;
+	bool withinProximityThresh = distanceToBall < distanceThresh;
+	
+	if(withinOrientationThresh && withinProximityThresh) {
+		return true;
+	} 
+	
+	return false;
+}

@@ -42,6 +42,9 @@ private slots:
 
     void MoveInDir(int dir);
 
+    void ConnLost();
+    void SocketError();
+
 private:
     EStatus m_status;
 

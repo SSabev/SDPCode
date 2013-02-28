@@ -10,6 +10,8 @@
 #include <sys/socket.h>
 #include <sys/select.h>
 
+//#include <SharedMem.h>
+
 
 class CConnector
         : public QObject
@@ -17,7 +19,7 @@ class CConnector
     Q_OBJECT
 
 public:
-    CConnector(struct sockaddr_rc *m_arduinoAddr, int *socket);
+    CConnector(int *socket);
     ~CConnector();
 
 public slots:
@@ -27,8 +29,31 @@ signals:
     void finished(bool isSuccess);
 
 private:
-    struct sockaddr_rc  *m_arduinoAddr;
-    int                 *m_pSocket;
+    int *m_pSocket;
+};
+
+
+
+
+class CReader
+        : public QObject
+{
+    Q_OBJECT
+
+public:
+    CReader(int *socket);
+    ~CReader();
+
+public slots:
+    void process();
+
+signals:
+    void ConnectionLost();
+    void SocketError();
+    void ReadMissMatch(int read); // we know what is expected
+
+private:
+    int *m_pSocket;
 };
 
 #endif // THREADEDCLASSES_H

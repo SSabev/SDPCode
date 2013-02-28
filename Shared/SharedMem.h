@@ -49,16 +49,39 @@ typedef struct{
     uint32_t      isFailedFrame    : 1;
 } __attribute__ ((packed)) TAIData;
 
+//! As specified in the Docs/BT_protocol.doc in git repo
+/// Size: 5 bytes
 typedef struct{
-    //! TODO: need to identify data that is required
-    ///       for robot movement
-    /// For testing (Milestone 1) it's size is 2 integers
-    unsigned char motor_left;
-    unsigned char motor_right;
-    unsigned char motor_front;
-    unsigned char motor_rear;
-    uint32_t      kicker    : 1;
+    unsigned char motor_left_speed  : 7;
+    unsigned char motor_left_dir    : 1;
+
+    unsigned char motor_right_speed : 7;
+    unsigned char motor_right_dir   : 1;
+
+    unsigned char motor_rear_speed  : 7;
+    unsigned char motor_rear_dir    : 1;
+
+    unsigned char motor_front_speed : 7;
+    unsigned char motor_front_dir   : 1;
+
+    unsigned char kicker            : 1;
 } __attribute__ ((packed)) TRobotData;
+
+//! As specified in the Docs/BT_protocol.doc in git repo
+/// Size: 1 byte
+typedef struct{
+    unsigned char r_sensor    : 1;
+    unsigned char l_sensor    : 1;
+    unsigned char ball_sensor : 1;
+    unsigned char reserved    : 5;
+} __attribute__ ((packed)) TRobotState;
+
+// Wrapper structure for int alingnment
+typedef struct{
+    TRobotData  sendData;       /// 5 bytes
+    TRobotState receiveData;    /// 1 byte
+    int16_t     reserved;       /// 2 bytes
+}  __attribute__ ((packed)) TRobot;
 
 typedef struct{
     unsigned    yellow_x;
@@ -75,25 +98,21 @@ typedef struct{
     unsigned    timestamp;
 } __attribute__ ((packed)) TVisionData;
 
-typedef struct{
-    unsigned char r_sensor  : 1;
-    unsigned char l_sensor  : 1;
-    unsigned char have_ball : 1;
-} __attribute__ ((packed)) TRobotState;
+
 
 typedef struct
 {
     TVisionData     visionData;
-    TRobotData      robotData;
-    TRobotState     robotState;
+    TRobot          robot;
     TAIData         aiData;
 } __attribute__ ((packed))  TEntry;
 
 typedef enum{
     eNonOperational = 0,
-    eBTPresent      = 1,
+    eBTConnected    = 1,
     eVisionPresent  = (1 << 1),
-    eOperational    = (eBTPresent | eVisionPresent)
+    eOperational    = (eBTConnected | eVisionPresent),
+    eBTDisconnected = (~eBTConnected)
 } TSystemStatus;
 
 typedef struct
