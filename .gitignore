@@ -8,6 +8,8 @@
 *.profile
 *~
 
+*.pro.user
+
 GUI_release/*
 GUI_Release/*
 GUI/GUI.pro.user
