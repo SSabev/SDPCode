@@ -95,12 +95,13 @@ void AIControl::RunAI()
 	m_eagle.SetSharedData(sharedMem.systemState, sharedMem.pitchCfg.pitchWidth, sharedMem.pitchCfg.pitchHeight, sharedMem.pitchSide);
 	RobotState targetState = m_eagle.IdentifyTarget(ourRobotFuture, enemyRobotFuture, ballFuture);
 
-	// Check if we should kick from our current state.
+	// Check if we have the ball and should kick from our current state.
+	bool doWeHaveBall = m_eagle.DoWeHaveBall(ourRobotFuture, ballFuture);
 	bool shouldKick = m_eagle.ShouldWeShoot(ourRobotFuture, enemyRobotFuture, ballFuture);
 
 	// Using A*, generate the best path to the target.
 	m_aStar.SetSharedData(sharedMem.pitchCfg.pitchWidth, sharedMem.pitchCfg.pitchHeight, sharedMem.pitchSide);
-	std::list<RobotState> aStarPath = m_aStar.GeneratePath(ourRobotFuture, targetState);
+	std::list<RobotState> aStarPath = m_aStar.GeneratePath(ourRobotFuture, targetState, doWeHaveBall);
 
 	// If the A* has returned a blank path, it found it impossible to complete.
 	if (aStarPath.size() == 0)
