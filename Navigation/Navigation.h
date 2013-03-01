@@ -15,7 +15,8 @@ public:
     CNavigation();
 
     void GenerateValues();
-
+    void Holonomic();
+    void RotateToOrient(float targetOrient);
 private:
     void GenerateLinear(TEntry *entry);
     void GenerateAngular(TEntry *entry);
