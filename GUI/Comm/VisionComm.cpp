@@ -2,6 +2,7 @@
 
 #include <Sockets.h>
 #include <Logging.h>
+#include <SharedMem.h>
 
 #include "VisionComm.h"
 
@@ -19,7 +20,22 @@ CVisionComm::CVisionComm(QWidget *parent)
 
 void CVisionComm::ConnedToServ()
 {
+    char sendByte;
+    int read;
+
+    TPitchCfg cfg;
+
     loggingObj->ShowMsg("VISIONCOMM: connected");
+
+    // read pitch cfg - first data block received from the Vision module
+    sendByte = VISION_REQUEST_NAV;
+    localSocket.write(&sendByte, 1);
+    localSocket.waitForBytesWritten();
+    read = localSocket.read((char *) &cfg, sizeof(TPitchCfg));
+    if(read != sizeof(TPitchCfg))
+        loggingObj->ShowMsg("VISIONCOMM: failed to read the pitch configuration");
+    else
+        sharedMem.pitchCfg = cfg;
 }
 
 void CVisionComm::ConnectToVision()
