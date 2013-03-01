@@ -8,6 +8,11 @@
 *.profile
 *~
 
+<<<<<<< HEAD
+=======
+*.pro.user
+
+>>>>>>> 21103f7051bb01a9f8e41b8e7c9656a60ea98a9f
 GUI_release/*
 GUI_Release/*
 GUI/GUI.pro.user
