@@ -15,12 +15,7 @@ public:
     CNavigation();
 
     void GenerateValues();
-    void Holonomic();
-    void RotateToOrient(float targetOrient);
 private:
-    void GenerateLinear(TEntry *entry);
-    void GenerateAngular(TEntry *entry);
-    void GenerateMaxAngular(TEntry *entry);
 
     TTarget m_target;
 
