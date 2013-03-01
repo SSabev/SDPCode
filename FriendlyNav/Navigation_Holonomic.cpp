@@ -181,13 +181,13 @@ else {
         motorSpeed[2] = forwardspeed + rotatespeed;
         motorSpeed[3] = rightspeed + rotatespeed;
 
-	if (distToTarget < 65){
+//	if (distToTarget < 65){
 //send kick command!
-entry->robotData.kicker =  1;
-	}
-else {
-entry->robotData.kicker =  0;
-}
+//entry->robotData.kicker =  1;
+//	}
+//else {
+//entry->robotData.kicker =  0;
+//}
 
   //Send the speeds
 //     if(m_ourOrientation <= M_PI_2 || m_ourOrientation > 3* M_PI_2)

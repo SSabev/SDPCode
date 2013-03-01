@@ -1,45 +1,14 @@
----------------------------------------------------------------------
-
-2013-02-08 13:57:19
+2013-03-01 14:59:32
 Results of test on pitch 0 
 The current thresholds are:
-{'blue': [[83, 54, 74], [115, 255, 255]], 'ball': [[0, 159, 134], [13, 246, 255]], 'yellow': [[26, 92, 255], [29, 149, 255]]}
+{'blue': [[72, 29, 0], [223, 255, 255]], 'ball': [[0, 159, 93], [13, 226, 232]], 'yellow': [[16, 53, 169], [41, 255, 255]]}
 
 Percent recognized (not percent correct): 
-Yellow: 	 0/5 	 0.000000 percents 
-Blue:   	 5/5 	 100.000000 percents 
-Ball:   	 5/5 	 100.000000 percents 
+Yellow: 	 89/92 	 96.739130 percents 
+Blue:   	 91/92 	 98.913043 percents 
+Ball:   	 81/92 	 88.043478 percents 
 
 List of files with objects not recognized:
-['P0-00001.jpg', 'P0-00002.jpg', 'P0-00003.jpg', 'P0-00004.jpg', 'P0-00005.jpg']
+['P0-00011.jpg', 'P0-00012.jpg', 'P0-00014.jpg', 'P0-00026.jpg', 'P0-00028.jpg', 'P0-00039.jpg', 'P0-00041.jpg', 'P0-00042.jpg', 'P0-00043.jpg', 'P0-00045.jpg', 'P0-00046.jpg', 'P0-00048.jpg', 'P0-00076.jpg', 'P0-00077.jpg', 'P0-00088.jpg']
 
----------------------------------------------------------------------
-
-2013-02-08 14:01:32
-Results of test on pitch 0 
-The current thresholds are:
-{'blue': [[83, 54, 74], [115, 255, 255]], 'ball': [[0, 159, 134], [13, 246, 255]], 'yellow': [[26, 92, 255], [29, 149, 255]]}
-
-Percent recognized (not percent correct): 
-Yellow: 	 0/4 	 0.000000 percents 
-Blue:   	 4/4 	 100.000000 percents 
-Ball:   	 4/4 	 100.000000 percents 
-
-List of files with objects not recognized:
-['P0-00001.jpg', 'P0-00002.jpg', 'P0-00003.jpg', 'P0-00004.jpg']
-
----------------------------------------------------------------------
-
-2013-02-08 14:14:35
-Results of test on pitch 0 
-The current thresholds are:
-{'blue': [[83, 54, 74], [115, 255, 255]], 'ball': [[0, 159, 134], [13, 246, 255]], 'yellow': [[26, 92, 255], [29, 149, 255]]}
-
-Percent recognized (not percent correct): 
-Yellow: 	 0/16 	 0.000000 percents 
-Blue:   	 16/16 	 100.000000 percents 
-Ball:   	 16/16 	 100.000000 percents 
-
-List of files with objects not recognized:
-['P0-00001.jpg', 'P0-00002.jpg', 'P0-00003.jpg', 'P0-00004.jpg', 'P0-00005.jpg', 'P0-00006.jpg', 'P0-00007.jpg', 'P0-00008.jpg', 'P0-00009.jpg', 'P0-00010.jpg', 'P0-00011.jpg', 'P0-00012.jpg', 'P0-00013.jpg', 'P0-00014.jpg', 'P0-00015.jpg', 'P0-00016.jpg']
-
+Read errors are in: 'P0-00039.jpg'

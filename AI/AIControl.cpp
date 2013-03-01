@@ -70,7 +70,7 @@ void AIControl::RunAI()
 	Vector2 ballPos(currentEntry->visionData.ball_x, currentEntry->visionData.ball_y);
 
 	// Check that the data that's coming in from shared memory is correct and can be used.
-	if (IsFailedFrame(ourRobot, enemyRobot, ballPos))
+    /*if (IsFailedFrame(ourRobot, enemyRobot, ballPos))
 	{
 		// In this case, the data from vision can't be used.
 		std::string logMessage = "AI believes that data from Vision is bad and can't be used.";
@@ -79,7 +79,7 @@ void AIControl::RunAI()
 
 		currentEntry->aiData.isFailedFrame = 1;
 		return;
-	}
+    }*/
 
 	RobotState ourRobotFuture;
 	RobotState enemyRobotFuture;

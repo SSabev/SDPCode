@@ -22,28 +22,28 @@ MainWindow::~MainWindow()
 
 void MainWindow::MoveWithBallSlot()
 {
-//    TEntry *entry = &sharedMem.positioning[sharedMem.currentIdx];
-//    entry->aiData.path[0].position_X = 2;
-//    entry->aiData.path[0].position_Y = 3;
-//    entry->aiData.path[1].position_X = 100;
-//    entry->aiData.path[1].position_Y = 100;
-//    entry->aiData.path[2].position_X = 200;
-//    entry->aiData.path[2].position_Y = 300;
-//    entry->aiData.path[3].position_X = 500;
-//    entry->aiData.path[3].position_Y = 350;
+    //    TEntry *entry = &sharedMem.positioning[sharedMem.currentIdx];
+    //    entry->aiData.path[0].position_X = 2;
+    //    entry->aiData.path[0].position_Y = 3;
+    //    entry->aiData.path[1].position_X = 100;
+    //    entry->aiData.path[1].position_Y = 100;
+    //    entry->aiData.path[2].position_X = 200;
+    //    entry->aiData.path[2].position_Y = 300;
+    //    entry->aiData.path[3].position_X = 500;
+    //    entry->aiData.path[3].position_Y = 350;
 
-//    entry->aiData.pathLength = 4;
+    //    entry->aiData.pathLength = 4;
 
-//    vision->UpdateWindow();
+    //    vision->UpdateWindow();
 
-//take penlty kick?
+    //take penlty kick?
     TEntry *entry = &sharedMem.positioning[sharedMem.currentIdx];    sharedMem.systemState = eStop;
-	entry->robotData.motor_left =  0;
-        entry->robotData.motor_right =  0;
-        entry->robotData.motor_front =  0;
-        entry->robotData.motor_rear =  0;
-	entry->robotData.kicker = 2;
-         m_btComm->SendData(&entry->robotData);
+    entry->robotData.motor_left =  0;
+    entry->robotData.motor_right =  0;
+    entry->robotData.motor_front =  0;
+    entry->robotData.motor_rear =  0;
+    entry->robotData.kicker = 2;
+    m_btComm->SendData(&entry->robotData);
 
 }
 
@@ -58,7 +58,7 @@ void MainWindow::NavToBallSlot()
     //                                sharedMem.currentIdx]
     //                          .visionData);
     if(entry->visionData.yellow_angle <0)
-         entry->aiData.path[0].orientation = 2*M_PI + entry->visionData.yellow_angle;
+        entry->aiData.path[0].orientation = 2*M_PI + entry->visionData.yellow_angle;
     else
         entry->aiData.path[0].orientation = entry->visionData.yellow_angle;
     entry->aiData.path[0].position_X = entry->visionData.yellow_x;
@@ -67,53 +67,56 @@ void MainWindow::NavToBallSlot()
     entry->aiData.path[1].position_X = entry->visionData.ball_x;
     entry->aiData.path[1].position_Y = entry->visionData.ball_y;
     loggingObj->ShowMsg(QString("yellow x %1,yellow y %2,orient yellow %3,blue x %4,blue y %5,blue orient %6")
-                            .arg(entry->visionData.yellow_x)
-                            .arg(entry->visionData.yellow_y)
-                .arg(entry->visionData.yellow_angle)
-                .arg(entry->visionData.blue_x)
-                .arg(entry->visionData.blue_y)
-                 .arg(entry->visionData.blue_angle)
-            .toAscii()
-                            .data());
+                        .arg(entry->visionData.yellow_x)
+                        .arg(entry->visionData.yellow_y)
+                        .arg(entry->visionData.yellow_angle)
+                        .arg(entry->visionData.blue_x)
+                        .arg(entry->visionData.blue_y)
+                        .arg(entry->visionData.blue_angle)
+                        .toAscii()
+                        .data());
     entry->aiData.path[0].position_X = 0;
     entry->aiData.path[0].position_Y = 0;
     entry->aiData.path[1].position_X =5;
     entry->aiData.path[1].position_Y = 5;
-     entry->aiData.path[0].orientation = -0.1;
+    entry->aiData.path[0].orientation = -0.1;
+
     while(entry->aiData.path[0].orientation<2*M_PI-0.1)
     {
-    entry->aiData.path[0].orientation +=0.1;
-    nav.Holonomic();
-    loggingObj->ShowMsg(QString("x %1,y %2,orient %3,x_target %4,y_target %5,orient_target %6, speed1 %7, speed2 %8,speed3 %9  ,speed4 %10 ")
+        entry->aiData.path[0].orientation +=0.1;
+
+        nav.Holonomic();
+
+        loggingObj->ShowMsg(QString("x %1,y %2,orient %3,x_target %4,y_target %5,orient_target %6, speed1 %7, speed2 %8,speed3 %9  ,speed4 %10 ")
                             .arg(entry->aiData.path[0].position_X)
-                            .arg(entry->aiData.path[0].position_Y)
+                .arg(entry->aiData.path[0].position_Y)
                 .arg(entry->aiData.path[0].orientation)
                 .arg(entry->aiData.path[1].position_X)
                 .arg(entry->aiData.path[1].position_Y)
                 .arg(entry->aiData.path[1].orientation)
-                 .arg(entry->robotData.motor_left)
-             .arg(entry->robotData.motor_right)
-             .arg(entry->robotData.motor_front)
-             .arg(entry->robotData.motor_rear)
-            .toAscii()
-                            .data());
+                .arg(entry->robotData.motor_left)
+                .arg(entry->robotData.motor_right)
+                .arg(entry->robotData.motor_front)
+                .arg(entry->robotData.motor_rear)
+                .toAscii()
+                .data());
     }
     //aiCtrl.RunAI();
 
 
     loggingObj->ShowMsg(QString("x %1,y %2,orient %3,x_target %4,y_target %5,orient_target %6, speed1 %7, speed2 %8,speed3 %9  ,speed4 %10 ")
-                            .arg(entry->aiData.path[0].position_X)
-                            .arg(entry->aiData.path[0].position_Y)
-			    .arg(entry->aiData.path[0].orientation)
-                .arg(entry->aiData.path[1].position_X)
-                .arg(entry->aiData.path[1].position_Y)
-                .arg(entry->aiData.path[1].orientation)
-                 .arg(entry->robotData.motor_left)
-             .arg(entry->robotData.motor_right)
-             .arg(entry->robotData.motor_front)
-             .arg(entry->robotData.motor_rear)
+                        .arg(entry->aiData.path[0].position_X)
+            .arg(entry->aiData.path[0].position_Y)
+            .arg(entry->aiData.path[0].orientation)
+            .arg(entry->aiData.path[1].position_X)
+            .arg(entry->aiData.path[1].position_Y)
+            .arg(entry->aiData.path[1].orientation)
+            .arg(entry->robotData.motor_left)
+            .arg(entry->robotData.motor_right)
+            .arg(entry->robotData.motor_front)
+            .arg(entry->robotData.motor_rear)
             .toAscii()
-                            .data());
+            .data());
 
 
 
@@ -126,13 +129,13 @@ void MainWindow::StopeMvmntSlot()
 {
 
     TEntry *entry = &sharedMem.positioning[sharedMem.currentIdx];    sharedMem.systemState = eStop;
-	entry->robotData.motor_left =  0;
-        entry->robotData.motor_right =  0;
-        entry->robotData.motor_front =  0;
-        entry->robotData.motor_rear =  0;	
-		entry->robotData.kicker = 0;
-         m_btComm->SendData(&entry->robotData);
-         m_timer.stop();
+    entry->robotData.motor_left =  0;
+    entry->robotData.motor_right =  0;
+    entry->robotData.motor_front =  0;
+    entry->robotData.motor_rear =  0;
+    entry->robotData.kicker = 0;
+    m_btComm->SendData(&entry->robotData);
+    m_timer.stop();
 }
 
 void MainWindow::SetupGUI()
@@ -201,45 +204,45 @@ void MainWindow::TimerCallBack()
     // Read Modules new information
     m_btComm->ReadData(
                 &sharedMem.positioning[
-                    sharedMem.currentIdx]
-                .robotState);
+                sharedMem.currentIdx]
+            .robotState);
 
     m_visionComm->ReadData(&entry->visionData);
     //aiCtrl.RunAI();
     if (sharedMem.teamColor == eYellowTeam)
     {
-    if(entry->visionData.yellow_angle <0)
-         entry->aiData.path[0].orientation = 2*M_PI + entry->visionData.yellow_angle;
-    else
-        entry->aiData.path[0].orientation = entry->visionData.yellow_angle;
-    entry->aiData.path[0].position_X = entry->visionData.yellow_x;
-    entry->aiData.path[0].position_Y = entry->visionData.yellow_y;
+        if(entry->visionData.yellow_angle <0)
+            entry->aiData.path[0].orientation = 2*M_PI + entry->visionData.yellow_angle;
+        else
+            entry->aiData.path[0].orientation = entry->visionData.yellow_angle;
+        entry->aiData.path[0].position_X = entry->visionData.yellow_x;
+        entry->aiData.path[0].position_Y = entry->visionData.yellow_y;
     }
     else
     {
         if(entry->visionData.blue_angle <0)
-             entry->aiData.path[0].orientation = 2*M_PI + entry->visionData.blue_angle;
+            entry->aiData.path[0].orientation = 2*M_PI + entry->visionData.blue_angle;
         else
             entry->aiData.path[0].orientation = entry->visionData.blue_angle;
-       entry->aiData.path[0].position_X = entry->visionData.blue_x;
+        entry->aiData.path[0].position_X = entry->visionData.blue_x;
         entry->aiData.path[0].position_Y = entry->visionData.blue_y;
     }
     entry->aiData.path[1].position_X = entry->visionData.ball_x;
     entry->aiData.path[1].position_Y = entry->visionData.ball_y;
-   //  nav.Holonomic();
+    //  nav.Holonomic();
     loggingObj->ShowMsg(QString("x %1,y %2,orient %3,x_target %4,y_target %5,orient_target %6, speed1 %7, speed2 %8,speed3 %9  ,speed4 %10 ")
-                            .arg(entry->aiData.path[0].position_X)
-                            .arg(entry->aiData.path[0].position_Y)
-                .arg(entry->aiData.path[0].orientation)
-                .arg(entry->aiData.path[1].position_X)
-                .arg(entry->aiData.path[1].position_Y)
-                .arg(entry->aiData.path[1].orientation)
-                 .arg(entry->robotData.motor_left)
-             .arg(entry->robotData.motor_right)
-             .arg(entry->robotData.motor_front)
-             .arg(entry->robotData.motor_rear)
+                        .arg(entry->aiData.path[0].position_X)
+            .arg(entry->aiData.path[0].position_Y)
+            .arg(entry->aiData.path[0].orientation)
+            .arg(entry->aiData.path[1].position_X)
+            .arg(entry->aiData.path[1].position_Y)
+            .arg(entry->aiData.path[1].orientation)
+            .arg(entry->robotData.motor_left)
+            .arg(entry->robotData.motor_right)
+            .arg(entry->robotData.motor_front)
+            .arg(entry->robotData.motor_rear)
             .toAscii()
-                            .data());
+            .data());
 
 
 
