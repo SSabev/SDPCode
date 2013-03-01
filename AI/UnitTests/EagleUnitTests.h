@@ -21,5 +21,6 @@ private:
     void EagleDoWeHaveBall_OrientationWrapTest();
     void EagleDoWeHaveBall_DistanceBoundaryPass();
     void EagleDoWeHaveBall_DistanceBoundaryFail();
+    void EagleDoWeHaveBall_BothFail();
 };
 #endif
