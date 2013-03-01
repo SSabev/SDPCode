@@ -32,10 +32,12 @@ AStar::AStar()
 /*!
 * Sets the dimensions of the pitch. This will be defined in the shared memory, in terms of pixels as seen by the vision module.
 */
-void AStar::SetPitchDimensions(int pitchSizeX, int pitchSizeY)
+void AStar::SetSharedData(int pitchSizeX, int pitchSizeY, TPitchSide pitchSide)
 {
 	m_gridSizeX = pitchSizeX;
 	m_gridSizeY = pitchSizeY;
+
+	m_pitchSide = pitchSide;
 }
 
 std::list<RobotState> AStar::GeneratePath(RobotState startingState, RobotState destinationState)
@@ -210,6 +212,8 @@ std::list<RobotState> AStar::GeneratePath(RobotState startingState, RobotState d
 				p_newAStarNode->setGScore(m_costTravelled + currentVector.Distance(&currentAdjacentVector));
 				p_newAStarNode->setHScore(currentAdjacentVector.Distance(&destinationVector) * HEURISTIC_PENALTY);
 				p_newAStarNode->setPreviousNode(currentVector);
+
+				// TODO: If we're moving to the ball and we want to get behind it, add bias in a U-shape around it
 			}
 		}
 	}

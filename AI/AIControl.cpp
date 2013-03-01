@@ -99,7 +99,7 @@ void AIControl::RunAI()
 	bool shouldKick = m_eagle.ShouldWeShoot(ourRobotFuture, enemyRobotFuture, ballFuture);
 
 	// Using A*, generate the best path to the target.
-	m_aStar.SetPitchDimensions(sharedMem.pitchCfg.pitchWidth, sharedMem.pitchCfg.pitchHeight);
+	m_aStar.SetSharedData(sharedMem.pitchCfg.pitchWidth, sharedMem.pitchCfg.pitchHeight, sharedMem.pitchSide);
 	std::list<RobotState> aStarPath = m_aStar.GeneratePath(ourRobotFuture, targetState);
 
 	// If the A* has returned a blank path, it found it impossible to complete.

@@ -20,7 +20,7 @@ class AStar
 public:
 	AStar();
 	
-	void SetPitchDimensions(int pitchSizeX, int pitchSizeY);
+	void SetSharedData(int pitchSizeX, int pitchSizeY, TPitchSide pitchSide);
 	std::list<RobotState> GeneratePath(RobotState startingState, RobotState destinationState);
 
 private:
@@ -33,6 +33,7 @@ private:
 
 	int m_gridSizeX;
 	int m_gridSizeY;
+	TPitchSide m_pitchSide;
 
 	Vector2 m_ballPos;
 };
