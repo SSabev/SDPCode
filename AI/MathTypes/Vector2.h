@@ -17,6 +17,7 @@ public:
 	const float Y() const;
 
 	void Clamp(Vector2 minVector, Vector2 maxVector);
+	const float Dot(Vector2* other) const;
 	const float Distance(Vector2* dest) const;
 	const float DistanceSquared(Vector2* dest) const;
 	const float GetAngleTo(Vector2* dest) const;
