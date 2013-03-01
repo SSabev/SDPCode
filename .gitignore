@@ -29,7 +29,9 @@ AI/SDP-AI.*
 AI/docs/*
 
 vision/data/*
-vision/input-images/*
+vision/input_images/*
+vision/output_images/*
+vision/test_report.txt
 vision/data_not_to_be_touched/*                                              
 
 Infinity.pro.user
