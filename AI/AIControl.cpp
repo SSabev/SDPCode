@@ -96,7 +96,7 @@ void AIControl::RunAI()
 	RobotState targetState = m_eagle.IdentifyTarget(ourRobotFuture, enemyRobotFuture, ballFuture);
 
 	// Check if we should kick from our current state.
-	bool shouldKick = m_eagle.ShouldWeShoot(ourRobotFuture, ballFuture);
+	bool shouldKick = m_eagle.ShouldWeShoot(ourRobotFuture, enemyRobotFuture, ballFuture);
 
 	// Using A*, generate the best path to the target.
 	m_aStar.SetPitchDimensions(sharedMem.pitchCfg.pitchWidth, sharedMem.pitchCfg.pitchHeight);
