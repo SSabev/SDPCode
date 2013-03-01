@@ -104,6 +104,13 @@ const float Vector2::DistanceSquared(Vector2* dest) const
 	return distSquared;
 }
 
+const float Vector2::Dot(Vector2* other) const
+{
+	float dotProduct = (X()*other->X()) + (Y()*other->Y());
+
+	return dotProduct;
+}
+
 /*!
  * Gets the angle in radians between the Vector2 object and another Vector2.
 */
