@@ -35,51 +35,6 @@ CNavigation::CNavigation()
     memset(&m_target, 0, sizeof(TTarget));
 }
 
-void CNavigation::RotateToOrient(float targetOrient)
-{
-    TEntry *entry = &sharedMem.positioning[sharedMem.currentIdx];
-     memset(&entry->robotData, 0, sizeof(TRobotData));
-	//check our orientation and flip rotation if facing the wrong side
-	if(m_ourOrientation <= M_PI_2 || m_ourOrientation > 3* M_PI_2)	
-	{
-	if(targetOrient - m_ourOrientation < 0)
-	//rotate left
-	if (targetOrient - m_ourOrientation > ANGULAR_THRESHOLD){
-	entry->robotData.motor_left =  -100;
-        entry->robotData.motor_right =  100;
-        entry->robotData.motor_front =  100;
-        entry->robotData.motor_rear =  -100;
-	}
-	else
-	//rotate right	
-	if (targetOrient - m_ourOrientation > ANGULAR_THRESHOLD){
-	entry->robotData.motor_left =    100;
-        entry->robotData.motor_right =  -100;
-        entry->robotData.motor_front =  -100;
-        entry->robotData.motor_rear =    100;
-	}
-	}
-	else{
-	if(targetOrient - m_ourOrientation < 0)
-	//rotate right
-	if (targetOrient - m_ourOrientation > ANGULAR_THRESHOLD){
-	entry->robotData.motor_left =    100;
-        entry->robotData.motor_right =  -100;
-        entry->robotData.motor_front =  -100;
-        entry->robotData.motor_rear =    100;
-	}
-	else
-	//rotate left
-	if (targetOrient - m_ourOrientation > ANGULAR_THRESHOLD){
-	entry->robotData.motor_left =   -100;
-        entry->robotData.motor_right =   100;
-        entry->robotData.motor_front =   100;
-        entry->robotData.motor_rear =   -100;
-	}
-	}
-
-}
-
 void CNavigation::Holonomic()
 {
     TEntry *entry = &sharedMem.positioning[sharedMem.currentIdx];
@@ -174,6 +129,13 @@ else {
 }
 
 
+	//	if (distToTarget < 65){
+//send kick command!
+//entry->robotData.kicker =  1;
+//	}
+//else {
+//entry->robotData.kicker =  0;
+//}
 	
     //set the motor speeds
         motorSpeed[0] = -forwardspeed + rotatespeed;
@@ -181,141 +143,11 @@ else {
         motorSpeed[2] = forwardspeed + rotatespeed;
         motorSpeed[3] = rightspeed + rotatespeed;
 
-//	if (distToTarget < 65){
-//send kick command!
-//entry->robotData.kicker =  1;
-//	}
-//else {
-//entry->robotData.kicker =  0;
-//}
 
-  //Send the speeds
-//     if(m_ourOrientation <= M_PI_2 || m_ourOrientation > 3* M_PI_2)
- //    {
        entry->robotData.motor_left =  motorSpeed[3];
        entry->robotData.motor_right =  motorSpeed[1];
        entry->robotData.motor_front =  motorSpeed[0];
        entry->robotData.motor_rear =  motorSpeed[2];
-//    }
-//    else
- //    {
- //        entry->robotData.motor_left =  -motorSpeed[0];
-  //       entry->robotData.motor_right =  -motorSpeed[2];
-  //       entry->robotData.motor_front =  -motorSpeed[1];
-  //       entry->robotData.motor_rear =  -motorSpeed[3];
-//     }
 
-
-/*
-    // if(m_ourOrientation <= M_PI_2 || m_ourOrientation > 3* M_PI_2)
-    //generate angle difference and normalise in degrees
-    angle = (theta - m_ourOrientation)- M_PI_2;
-    //else
-    //angle = M_PI + (theta - m_ourOrientation);
-    //entry->aiData.path[1].orientation = angle;
-    old_angle = angle;
-     if(angle<0)
-     {
-         angle = -angle;
-     }
-        //entry->aiData.path[1].orientation = angle;
-    angle = angle*180/M_PI;
-    int speed1, speed2;
-    if (angle <= 90) {
-        if (angle > (90 - angle)) {
-            speed1 = 100;
-            speed2 = ((90 - angle) * 100) / angle;
-        } else {
-            speed2 = 100;
-            speed1 = ((-angle) * 100) / (90 - angle);
-        }
-        motorSpeed[0] = speed2;
-        motorSpeed[1] = speed1;
-        motorSpeed[2] = (-speed2);
-        motorSpeed[3] = (-speed1);
-    } else if (angle > 90 && angle <= 180) {
-        angle = angle - 90;
-        if (angle > (90 - angle)) {
-            speed1 = 100;
-            speed2 = ((90 - angle) * 100) / angle;
-        } else {
-            speed2 = 100;
-            speed1 = ((angle) * 100) / (90 - angle);
-        }
-        motorSpeed[0] = (-speed1);
-        motorSpeed[1] = (speed2);
-        motorSpeed[2] = speed1;
-        motorSpeed[3] = (-speed2);
-    } else if (angle > 180 && angle <= 270) {
-        angle = angle - 180;
-        if (angle > (90 - angle)) {
-            speed1 = 100;
-            speed2 = ((90 - angle) * 100) / angle;
-        } else {
-            speed2 = 100;
-            speed1 = ((angle) * 100) / (90 - angle);
-        }
-        motorSpeed[0] =  speed2;
-        motorSpeed[1] = (-speed1);
-        motorSpeed[2] = -speed2;
-        motorSpeed[3] = speed1;
-    } else {
-        angle = angle - 270;
-        if (angle > (90 - angle)) {
-            speed1 = 100;
-            speed2 = ((90 - angle) * 100) / angle;
-        } else {
-            speed2 = 100;
-            speed1 = ((angle) * 100) / (90 - angle);
-        }
-        motorSpeed[0] =  speed1;
-        motorSpeed[1] = (-speed2);
-        motorSpeed[2] = (-speed1);
-        motorSpeed[3] = speed2;
-    }
-
-    //if(m_ourOrientation <= M_PI_2 || m_ourOrientation > 3* M_PI_2)
-   // {
-        if(m_ourOrientation <= M_PI_2 || m_ourOrientation > 3* M_PI_2)
-        {
-        entry->robotData.motor_left =  -motorSpeed[0];
-        entry->robotData.motor_right = -motorSpeed[2];
-        entry->robotData.motor_front = -motorSpeed[1];
-        entry->robotData.motor_rear =  -motorSpeed[3];
-        }
-        else
-        {
-            entry->robotData.motor_left =  motorSpeed[0];
-            entry->robotData.motor_right =  motorSpeed[2];
-            entry->robotData.motor_front =  motorSpeed[1];
-            entry->robotData.motor_rear =  motorSpeed[3];
-        }
-        loggingObj->ShowMsg(QString("angle to target : %1")
-                                .arg(angle)
-
-                .toAscii()
-                                .data());
-   // }
-   /* else {
-        if(old_angle<0)
-        {
-        entry->robotData.motor_left =  -motorSpeed[0];
-        entry->robotData.motor_right =  motorSpeed[2];
-        entry->robotData.motor_front =  -motorSpeed[1];
-        entry->robotData.motor_rear =  motorSpeed[3];
-        }
-        else
-        {
-            entry->robotData.motor_left =  motorSpeed[0];
-            entry->robotData.motor_right =  -motorSpeed[2];
-            entry->robotData.motor_front =  motorSpeed[1];
-            entry->robotData.motor_rear =  -motorSpeed[3];
-    }
-       }*/
-
-    //entry->robotData.motor_front = 100;
-   // entry->robotData.motor_rear =  100;
-    //entry->robotData.motor_left = 100;
-   // entry->robotData.motor_right = 100;
 
 }
