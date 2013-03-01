@@ -26,18 +26,23 @@ Vector2UnitTests::Vector2UnitTests()
 	TEST_ADD(Vector2UnitTests::Vector2MagnitudeSquared);
 	TEST_ADD(Vector2UnitTests::Vector2MagnitudeSquaredZero);
 	TEST_ADD(Vector2UnitTests::Vector2ClampOutsideX);
-        TEST_ADD(Vector2UnitTests::Vector2ClampInsideX);
-        TEST_ADD(Vector2UnitTests::Vector2ClampOutsideY);
-        TEST_ADD(Vector2UnitTests::Vector2ClampInsideY);
-        TEST_ADD(Vector2UnitTests::Vector2ClampBothOnBoundaries);
-        TEST_ADD(Vector2UnitTests::Vector2ClampBothOutwithBoundaries);
-        TEST_ADD(Vector2UnitTests::Vector2GetAngleTo);
-        TEST_ADD(Vector2UnitTests::Vector2GetAngleToNegative);
-        TEST_ADD(Vector2UnitTests::Vector2GetAngleToZero);
-        TEST_ADD(Vector2UnitTests::Vector2Gradient);
-        TEST_ADD(Vector2UnitTests::Vector2GradientNegative);
-        TEST_ADD(Vector2UnitTests::Vector2GradientZero);
-        TEST_ADD(Vector2UnitTests::Vector2GradientDivideByZero);
+    	TEST_ADD(Vector2UnitTests::Vector2ClampInsideX);
+    	TEST_ADD(Vector2UnitTests::Vector2ClampOutsideY);
+    	TEST_ADD(Vector2UnitTests::Vector2ClampInsideY);
+    	TEST_ADD(Vector2UnitTests::Vector2ClampBothOnBoundaries);
+    	TEST_ADD(Vector2UnitTests::Vector2ClampBothOutwithBoundaries);
+    	TEST_ADD(Vector2UnitTests::Vector2GetAngleTo);
+    	TEST_ADD(Vector2UnitTests::Vector2GetAngleToNegative);
+    	TEST_ADD(Vector2UnitTests::Vector2GetAngleToZero);
+    	TEST_ADD(Vector2UnitTests::Vector2Gradient);
+    	TEST_ADD(Vector2UnitTests::Vector2GradientNegative);
+    	TEST_ADD(Vector2UnitTests::Vector2GradientZero);
+    	TEST_ADD(Vector2UnitTests::Vector2GradientDivideByZero);
+    	TEST_ADD(Vector2UnitTests::Vector2Dot);
+    	TEST_ADD(Vector2UnitTests::Vector2DotNegativeValuesPositiveOutcome);
+    	TEST_ADD(Vector2UnitTests::Vector2DotNegativeValuesNegativeOutcome);
+    	TEST_ADD(Vector2UnitTests::Vector2DotZero);
+    	TEST_ADD(Vector2UnitTests::Vector2OneNegative);                         
 
 }
 
@@ -338,3 +343,47 @@ void Vector2UnitTests::Vector2GradientDivideByZero()
 
 }
 
+void Vector2UnitTests::Vector2Dot()
+{
+    Vector2 v1 (10, 18);        
+    Vector2 v2 (14, 8);      
+
+    TEST_ASSERT(v1.Dot(&v2) == 284.0f);
+
+}
+
+void Vector2UnitTests::Vector2DotNegativeValuesPositiveOutcome()
+{
+    Vector2 v1 (-10, -18);        
+    Vector2 v2 (-14, -8);      
+
+    TEST_ASSERT(v1.Dot(&v2) == 284.0f);
+
+}
+
+void Vector2UnitTests::Vector2DotNegativeValuesNegativeOutcome()
+{
+    Vector2 v1 (10, -18);        
+    Vector2 v2 (14, 8);      
+
+    TEST_ASSERT(v1.Dot(&v2) == -4.0f);
+
+}
+
+void Vector2UnitTests::Vector2DotZero()
+{
+    Vector2 v1 (0, -18);        
+    Vector2 v2 (-14, 0);      
+
+    TEST_ASSERT(v1.Dot(&v2) == 0.0f);
+
+}
+
+void Vector2UnitTests::Vector2OneNegative()
+{
+    Vector2 v1 (30, 4);        
+    Vector2 v2 (50, -5);      
+
+    TEST_ASSERT(v1.Dot(&v2) == 1480.0f);
+
+}
