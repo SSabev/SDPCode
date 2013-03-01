@@ -21,7 +21,7 @@ public:
 	AStar();
 	
 	void SetSharedData(int pitchSizeX, int pitchSizeY, TPitchSide pitchSide);
-	std::list<RobotState> GeneratePath(RobotState startingState, RobotState destinationState);
+	std::list<RobotState> GeneratePath(RobotState startingState, RobotState destinationState, bool doWeHaveBall);
 
 private:
 	std::list<Vector2> FindAdjacentNodes(Vector2 currentNode);

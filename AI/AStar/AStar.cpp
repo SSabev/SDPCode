@@ -40,7 +40,7 @@ void AStar::SetSharedData(int pitchSizeX, int pitchSizeY, TPitchSide pitchSide)
 	m_pitchSide = pitchSide;
 }
 
-std::list<RobotState> AStar::GeneratePath(RobotState startingState, RobotState destinationState)
+std::list<RobotState> AStar::GeneratePath(RobotState startingState, RobotState destinationState, bool doWeHaveBall)
 {
 	Vector2 startingVector = startingState.Position();
 	Vector2 destinationVector = destinationState.Position();
@@ -214,6 +214,10 @@ std::list<RobotState> AStar::GeneratePath(RobotState startingState, RobotState d
 				p_newAStarNode->setPreviousNode(currentVector);
 
 				// TODO: If we're moving to the ball and we want to get behind it, add bias in a U-shape around it
+				if (!doWeHaveBall)
+				{
+
+				}
 			}
 		}
 	}
