@@ -33,11 +33,11 @@ void CNavigation::GenerateValues()
     float dy;
     float theta;
     int  motorSpeed[4];
-    int distToTarget;
+//    int distToTarget;
     dx = (int)entry->aiData.path[1].position_X - (int)entry->aiData.path[0].position_X;
     dy = (int)entry->aiData.path[1].position_Y - (int)entry->aiData.path[0].position_Y;
 
-    distToTarget = (int) sqrt((dx * dx)+(dy * dy));
+//    distToTarget = (int) sqrt((dx * dx)+(dy * dy));
 
 
     //make theta the direction to move in.
