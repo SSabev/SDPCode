@@ -44,6 +44,11 @@ private:
     	void Vector2GradientNegative();
     	void Vector2GradientZero();
     	void Vector2GradientDivideByZero();
+    	void Vector2Dot();
+    	void Vector2DotNegativeValuesPositiveOutcome();
+    	void Vector2DotNegativeValuesNegativeOutcome();
+    	void Vector2DotZero();
+    	void Vector2OneNegative();                      
 };
 
 #endif
