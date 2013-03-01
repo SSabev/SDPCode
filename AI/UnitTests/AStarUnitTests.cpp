@@ -8,6 +8,8 @@
 
 #include "../MathTypes/Vector2.h"
 
+#include "../../Shared/SharedMem.h"
+
 #include <list>
 #include <iostream>
 
@@ -21,7 +23,7 @@ void AStarUnitTests::AStarFindAdjacentNodesZero()
 {
 	AStar aStar;
 
-	aStar.SetPitchDimensions(244, 122);
+	aStar.SetSharedData(244, 122, eLeftSide);
 	std::list<Vector2> adjacentNodes = aStar.FindAdjacentNodes(Vector2(0,0));
 
 	// Nodes adjacent to (0,0) should be (1,0), (0,1), (1,1).
