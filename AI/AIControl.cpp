@@ -70,7 +70,7 @@ void AIControl::RunAI()
 	Vector2 ballPos(currentEntry->visionData.ball_x, currentEntry->visionData.ball_y);
 
 	// Check that the data that's coming in from shared memory is correct and can be used.
-	if (IsFailedFrame(ourRobot, enemyRobot, ballPos))
+	if (IsFailedFrame(ourRobot, ballPos))
 	{
 		// In this case, the data from vision can't be used.
 		std::string logMessage = "AI believes that data from Vision is bad and can't be used.";
@@ -92,9 +92,11 @@ void AIControl::RunAI()
 
 	// Given the positions of the robots and ball, identify the ideal position 
 	// and orientation for us to reach.
-	m_eagle.SetPitchDimensions(sharedMem.pitchCfg.pitchWidth, sharedMem.pitchCfg.pitchHeight);
-	m_eagle.SetState(sharedMem.systemState);
+	m_eagle.SetSharedData(sharedMem.systemState, sharedMem.pitchCfg.pitchWidth, sharedMem.pitchCfg.pitchHeight, sharedMem.pitchSide);
 	RobotState targetState = m_eagle.IdentifyTarget(ourRobotFuture, enemyRobotFuture, ballFuture);
+
+	// Check if we should kick from our current state.
+	bool shouldKick = m_eagle.ShouldWeShoot(ourRobotFuture, ballFuture);
 
 	// Using A*, generate the best path to the target.
 	m_aStar.SetPitchDimensions(sharedMem.pitchCfg.pitchWidth, sharedMem.pitchCfg.pitchHeight);
@@ -125,7 +127,7 @@ void AIControl::RunAI()
 	// Results should be written to shared memory.
 	currentEntry->aiData.isFailedFrame = 0;
 	currentEntry->aiData.pathLength = smoothedPath.size();
-	currentEntry->aiData.shouldKick = 0;
+	currentEntry->aiData.shouldKick = shouldKick;
 
 	const int maxPathSize = 30;
 	const int pointsToWrite = std::min((int)smoothedPath.size(), maxPathSize);
@@ -174,13 +176,12 @@ bool AIControl::CoordinatesAreBad(Vector2 objectPosition)
 /*!
  * Passes the (X,Y) coordinates of robot1, robot2 and ball objects into the CoordinatesAreBad method, returning true if any one coordinate is invalid.
  */
-bool AIControl::IsFailedFrame(RobotState robot1, RobotState robot2, Vector2 ball) {
+bool AIControl::IsFailedFrame(RobotState ourRobot, Vector2 ball) {
 	
-	bool isInvalidRobot1 = AIControl::CoordinatesAreBad(robot1.Position());
-	bool isInvalidRobot2 = AIControl::CoordinatesAreBad(robot2.Position());
+	bool isInvalidRobot = AIControl::CoordinatesAreBad(ourRobot.Position());
 	bool isInvalidBall = AIControl::CoordinatesAreBad(ball);
 
-	return isInvalidRobot1 || isInvalidRobot2 || isInvalidBall;
+	return isInvalidRobot || isInvalidBall;
 }
 
 #if defined(TEST)
