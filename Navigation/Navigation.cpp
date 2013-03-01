@@ -137,6 +137,7 @@ else {
 //entry->robotData.kicker =  0;
 //}
 	
+
     //set the motor speeds
         motorSpeed[0] = -forwardspeed + rotatespeed;
         motorSpeed[1] = -rightspeed + rotatespeed;
