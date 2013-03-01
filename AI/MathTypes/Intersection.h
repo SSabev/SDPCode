@@ -5,6 +5,11 @@
 
 class Intersection
 {
+#if defined(STANDALONE)
+	// This facilitates testing of private and protected functions.
+    friend class IntersectionUnitTests;
+#endif
+
 public:
 	Intersection();
 
