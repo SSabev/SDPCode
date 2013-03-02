@@ -29,7 +29,11 @@ class Vision:
         self.stdout = stdout
 
         self.pipe = pipe
-
+        
+        # vision can skip 3 bad frames in a row
+        self.skip = 0;
+        self.max_skip = 3;
+        
         if sourcefile is None:
             self.camera = Camera()
         else:
@@ -152,6 +156,17 @@ class Vision:
         for name in ['yellow', 'blue', 'ball']:
             entity = ents[name]
             coordinates = entity.coordinates()
+            
+            # if the frame is not recognized, skip a maximum of self.max_skip times
+            #if (coordinates[0] != -1):
+            #    self.addCoordinates(name, coordinates)
+            #    self.skip = 0
+            #else:
+            #    if (self.skip < self.max_skip):
+            #        self.skip = self.skip + 1;
+            #    else:
+            #        self.addCoordinates(name, coordinates)
+                    
             self.addCoordinates(name, coordinates)
             x, y = self.smoothCoordinates(name)
 
