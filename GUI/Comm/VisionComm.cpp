@@ -18,6 +18,11 @@ CVisionComm::CVisionComm(QWidget *parent)
     localSocket.connectToServer(VISION_SOCK_NAME);
 }
 
+CVisionComm::~CVisionComm()
+{
+    ShutdownVision();
+}
+
 void CVisionComm::ConnedToServ()
 {
     char sendByte;
@@ -28,7 +33,7 @@ void CVisionComm::ConnedToServ()
     loggingObj->ShowMsg("VISIONCOMM: connected");
 
     // read pitch cfg - first data block received from the Vision module
-    sendByte = VISION_REQUEST_NAV;
+    sendByte = VISION_REQUEST_CFG;
     localSocket.write(&sendByte, 1);
     localSocket.waitForBytesWritten();
     read = localSocket.read((char *) &cfg, sizeof(TPitchCfg));
@@ -44,6 +49,18 @@ void CVisionComm::ConnectToVision()
         return;
 
     localSocket.connectToServer(VISION_SOCK_NAME);
+}
+
+void CVisionComm::ShutdownVision()
+{
+    char sendByte = VISION_SHUTDOWN;
+
+    if(localSocket.state() != QLocalSocket::ConnectedState)
+        return;
+
+    localSocket.write(&sendByte, 1);
+    localSocket.flush();
+    localSocket.close();
 }
 
 bool CVisionComm::IsConnected()
