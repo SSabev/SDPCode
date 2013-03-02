@@ -15,6 +15,8 @@ public:
     CNavigation();
 
     void GenerateValues();
+
+    void GenerateStop();
 private:
 
     TTarget m_target;

@@ -128,3 +128,14 @@ void CNavigation::GenerateValues()
     entry->robot.sendData.motor_left_dir = motorSpeed[3] >= 0 ? 1 : 0;
     entry->robot.sendData.motor_right_dir = motorSpeed[1] >= 0 ? 1 : 0;
 }
+
+void CNavigation::GenerateStop()
+{
+    TEntry *entry = &sharedMem.positioning[sharedMem.currentIdx];
+
+    entry->robot.sendData.motor_left_speed  =  0;
+    entry->robot.sendData.motor_right_speed =  0;
+    entry->robot.sendData.motor_front_speed =  0;
+    entry->robot.sendData.motor_rear_speed  =  0;
+    entry->robot.sendData.kicker            =  0;
+}
