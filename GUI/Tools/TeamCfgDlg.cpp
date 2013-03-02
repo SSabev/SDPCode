@@ -17,6 +17,9 @@ CTeamCfgDlg::CTeamCfgDlg(QWidget *parent)
     else
         blueBtn->setChecked(true);
 
+    widthBx->setValue(sharedMem.pitchCfg.pitchWidth);
+    heightBx->setValue(sharedMem.pitchCfg.pitchHeight);
+
     connect(okBtn, SIGNAL(clicked()), this, SLOT(OkSlot()));
     connect(cancelBtn, SIGNAL(clicked()), this, SLOT(CancelSlot()));
 }
@@ -32,6 +35,9 @@ void CTeamCfgDlg::OkSlot()
         sharedMem.teamColor = eYellowTeam;
     else
         sharedMem.teamColor = eBlueTeam;
+
+    sharedMem.pitchCfg.pitchWidth = widthBx->value();
+    sharedMem.pitchCfg.pitchHeight = heightBx->value();
 
     accept();
 }
