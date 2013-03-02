@@ -13,8 +13,9 @@ class Features:
     #       'dirmarker' : (3,  12, 3,  12),
     #     }
 
+    # min and max area of the ball and the T shape
     Sizes = {'ball': (20, 300),
-             'T': (100, 800),
+             'T': (100, 1000),
             }
 
     def __init__(self, display, threshold):
@@ -53,19 +54,31 @@ class Features:
         size = self.Sizes[which]
         blobmaker = BlobMaker()
         blobs = blobmaker.extractFromBinary(image, image, minsize=size[0], maxsize=size[1])
-
+        
+        
         if blobs is None:
+            return Entity()
+        if len(blobs) == 0:
             return Entity()
 
         entityblob = None
-        for blob in blobs:
-            if self.sizeMatch(blob, which):
-                entityblob = blob
-                break
+        
+        # sort the blobs by area ( to chose the largest blob that fits)
+        blobs = sorted(blobs, key = lambda bl: bl.area() , reverse=True);
+        
+        #if (len(blobs)> 1): print which, blobs
+        
+        
+        #for blob in blobs:
+        #    if self.sizeMatch(blob, which):
+        #        entityblob = blob
+        #        break
 
-        if entityblob is None:
-            return Entity()
-
+        #if entityblob is None:
+        #    return Entity()
+        # size match is actually already done in blobmaker, just take the largest blob
+        entityblob = blobs[0];
+        
         isBall = which != 'ball'
         entity = Entity.fromFeature(entityblob, isBall, isBall)
 
