@@ -15,14 +15,19 @@ public:
 
     void UpdateWindow ();
 
+    void SetSize(int w, int h);
+
 protected:
     //QT virtual functions
-    void paintEvent (QPaintEvent *event);
+    void paintEvent (QPaintEvent*);
     QSize minimumSizeHint () const;
 
 private:
     void DrawFrame (QPainter *painter);
     QPixmap m_pixmap;
+
+    int m_pitchWidth;
+    int m_pitchHeight;
 };
 
 #endif // CVISIONMOD_H
