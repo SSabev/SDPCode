@@ -112,7 +112,8 @@ typedef enum{
     eBTConnected    = 1,
     eVisionPresent  = (1 << 1),
     eOperational    = (eBTConnected | eVisionPresent),
-    eBTDisconnected = (~eBTConnected)
+    eBTDisconnected = (~eBTConnected),
+    eVisionMissing  = (~eVisionPresent)
 } TSystemStatus;
 
 typedef struct
