@@ -16,6 +16,7 @@ EagleUnitTests::EagleUnitTests()
     TEST_ADD(EagleUnitTests::EagleDoWeHaveBall_OrientationWrapTest);
     TEST_ADD(EagleUnitTests::EagleDoWeHaveBall_DistanceBoundaryPass);
     TEST_ADD(EagleUnitTests::EagleDoWeHaveBall_DistanceBoundaryFail);
+    TEST_ADD(EagleUnitTests::EagleDoWeHaveBall_BothFail);
 }
 
 void EagleUnitTests::EagleIdentifyTarget()
@@ -88,7 +89,7 @@ void EagleUnitTests::EagleDoWeHaveBall_OrientationBoundaryPass()
 
     eagle.SetPitchDimensions(244, 122);
 
-    RobotState ourRobotState(Vector2(10, 10), 1.56f/*1.5707963267948966f*/);    
+    RobotState ourRobotState(Vector2(10, 10), 1.56f);    
     Vector2 ball(50, 50);
 
 	TEST_ASSERT(eagle.DoWeHaveBall(ourRobotState, ball) == true);
@@ -137,6 +138,18 @@ void EagleUnitTests::EagleDoWeHaveBall_DistanceBoundaryFail()
     eagle.SetPitchDimensions(244, 122);
 
     RobotState ourRobotState(Vector2(10, 10), 7.283185307179586f);    
+    Vector2 ball(64, 64);
+
+	TEST_ASSERT(eagle.DoWeHaveBall(ourRobotState, ball) == false);
+}
+
+void EagleUnitTests::EagleDoWeHaveBall_BothFail()
+{
+	Eagle eagle;
+
+    eagle.SetPitchDimensions(244, 122);
+
+    RobotState ourRobotState(Vector2(10, 10), 1.5707963267948966f);    
     Vector2 ball(64, 64);
 
 	TEST_ASSERT(eagle.DoWeHaveBall(ourRobotState, ball) == false);

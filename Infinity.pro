@@ -1,5 +1,5 @@
-DEFINES += ARDUINO_BLD
-#DEFINES += NXT_BUILD
+#DEFINES += ARDUINO_BLD
+DEFINES += NXT_BUILD
 
 #DEFINES += BUILDING_ON_DICE
 
@@ -27,7 +27,6 @@ HEADERS += \
     Navigation/Navigation.h \
     GUI/Tools/LoggingWdgt.h \
     GUI/Tools/CVisionMod.h \
-    GUI/Comm/ThreadedClasses.h \
     GUI/Comm/IBTComm.h
 
 SOURCES += \
@@ -47,8 +46,7 @@ SOURCES += \
     AI/RobotState.cpp \
     Navigation/Navigation.cpp \
     GUI/Tools/LoggingWdgt.cpp \
-    GUI/Tools/CVisionMod.cpp \
-    GUI/Comm/ThreadedClasses.cpp
+    GUI/Tools/CVisionMod.cpp
 
 FORMS += \
     GUI/mainwindow.ui \
@@ -62,29 +60,35 @@ INCLUDEPATH += \
 
 
 contains(DEFINES, ARDUINO_BLD) {
-HEADERS += GUI/Comm/ArduinoComm.h
+    HEADERS += \
+        GUI/Comm/ArduinoComm.h \
+        GUI/Comm/ThreadedClasses.h
 
-SOURCES += GUI/Comm/ArduinoComm.cpp
+    SOURCES += \
+        GUI/Comm/ArduinoComm.cpp \
+        GUI/Comm/ThreadedClasses.cpp
 
-LIBS += -lbluetooth
+    LIBS += -lbluetooth
 
-contains(DEFINES, BUILDING_ON_DICE) {
-INCLUDEPATH += $$PWD/Bluez_DICE/include
+    contains(DEFINES, BUILDING_ON_DICE) {
+        INCLUDEPATH += $$PWD/Bluez_DICE/include
 
-LIBS += -L$$PWD/Bluez_DICE/lib64
+        LIBS += -L$$PWD/Bluez_DICE/lib64
+    }
+
+    contains(DEFINES, NXT_BUILD) {
+        error(There can be only one communicator)
+    }
 }
 
 contains(DEFINES, NXT_BUILD) {
-error(There can be only one communicator)
-}
-}
+    HEADERS += \
+        GUI/Comm/BTComm.h
 
-contains(DEFINES, NXT_BUILD) {
-HEADERS += GUI/Comm/BTComm.h
+    SOURCES += \
+        GUI/Comm/BTComm.cpp
 
-SOURCES += GUI/Comm/BTComm.cpp
-
-contains(DEFINES, ARDUINO_BLD) {
-error(There can be only one communicator)
-}
+    contains(DEFINES, ARDUINO_BLD) {
+        error(There can be only one communicator)
+    }
 }

@@ -89,7 +89,7 @@ std::list<RobotState> AStar::GeneratePath(RobotState startingState, RobotState d
 		// If we have, we've got all the information we need to produce the path.
 		// Alternatively, can we terminate early here?
 
-		if ((currentVector == destinationVector) || ((CanTerminateEarly()) && (m_costTravelled > EARLY_TERMINATION_COST)))
+		if (currentVector == destinationVector)
 		{
 			// We now want to reconstruct the complete A* path.
 			std::vector<Vector2> nodesOnPath;

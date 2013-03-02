@@ -11,17 +11,17 @@ public class Communicator implements Runnable {
 	private DataInputStream dataIn;
 	private boolean connected;
 	
-	private int tachoA;
-	private int tachoC;
+	private boolean sensorA;
+	private boolean sensorB;
 	
-	public Communicator() throws NXTCommException {
+	public Communicator(String bt_name, String bt_mac) throws NXTCommException {
 		this.connected = false;
 		this.connection = NXTCommFactory.createNXTComm(NXTCommFactory.BLUETOOTH);
-		this.robot = new NXTInfo(NXTCommFactory.BLUETOOTH, "Odysseus", "00:16:53:0a:4c:0d");
+		this.robot = new NXTInfo(NXTCommFactory.BLUETOOTH, bt_name, bt_mac);
 	}
 	
 	public void connect() {
-		System.out.println("Connecting to robot...");
+		System.out.println("Connecting to " + robot.name + "...");
 		
 		boolean suppress = false;
 		
@@ -76,10 +76,10 @@ public class Communicator implements Runnable {
 	
 	public boolean sendPacket(byte[] packet) {
 		if(connected) {
-			System.out.println("Sending packet: " + Arrays.toString(packet));
+			System.out.println("Sending packet to " + robot.name + ": " + Arrays.toString(packet));
 		
 			try {
-				dataOut.write(packet, 0, 5);
+				dataOut.write(packet, 0, 3);
 				dataOut.flush();
 				
 				return true;
@@ -95,27 +95,32 @@ public class Communicator implements Runnable {
 		}
 	}
 	
+	public boolean isTouched() {
+		return sensorA || sensorB;
+	}
+	
 	public void run() {
 
 		while (true) {
-			if(connected) {
-				/* do nothing; needed for autorecovery after robot disconnects (somehow?!) */
-			}
-			
+			if(connected) { /* do nothing */ }
 			while(connected) {
 				try {	
-					int tachoCount = dataIn.readInt();
+					byte[] b = new byte[3];
+					int bytes_read = dataIn.read(b);
 			
-					if(tachoCount == 99) {
+					if(b[0] == (byte) 99) {
 						connected = false;
 						
-						System.out.println("Robot invoked shutdown sequence");
-					} else if(tachoCount > 0) {
-						tachoA = tachoCount;
-						System.out.println("Tacho count data received: motor A=" + tachoA);
+						System.out.println(robot.name + " invoked shutdown sequence");
+					} else if(b[0] == (byte) 1) {
+						sensorA = b[1] == (byte) 1 ? true : false ;
+						sensorB = b[2] == (byte) 1 ? true : false ;
+					
+						System.out.print("Touch sensor data received from " + robot.name + ": ");
+						System.out.println("A=" + sensorA + " B=" + sensorB);
+						
 					} else {
-						tachoC = tachoCount * (-1);
-						System.out.println("Tacho count data received: motor C=" + tachoC);
+						System.out.println("Unrecognised feedback received");
 					}
 				
 					Thread.sleep(50);

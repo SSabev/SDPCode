@@ -11,13 +11,12 @@ public class Server implements Runnable
 
   // A pre-allocated buffer for encrypting data
   private final ByteBuffer buffer = ByteBuffer.allocate( 16384 );
-  private static Communicator connection;
+  private DuoNXTCommunicator connection;
 
   public Server( int port ) {
   	
   	try {
-		this.connection = new Communicator();
-		this.connection.connect();
+		this.connection = new DuoNXTCommunicator();
 	} catch (Exception e) {
 			System.err.println("Exception: " + e.getMessage());
 	}
@@ -25,7 +24,6 @@ public class Server implements Runnable
     this.port = port;
 
     new Thread( this ).start();				// start server thread
-	new Thread( connection ).start();		// start bluetooth listener thread
   }
 
   public void run() {
