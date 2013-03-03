@@ -6,10 +6,6 @@
 
 #include <vector>
 
-// (244,122) is one waypoint per cm^2.
-//const int GRID_SIZE_X = 244;
-//const int GRID_SIZE_Y = 122;
-
 // I'm experimenting with penalising the heuristic, otherwise it results in expanding 
 // too many nodes needlessly.
 // This will make it inadmissable (not really A* anymore), but given that we know there are 
@@ -40,7 +36,7 @@ void AStar::SetSharedData(int pitchSizeX, int pitchSizeY, TPitchSide pitchSide)
 	m_pitchSide = pitchSide;
 }
 
-std::list<RobotState> AStar::GeneratePath(RobotState startingState, RobotState destinationState, bool doWeHaveBall)
+std::list<RobotState> AStar::GeneratePath(RobotState startingState, RobotState destinationState, bool doWeHaveBall, Vector2 ballPos, RobotState enemyRobotFuture)
 {
 	Vector2 startingVector = startingState.Position();
 	Vector2 destinationVector = destinationState.Position();
@@ -213,10 +209,53 @@ std::list<RobotState> AStar::GeneratePath(RobotState startingState, RobotState d
 				p_newAStarNode->setHScore(currentAdjacentVector.Distance(&destinationVector) * HEURISTIC_PENALTY);
 				p_newAStarNode->setPreviousNode(currentVector);
 
+				// We're dealing with a squared threshold so we don't have to bother with square roots.
+				const float biasThresholdSquared = 1500.0f;
+				const float defaultBias = 100000.0f;
+
 				// TODO: If we're moving to the ball and we want to get behind it, add bias in a U-shape around it
+				// If we don't have the ball, we want to ensure that we come from behind it. 
 				if (!doWeHaveBall)
 				{
+					float distanceToBallSquared = currentAdjacentVector.DistanceSquared(&ballPos);
 
+					// Check proximity of the point first
+					if (distanceToBallSquared <= biasThresholdSquared)
+					{
+						if (m_pitchSide == eLeftSide)
+						{
+							// If we're on the left side of the pitch, the open side of the U needs to be that way.
+							if ((currentAdjacentVector.X() >= ballPos.X()) && (currentAdjacentVector != ballPos))
+							{
+								// Let's apply a radial bias.
+								// We multiply distance from node to ball by 10 to allow a greater difference
+								// between waypoints.
+								float biasToApply = defaultBias/distanceToBallSquared;
+
+								p_newAStarNode->setBias(defaultBias / distanceToBallSquared);
+							}
+						}
+						else
+						{
+							// If we're on the right side of the pitch, the open side of the U needs to be that way.
+							if ((currentAdjacentVector.X() <= ballPos.X()) && (currentAdjacentVector != ballPos))
+							{
+								// Let's apply a radial bias.
+								p_newAStarNode->setBias(defaultBias / distanceToBallSquared);
+							}
+						}
+					}
+
+					// Add bias to a radius around the enemy robot.
+					Vector2 enemyRobotPosition = enemyRobotFuture.Position();
+
+					float distanceToEnemyRobotSqd = currentAdjacentVector.DistanceSquared(&enemyRobotPosition);
+					float robotRadiusSquared = 625.0f;
+
+					if (distanceToEnemyRobotSqd < robotRadiusSquared)
+					{
+						p_newAStarNode->setBias(defaultBias / distanceToEnemyRobotSqd);
+					}
 				}
 			}
 		}
