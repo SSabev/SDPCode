@@ -32,32 +32,38 @@ void AStarUnitTests::AStarFindAdjacentNodesZero()
 
 void AStarUnitTests::AStarPlot()
 {
-	/*Vector2 ourRobotCurrent(15,15);
-	Vector2 ballCurrent(230, 65);
+		RobotState ourRobotCurrent(Vector2(440,180), 0.0f);
+		RobotState enemyRobotCurrent(Vector2(200, 160), 0.0f);
+		Vector2 ballCurrent(80, 90);
 
-	std::vector<Vector2> ourRobotPrevious;
-	ourRobotPrevious.push_back(ourRobotCurrent);
-	ourRobotPrevious.push_back(Vector2(5,5));
+		std::vector<RobotState> ourRobotPrevious;
+		ourRobotPrevious.push_back(ourRobotCurrent);
+		ourRobotPrevious.push_back(RobotState(Vector2(460,200), 0.0f));
 
-	std::vector<Vector2> ballPrevious;
-	ballPrevious.push_back(ballCurrent);
-	ballPrevious.push_back(Vector2(210,85));
+		std::vector<RobotState> enemyRobotPrevious;
+		enemyRobotPrevious.push_back(enemyRobotCurrent);
+		enemyRobotPrevious.push_back(RobotState(Vector2(200,160), 0.0f));
 
-	AIControl aiControl;
-	Foresee foresee;
-	AStar aStar;
-	Impala impala;
+		std::vector<Vector2> ballPrevious;
+		ballPrevious.push_back(ballCurrent);
+		ballPrevious.push_back(Vector2(80,50));
 
-	// We're not dealing with the enemy robot position currently.
-	foresee.SetPitchDimensions(244, 122);
-	Vector2 ourRobotFuture = foresee.ExtrapolatePositionFromPoints(ourRobotPrevious);
-	Vector2 ballFuture = foresee.ExtrapolatePositionFromPoints(ballPrevious);
+		AIControl aiControl;
+		Foresee foresee;
+		AStar aStar;
+		Impala impala;
 
-	aStar.SetPitchDimensions(244, 122);
-	std::list<Vector2> aStarPath = aStar.GeneratePath(ourRobotFuture, ballFuture);
+		// We're not dealing with the enemy robot position currently.
+		foresee.SetPitchDimensions(600, 300);
+		RobotState ourRobotFuture = foresee.ExtrapolateRobotState(ourRobotPrevious);
+		RobotState enemyRobotFuture = foresee.ExtrapolateRobotState(enemyRobotPrevious);
+		Vector2 ballFuture = foresee.ExtrapolatePosition(ballPrevious);
 
-	std::list<Vector2> smoothedPath = impala.SmoothPath(aStarPath, 19);
+		aStar.SetSharedData(600, 300, eLeftSide);
+		std::list<RobotState> aStarPath = aStar.GeneratePath(ourRobotFuture, RobotState(ballFuture,0), false, ballFuture, enemyRobotFuture);
 
-	// We're passing ballFuture twice as it also happens to be the destination currently.
-	aiControl.Plot(smoothedPath, ourRobotPrevious, ballFuture, ballPrevious, ballFuture);*/
+		std::list<RobotState> smoothedPath = impala.SmoothPath(aStarPath, 19);
+
+		// We're passing ballFuture twice as it also happens to be the destination currently.
+		aiControl.Plot(smoothedPath, ourRobotPrevious, RobotState(ballFuture,0), ballPrevious, ballFuture, enemyRobotPrevious, enemyRobotFuture);
 }
