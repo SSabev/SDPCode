@@ -36,7 +36,7 @@ private:
 	bool IsFailedFrame(RobotState ourRobot, Vector2 ball);
 
 #if defined(TEST)
-	void Plot(std::list<RobotState> aStarPath, std::vector<RobotState> ourPrevious, RobotState destination, std::vector<Vector2> ballPrevious, Vector2 ballFuture);
+	void Plot(std::list<RobotState> aStarPath, std::vector<RobotState> ourPrevious, RobotState destination, std::vector<Vector2> ballPrevious, Vector2 ballFuture, std::vector<RobotState> enemyRobotPrevious, RobotState enemyRobotFuture);
 #endif
 
 	Foresee m_foresee;

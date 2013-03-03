@@ -101,7 +101,7 @@ void AIControl::RunAI()
 
 	// Using A*, generate the best path to the target.
 	m_aStar.SetSharedData(sharedMem.pitchCfg.pitchWidth, sharedMem.pitchCfg.pitchHeight, sharedMem.pitchSide);
-	std::list<RobotState> aStarPath = m_aStar.GeneratePath(ourRobotFuture, targetState, doWeHaveBall);
+	std::list<RobotState> aStarPath = m_aStar.GeneratePath(ourRobotFuture, targetState, doWeHaveBall, ballFuture, enemyRobotFuture);
 
 	// If the A* has returned a blank path, it found it impossible to complete.
 	if (aStarPath.size() == 0)
@@ -192,7 +192,7 @@ bool AIControl::IsFailedFrame(RobotState ourRobot, Vector2 ball) {
  *
  * Only available when TEST is defined.
 */
-void AIControl::Plot(std::list<RobotState> aStarPath, std::vector<RobotState> ourPrevious, RobotState destination, std::vector<Vector2> ballPrevious, Vector2 ballFuture)
+void AIControl::Plot(std::list<RobotState> aStarPath, std::vector<RobotState> ourPrevious, RobotState destination, std::vector<Vector2> ballPrevious, Vector2 ballFuture, std::vector<RobotState> enemyRobotPrevious, RobotState enemyRobotFuture)
 {
 	std::ofstream myfile;
 	myfile.open("astar_path.dat");
@@ -244,6 +244,20 @@ void AIControl::Plot(std::list<RobotState> aStarPath, std::vector<RobotState> ou
 	myfile.open("our_future.dat");
 
 	myfile << aStarPath.front().Position().ToString();
+
+	myfile.close();
+
+	myfile.open("enemy_current.dat");
+
+	myfile << enemyRobotPrevious[1].Position().ToString() << std::endl;
+	myfile << enemyRobotPrevious[0].Position().ToString() << std::endl;
+	myfile << enemyRobotFuture.Position().ToString();
+
+	myfile.close();
+
+	myfile.open("enemy_future.dat");
+
+	myfile << enemyRobotFuture.Position().ToString();
 
 	myfile.close();
 }
