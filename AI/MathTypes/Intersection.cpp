@@ -17,7 +17,7 @@ bool Intersection::LineCircleIntersection(Vector2 lineStart, Vector2 lineEnd, Ve
 	float b = 2*directionCentreToLineStart.Dot(&directionOfLine);
 	float c = directionCentreToLineStart.Dot(&directionCentreToLineStart) - std::pow(circleRadius,2);
 
-	float discriminant = std::pow(b,2) - (4*a) + c;
+	float discriminant = std::pow(b,2) - (4*a*c);
 
 	if (discriminant >= 0)
 	{
