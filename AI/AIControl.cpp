@@ -183,9 +183,9 @@ float AIControl::WrapValue(float orientation) {
 	// orientation = orientation < 0 ? -orientation : orientation ;
 	// just kidding, Richard... although the above is totally fabs.
 		
-	if(orientation < 0)
+	while (orientation < 0)
 	{
-		orientation  = -orientation;
+		orientation+=2*M_PI;
 	}
 	
 	return fmod(orientation, 2*M_PI);
