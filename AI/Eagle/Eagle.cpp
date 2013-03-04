@@ -34,14 +34,14 @@ RobotState Eagle::IdentifyTarget(RobotState ourRobotState, RobotState enemyRobot
 	if (!DoWeHaveBall(ourRobotState, ballPos))
 	{
 		// TODO - If we're not behind the ball, make this a position behind the ball.
-		if ((m_pitchSide == eLeftSide) && (ourRobotState.Position().X() < ballPos.X() - 30))
+		if ((m_pitchSide == eLeftSide) && (ourRobotState.Position().X() > ballPos.X() - 40))
 		{
-			targetState.SetPosition(ballPos - Vector2(30,0));
+			targetState.SetPosition(ballPos - Vector2(40,0));
 			targetState.SetOrientation(0);
 		}
-		else if ((m_pitchSide == eRightSide) && (ourRobotState.Position().X() > ballPos.X() + 30))
+		else if ((m_pitchSide == eRightSide) && (ourRobotState.Position().X() < ballPos.X() + 40))
 		{
-			targetState.SetPosition(ballPos + Vector2(30,0));
+			targetState.SetPosition(ballPos + Vector2(40,0));
 			targetState.SetOrientation(M_PI);
 		}
 		else
@@ -63,7 +63,6 @@ RobotState Eagle::IdentifyTarget(RobotState ourRobotState, RobotState enemyRobot
 	{
 		// If we have the ball, let's move to a more appropriate place.
 		// This is done regardless of whether we're shooting or not.
-		// TODO: Add logic for moving to a better position.
 		/*
 			This should depend on:
 			1. The opposite half of the pitch to the enemy robot.
@@ -95,35 +94,32 @@ RobotState Eagle::IdentifyTarget(RobotState ourRobotState, RobotState enemyRobot
 			kickingPosition = (KICKING_THRESHOLD/2)*m_pitchSizeX;
 		}
 
-		Vector2 goalCentre = GoalCentrePosition();
-
 		// Check if the position is within two robot radii of the enemy.
 		Vector2 proposedPosition = Vector2(kickingPosition,m_pitchSizeY/2);
 		Vector2 enemyRobotPosition = enemyRobotState.Position();
 
+		// Check if the proposed position is too close to the enemy robot to be used.
 		if (proposedPosition.Distance(&enemyRobotPosition) < 2*ROBOT_RADIUS)
 		{
-			// In this case, the proposed position is too close to the enemy robot to be used.
+			float adjustedXPosition;
+
 			if (isEnemyOnBottomSide)
 			{
-				float adjustedXPosition = kickingPosition + 2*ROBOT_RADIUS;
-				Vector2 newPosition = Vector2(adjustedXPosition, proposedPosition.Y());
-				targetState.SetPosition(newPosition);
-				targetState.SetOrientation(newPosition.GetAngleTo(&goalCentre));
+				adjustedXPosition = kickingPosition + 2*ROBOT_RADIUS;
 			}
 			else
 			{
-				float adjustedXPosition = kickingPosition - 2*ROBOT_RADIUS;
-				Vector2 newPosition = Vector2(adjustedXPosition, proposedPosition.Y());
-				targetState.SetPosition(newPosition);
-				targetState.SetOrientation(newPosition.GetAngleTo(&goalCentre));
+				adjustedXPosition = kickingPosition - 2*ROBOT_RADIUS;
 			}
+
+			proposedPosition = Vector2(adjustedXPosition, proposedPosition.Y());
 		}
-		else
-		{
-			targetState.SetPosition(proposedPosition);
-			targetState.SetOrientation(proposedPosition.GetAngleTo(&goalCentre));
-		}
+
+		Vector2 goalCentre = GoalCentrePosition();
+
+		proposedPosition.Clamp(Vector2(0,0), Vector2(m_pitchSizeX-1, m_pitchSizeY-1));
+		targetState.SetPosition(proposedPosition);
+		targetState.SetOrientation(proposedPosition.GetAngleTo(&goalCentre));
 	}
 
 	return targetState;
