@@ -52,6 +52,7 @@ void AStarUnitTests::AStarPlot()
 		Foresee foresee;
 		AStar aStar;
 		Impala impala;
+		Eagle eagle;
 
 		// We're not dealing with the enemy robot position currently.
 		foresee.SetPitchDimensions(600, 300);
@@ -59,11 +60,14 @@ void AStarUnitTests::AStarPlot()
 		RobotState enemyRobotFuture = foresee.ExtrapolateRobotState(enemyRobotPrevious);
 		Vector2 ballFuture = foresee.ExtrapolatePosition(ballPrevious);
 
-		aStar.SetSharedData(600, 300, eLeftSide);
-		std::list<RobotState> aStarPath = aStar.GeneratePath(ourRobotFuture, RobotState(ballFuture,0), false, ballFuture, enemyRobotFuture);
+		eagle.SetSharedData(eMatch,600,300,eLeftSide);
+		RobotState targetState = eagle.IdentifyTarget(ourRobotFuture,enemyRobotFuture,ballFuture);
 
-		std::list<RobotState> smoothedPath = impala.SmoothPath(aStarPath, 19);
+		aStar.SetSharedData(600, 300, eLeftSide);
+		std::list<RobotState> aStarPath = aStar.GeneratePath(ourRobotFuture, targetState, false, ballFuture, enemyRobotFuture);
+
+		std::list<RobotState> smoothedPath = impala.SmoothPath(aStarPath, 99);
 
 		// We're passing ballFuture twice as it also happens to be the destination currently.
-		aiControl.Plot(smoothedPath, ourRobotPrevious, RobotState(ballFuture,0), ballPrevious, ballFuture, enemyRobotPrevious, enemyRobotFuture);
+		aiControl.Plot(smoothedPath, ourRobotPrevious, targetState, ballPrevious, ballFuture, enemyRobotPrevious, enemyRobotFuture);
 }
