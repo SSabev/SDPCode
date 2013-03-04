@@ -189,7 +189,7 @@ void AIControlUnitTests::AIControlIsFailedFrame()
     Vector2 ballPosition(300,50); 
     
 
-    TEST_ASSERT(aiControl.IsFailedFrame(robot1Position, robot2Position, ballPosition) == false);
+    TEST_ASSERT(aiControl.IsFailedFrame(robot1Position, ballPosition) == false);
 
 }
 
@@ -208,7 +208,7 @@ void AIControlUnitTests::AIControlIsFailedFrameBoundaries()
     Vector2 ballPosition(599,299); 
     
 
-    TEST_ASSERT(aiControl.IsFailedFrame(robot1Position, robot2Position, ballPosition) == false);
+    TEST_ASSERT(aiControl.IsFailedFrame(robot1Position, ballPosition) == false);
 
 }
 
@@ -227,7 +227,7 @@ void AIControlUnitTests::AIControlIsFailedFrameRobot1()
     Vector2 ballPosition(300,50); 
     
 
-    TEST_ASSERT(aiControl.IsFailedFrame(robot1Position, robot2Position, ballPosition) == true);
+    TEST_ASSERT(aiControl.IsFailedFrame(robot1Position, ballPosition) == true);
 
 }
 
@@ -246,7 +246,7 @@ void AIControlUnitTests::AIControlIsFailedFrameBothRobots()
     Vector2 ballPosition(300,50); 
     
 
-    TEST_ASSERT(aiControl.IsFailedFrame(robot1Position, robot2Position, ballPosition) == true);
+    TEST_ASSERT(aiControl.IsFailedFrame(robot1Position, ballPosition) == true);
 
 }
 
@@ -265,6 +265,6 @@ void AIControlUnitTests::AIControlIsFailedFrameAllObjects()
     Vector2 ballPosition(1300,-50); 
     
 
-    TEST_ASSERT(aiControl.IsFailedFrame(robot1Position, robot2Position, ballPosition) == true);
+    TEST_ASSERT(aiControl.IsFailedFrame(robot1Position, ballPosition) == true);
 
 }
