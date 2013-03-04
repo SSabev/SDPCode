@@ -27,7 +27,8 @@ HEADERS += \
     Navigation/Navigation.h \
     GUI/Tools/LoggingWdgt.h \
     GUI/Tools/CVisionMod.h \
-    GUI/Comm/IBTComm.h
+    GUI/Comm/IBTComm.h \
+    AI/MathTypes/Intersection.h
 
 SOURCES += \
     GUI/SharedMem.cpp \
@@ -46,7 +47,8 @@ SOURCES += \
     AI/RobotState.cpp \
     Navigation/Navigation.cpp \
     GUI/Tools/LoggingWdgt.cpp \
-    GUI/Tools/CVisionMod.cpp
+    GUI/Tools/CVisionMod.cpp \
+    AI/MathTypes/Intersection.cpp
 
 FORMS += \
     GUI/mainwindow.ui \

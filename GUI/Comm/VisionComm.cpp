@@ -20,6 +20,7 @@ CVisionComm::CVisionComm(QWidget *parent)
 
 CVisionComm::~CVisionComm()
 {
+    disconnect(&localSocket);
     ShutdownVision();
 }
 
@@ -35,7 +36,7 @@ void CVisionComm::ConnedToServ()
     // read pitch cfg - first data block received from the Vision module
     sendByte = VISION_REQUEST_CFG;
     localSocket.write(&sendByte, 1);
-    localSocket.waitForBytesWritten();
+    localSocket.waitForReadyRead();
     read = localSocket.read((char *) &cfg, sizeof(TPitchCfg));
     if(read != sizeof(TPitchCfg))
         loggingObj->ShowMsg("VISIONCOMM: failed to read the pitch configuration");
@@ -103,7 +104,7 @@ bool CVisionComm::ReadData(TVisionData *data)
 
     sendByte = VISION_REQUEST_NAV;
     localSocket.write(&sendByte, 1);
-    localSocket.waitForBytesWritten();
+    localSocket.waitForReadyRead();
     net = localSocket.read((char *) data, sizeof(TVisionData));
 
     if(net != sizeof(TVisionData)){
