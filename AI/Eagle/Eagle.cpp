@@ -146,6 +146,8 @@ RobotState Eagle::IdentifyTarget(RobotState ourRobotState, RobotState enemyRobot
 		targetState.SetOrientation(proposedPosition.GetAngleTo(&goalCentre));
 	}
 
+	targetState.SetPosition((int)targetState.Position().X(), (int)targetState.Position().Y());
+
 	return targetState;
 }
 
