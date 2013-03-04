@@ -14,7 +14,7 @@
 // This will make it inadmissable (not really A* anymore), but given that we know there are 
 // few obstacles on the pitch and a truly optimal path isn't really necessary, we can 
 // probably get away with it. **The speed benefit is insane - factor of 100s**
-const float HEURISTIC_PENALTY = 150;
+const float HEURISTIC_PENALTY = 2.5f;
 
 /* This is an experimental optimisation for early termination of paths. As there are few 
  * obstacles on the pitch, in most cases, we can assume that the straightest path is also 
@@ -228,7 +228,7 @@ std::list<RobotState> AStar::GeneratePath(RobotState startingState, RobotState d
 
 				// We're dealing with a squared threshold so we don't have to bother with square roots.
 				const float biasMinThresholdSquared = 250.0f;
-				const float biasMaxThresholdSquared = 2500.0f;
+				const float biasMaxThresholdSquared = 900.0f;
 				const float defaultBias = 10000000.0f;
 
 				// If we're moving to the ball and we want to get behind it, add bias in a U-shape around it
@@ -240,7 +240,7 @@ std::list<RobotState> AStar::GeneratePath(RobotState startingState, RobotState d
 					// Check proximity of the point first
 					if (distanceToBallSquared <= biasMaxThresholdSquared)
 					{
-						if (m_pitchSide == eLeftSide)
+						/*if (m_pitchSide == eLeftSide)
 						{
 							// If we're on the left side of the pitch, the open side of the U needs to be that way.
 							if ((currentAdjacentVector != ballPos) && ((currentAdjacentVector.X() >= ballPos.X()) || (pow(fabs(currentAdjacentVector.Y() - ballPos.Y()),2) > biasMinThresholdSquared)))
@@ -259,9 +259,12 @@ std::list<RobotState> AStar::GeneratePath(RobotState startingState, RobotState d
 								// Let's apply a radial bias.
 								float biasToApply = defaultBias/distanceToBallSquared;
 
-								//p_newAStarNode->setBias(biasToApply);
+								p_newAStarNode->setBias(biasToApply);
 							}
-						}
+						}*/
+
+						float biasToApply = defaultBias/distanceToBallSquared;
+						p_newAStarNode->setBias(biasToApply);
 					}
 
 					// Add bias to a radius around the enemy robot.
