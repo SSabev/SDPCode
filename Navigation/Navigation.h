@@ -16,10 +16,8 @@ public:
 
     void GenerateValues();
 
+    void GenerateStop();
 private:
-    void GenerateLinear(TEntry *entry);
-    void GenerateAngular(TEntry *entry);
-    void GenerateMaxAngular(TEntry *entry);
 
     TTarget m_target;
 

@@ -33,7 +33,14 @@
             <number>0</number>
            </property>
            <property name="maximum">
-            <number>255</number>
+            <number>127</number>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="frontChBx">
+           <property name="text">
+            <string>CW/CCW</string>
            </property>
           </widget>
          </item>
@@ -54,7 +61,14 @@
             <number>0</number>
            </property>
            <property name="maximum">
-            <number>255</number>
+            <number>127</number>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="rearChBx">
+           <property name="text">
+            <string>CW/CCW</string>
            </property>
           </widget>
          </item>
@@ -75,7 +89,14 @@
             <number>0</number>
            </property>
            <property name="maximum">
-            <number>255</number>
+            <number>127</number>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="leftChBx">
+           <property name="text">
+            <string>CW/CCW</string>
            </property>
           </widget>
          </item>
@@ -96,7 +117,14 @@
             <number>0</number>
            </property>
            <property name="maximum">
-            <number>255</number>
+            <number>127</number>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="rightChBx">
+           <property name="text">
+            <string>CW/CCW</string>
            </property>
           </widget>
          </item>
@@ -221,6 +249,20 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>frontBox</tabstop>
+  <tabstop>rearBox</tabstop>
+  <tabstop>leftBox</tabstop>
+  <tabstop>rightBox</tabstop>
+  <tabstop>sendValsBtn</tabstop>
+  <tabstop>frontChBx</tabstop>
+  <tabstop>rightChBx</tabstop>
+  <tabstop>leftChBx</tabstop>
+  <tabstop>disconnectBtn</tabstop>
+  <tabstop>connectBtn</tabstop>
+  <tabstop>exitBtn</tabstop>
+  <tabstop>rearChBx</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

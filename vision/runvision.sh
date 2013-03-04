@@ -4,7 +4,8 @@ BASEDIR=$(dirname $0)
 
 # source "$BASEDIR/../env"
 
-until python "$BASEDIR/forker.py" $@; do
-    echo "Vision crashed! Respawning..." >&2
-    sleep 1
-done
+python "$BASEDIR/forker.py" $@
+chmod ug+x /tmp/vision_sock
+rm /tmp/vision_sock
+echo "Vision quit" >&2
+

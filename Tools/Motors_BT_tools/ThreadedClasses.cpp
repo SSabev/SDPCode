@@ -4,9 +4,10 @@
 #include <sys/select.h>
 #include <unistd.h>
 
-CConnector::CConnector(sockaddr_rc *m_pArduinoAddr, int *socket)
-    : m_arduinoAddr (m_pArduinoAddr)
-    , m_pSocket (socket)
+char buff[32];
+
+CConnector::CConnector(int *socket)
+    : m_pSocket (socket)
 {
 
 }
@@ -37,4 +38,54 @@ void CConnector::process()
 
     else
         emit finished (false);
+}
+
+//////////////////////////////////////////////////////
+
+CReader::CReader(int *socket)
+    : m_pSocket(socket)
+{
+
+}
+
+CReader::~CReader()
+{
+
+}
+
+void CReader::process()
+{
+    fd_set readfds;
+    fd_set writefds;
+
+    int maxfd;
+    int status;
+
+    while(true){
+        FD_ZERO (&readfds);
+        FD_ZERO (&writefds);
+        FD_SET (*m_pSocket, &readfds);
+
+        maxfd = (*m_pSocket) + 1;
+
+        status = select(maxfd, &readfds, &writefds, NULL, NULL);
+
+        if( status > 0 && FD_ISSET( *m_pSocket, &readfds ) ) {
+            // incoming data
+            memset(&buff, 0, 32);
+
+            status = recv(*m_pSocket, buff, 31, 0);
+            if(status < 0){
+                // conection lost
+                emit ConnectionLost();
+                break;
+            }
+            printf("%s", buff);
+        }
+        else if(status < 0){
+            // error on socket
+            emit SocketError();
+            break;
+        }
+    }
 }

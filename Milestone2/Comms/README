@@ -1,9 +1,0 @@
-Ensure leJOS NXJ software is installed
- > http://lejos.sourceforge.net/nxt/nxj/tutorial/Preliminaries/GettingStartedLinux.htm
-
-1. Run nxjpcc Server.java to compile
-2. Run program on brick (at the moment, 'holonomic.nxj')
-3. Run nxjpc Server
-4. Open GUI. Server connection should be established.
-   If GUI was already open, just 'Connect to BT'
-

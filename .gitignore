@@ -1,13 +1,22 @@
 .DS_Store
+
 *.swp
 *.swo
 *.un~
 *.pyc
 *.py~
+*.profile
+*~
+
+<<<<<<< HEAD
+=======
+*.pro.user
+
+>>>>>>> 21103f7051bb01a9f8e41b8e7c9656a60ea98a9f
 GUI_release/*
 GUI_Release/*
-*~
 GUI/GUI.pro.user
+
 AI/debug/*
 AI/libs/*
 !AI/libs/cpptest/cpptest.zip
@@ -18,10 +27,15 @@ AI/premake4
 AI/Makefile
 AI/SDP-AI.*
 AI/docs/*
+
+vision/data/*
+vision/input_images/*
+vision/output_images/*
+vision/test_report.txt
+vision/data_not_to_be_touched/*                                              
+
 Infinity.pro.user
 Infinity-debug-Desktop-Debug/*
 Infinity-debug-Desktop-Release/*
-vision/data/*
-*.profile
 Infinity-debug-Desktop-Debug/*                                                  
-Infinity-debug-Desktop-Release/*                                                
+Infinity-debug-Desktop-Release/* 

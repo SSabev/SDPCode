@@ -2,6 +2,7 @@ from __future__ import print_function
 import time
 import os
 import sys
+import math
 
 from SimpleCV import Camera
 from preprocess import Preprocessor
@@ -29,7 +30,11 @@ class Vision:
         self.stdout = stdout
 
         self.pipe = pipe
-
+        
+        # vision can skip 3 bad frames in a row
+        #self.skip = 0;
+        #self.max_skip = 3;
+        
         if sourcefile is None:
             self.camera = Camera()
         else:
@@ -95,8 +100,8 @@ class Vision:
         frame = self.camera.getImageUndistort()
 
         # Uncomment to see changes in barrell distortion matrix
-        calibrationPath = os.path.join('calibration', 'pitch{0}'.format(0))
-        self.camera.loadCalibration(os.path.join(sys.path[0], calibrationPath))
+        # calibrationPath = os.path.join('calibration', 'pitch{0}'.format(0))
+        # self.camera.loadCalibration(os.path.join(sys.path[0], calibrationPath))
 
         frame = self.preprocessor.preprocess(frame)
 
@@ -127,21 +132,33 @@ class Vision:
         self.pipe.send(InitSignal(self.preprocessor.pitch_size[0], self.preprocessor.pitch_size[1]))
 
     def addCoordinates(self, entity, coordinates):
-            self._pastCoordinates[entity].pop(0)
-            self._pastCoordinates[entity].append(coordinates)
+        self._pastCoordinates[entity].pop(0)
+        self._pastCoordinates[entity].append(coordinates)
 
     def smoothCoordinates(self, entity):
-            x = sum(map(lambda (x, _): x, self._pastCoordinates[entity])) / self._pastSize
-            y = sum(map(lambda (_, y): y, self._pastCoordinates[entity])) / self._pastSize
-            return (x, y)
+        x = sum(map(lambda (x, _): x, self._pastCoordinates[entity])) / self._pastSize
+        y = sum(map(lambda (_, y): y, self._pastCoordinates[entity])) / self._pastSize
+        return (x, y)
 
     def addAngle(self, entity, angle):
-            self._pastAngles[entity].pop(0)
-            self._pastAngles[entity].append(angle)
+        self._pastAngles[entity].pop(0)
+        self._pastAngles[entity].append(angle)
 
     def smoothAngle(self, entity):
-        return sum(self._pastAngles[entity]) / self._pastSize
-
+        temp = sorted (self._pastAngles[entity])
+        #if entity == 'blue': print (temp);
+        if (temp[-1] - temp[0] > math.pi):
+            temp = map(lambda angle: angle + 2*math.pi if angle < math.pi else angle, temp)
+        #if entity == 'blue': print (temp);
+        return sum(temp) / self._pastSize
+        
+    def standardize_angle(self, angle):
+        if (angle > 2*math.pi):
+            return angle - 2*math.pi
+        if (angle < 0):
+            return angle + 2*math.pi
+        return angle
+            
     def outputEnts(self, ents):
         # Messyyy
         if not self.preprocessor.hasPitchSize:
@@ -152,6 +169,18 @@ class Vision:
         for name in ['yellow', 'blue', 'ball']:
             entity = ents[name]
             coordinates = entity.coordinates()
+            
+            # This is currently not needed
+            # if the frame is not recognized, skip a maximum of self.max_skip times
+            #if (coordinates[0] != -1):
+            #    self.addCoordinates(name, coordinates)
+            #    self.skip = 0
+            #else:
+            #    if (self.skip < self.max_skip):
+            #        self.skip = self.skip + 1;
+            #    else:
+            #        self.addCoordinates(name, coordinates)
+                    
             self.addCoordinates(name, coordinates)
             x, y = self.smoothCoordinates(name)
 
@@ -163,10 +192,15 @@ class Vision:
                 # self.send('{0} {1} '.format(x, y))
                 msg_data += [int(x), int(y)]
             else:
-                self.addAngle(name, entity.angle())
+                # angle is currently clockwise, this makes it anti-clockwise
+                angle = self.standardize_angle( 2*math.pi - entity.angle() )
+                
+                self.addAngle(name, angle)
+                angle = self.standardize_angle ( self.smoothAngle(name) );
+                
+                msg_data += [int(x), int(y), angle]
+                
 
-                msg_data += [int(x), int(y), entity.angle()]
-		# self.smoothAngle(name)]
 
         msg_data.append(int(time.time() * 1000))
         data = FrameData(*msg_data)

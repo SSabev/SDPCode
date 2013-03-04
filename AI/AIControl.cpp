@@ -79,7 +79,7 @@ void AIControl::RunAI()
 
 		currentEntry->aiData.isFailedFrame = 1;
 		return;
-	}
+    	}
 
 	RobotState ourRobotFuture;
 	RobotState enemyRobotFuture;
@@ -185,7 +185,7 @@ bool AIControl::IsFailedFrame(RobotState ourRobot, Vector2 ball) {
 	return isInvalidRobot || isInvalidBall;
 }
 
-#if defined(TEST)
+#if defined(STANDALONE)
 /*!
  * Outputs several data files containing points, for use by the plotting/plot_path.sh script - this allows us 
  * to visualise a particular frame of AI output data.

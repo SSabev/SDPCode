@@ -20,6 +20,7 @@ class AIControl
 #if defined(STANDALONE)
 	// This facilitates testing of private and protected functions.
 	friend class AStarUnitTests;
+	friend class AIControlUnitTests;
 #endif
 
 public:
@@ -35,7 +36,7 @@ private:
 	bool CoordinatesAreBad(Vector2 objectPosition);
 	bool IsFailedFrame(RobotState ourRobot, Vector2 ball);
 
-#if defined(TEST)
+#if defined(STANDALONE)
 	void Plot(std::list<RobotState> aStarPath, std::vector<RobotState> ourPrevious, RobotState destination, std::vector<Vector2> ballPrevious, Vector2 ballFuture, std::vector<RobotState> enemyRobotPrevious, RobotState enemyRobotFuture);
 #endif
 

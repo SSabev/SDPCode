@@ -12,11 +12,13 @@ class CVisionComm
     Q_OBJECT
 public:
     CVisionComm(QWidget *parent = 0);
+    ~CVisionComm();
 
     bool ReadData(TVisionData *data);
-    bool ShutdownVision();
 
     void ConnectToVision();
+    void ShutdownVision();
+    bool IsConnected();
 
 private slots:
     void ConnedToServ();

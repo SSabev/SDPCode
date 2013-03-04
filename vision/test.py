@@ -2,7 +2,7 @@
 from SimpleCV import *
 from features import Features
 from threshold import Threshold
-from display import Gui, ThresholdGui
+from display import Gui
 from preprocess import Preprocessor
 import os
 import sys
@@ -53,12 +53,17 @@ else:
     pitchnum = 0
 
 threshold = Threshold(pitchnum)
-gui = Gui()
+gui = Gui(1)
 features = Features(gui, threshold)
-#preprocessor = Preprocessor(False)
+preprocessor = Preprocessor(False)
 INPUT_DIR = './input_images'
 OUTPUT_DIR = './output_images'
 error_list = []
+
+
+calibrationPath = os.path.join('calibration', 'pitch{0}'.format(pitchnum));
+camera = Camera();
+camera.loadCalibration(os.path.join(sys.path[0], calibrationPath));
 
 # Statistics
 recog = {'ball' : 0, 'blue' : 0, 'yellow' : 0}
@@ -70,6 +75,8 @@ for filename in os.listdir(INPUT_DIR):
         n_files = n_files + 1
         full_path = os.path.join(INPUT_DIR, filename)
         frame = Image(full_path)
+        frame = camera.undistort(frame)
+        frame = preprocessor.preprocess(frame)
         print 'File %s processed\n' % filename
         if not process_frame(frame, filename):
             error_list.append(filename)

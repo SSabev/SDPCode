@@ -11,6 +11,7 @@
 
 class Eagle
 {
+friend class EagleUnitTests;	
 public:
 	Eagle();
 	
@@ -21,7 +22,6 @@ public:
 
 private:
 	Vector2 GoalCentrePosition();
-	
 	TSystemState m_state;
 	TPitchSide m_pitchSide;
 

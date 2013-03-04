@@ -125,7 +125,6 @@ RobotState Eagle::IdentifyTarget(RobotState ourRobotState, RobotState enemyRobot
 	return targetState;
 }
 
-
 bool Eagle::DoWeHaveBall(RobotState ourRobotState, Vector2 ballPos) 
 {
 	Vector2 robotPos = ourRobotState.Position();
@@ -148,7 +147,6 @@ bool Eagle::DoWeHaveBall(RobotState ourRobotState, Vector2 ballPos)
 	
 	return false;
 }
-
 
 Vector2 Eagle::GoalCentrePosition()
 {

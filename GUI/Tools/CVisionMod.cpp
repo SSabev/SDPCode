@@ -12,6 +12,8 @@
 
 CVisionMod::CVisionMod (QWidget *parent)
     : QWidget (parent, Qt::Window)
+    , m_pitchHeight(V_SIZE)
+    , m_pitchWidth(H_SIZE)
 {
 //    setSizePolicy(QSizePolicy::Fixed);
     resize(H_SIZE, V_SIZE);
@@ -38,10 +40,18 @@ void CVisionMod::UpdateWindow()
 
 QSize CVisionMod::minimumSizeHint () const
 {
-    return QSize (H_SIZE, V_SIZE);
+    return QSize (m_pitchWidth, m_pitchHeight);
 }
 
-void CVisionMod::paintEvent(QPaintEvent *event)
+void CVisionMod::SetSize(int w, int h)
+{
+    m_pitchWidth = w;
+    m_pitchHeight = h;
+
+    resize(m_pitchWidth, m_pitchHeight);
+}
+
+void CVisionMod::paintEvent(QPaintEvent* /*event*/)
 {
     QStylePainter painter(this);
     painter.drawPixmap(0, 0, m_pixmap);
@@ -60,26 +70,26 @@ void CVisionMod::DrawFrame (QPainter *painter)
     if (entry->aiData.pathLength == 0) return;  // nothing to do here
 
     // paint BG
-    painter->fillRect (0, 0, H_SIZE, V_SIZE, Qt::white);
+    painter->fillRect (0, 0, m_pitchWidth, m_pitchHeight, Qt::white);
     // plot current points from AI
     painter->setPen (pen);
     // we are guaranteed that there is at least 1 point - current position
     // draw it in blue
-    painter->drawPoint((int)entry->aiData.path[0].position_X, V_SIZE - (int)entry->aiData.path[0].position_Y);
-    path.moveTo(entry->aiData.path[0].position_X, V_SIZE - (int)entry->aiData.path[0].position_Y);
+    painter->drawPoint((int)entry->aiData.path[0].position_X, m_pitchHeight - (int)entry->aiData.path[0].position_Y);
+    path.moveTo(entry->aiData.path[0].position_X, m_pitchHeight - (int)entry->aiData.path[0].position_Y);
 
     pen.setColor (Qt::red);
     painter->setPen (pen);
     for (i = 1; i < (int) entry->aiData.pathLength; i++){
-        painter->drawPoint((int)entry->aiData.path[i].position_X, V_SIZE - (int)entry->aiData.path[i].position_Y);
+        painter->drawPoint((int)entry->aiData.path[i].position_X, m_pitchHeight - (int)entry->aiData.path[i].position_Y);
 
         dist = entry->aiData.path[i].position_X - entry->aiData.path[i-1].position_X;
         path.cubicTo(entry->aiData.path[i-1].position_X + dist/2,
-                     V_SIZE - entry->aiData.path[i-1].position_Y,
+                     m_pitchHeight - entry->aiData.path[i-1].position_Y,
                      entry->aiData.path[i-1].position_X + dist/2,
-                     V_SIZE - entry->aiData.path[i].position_Y,
+                     m_pitchHeight - entry->aiData.path[i].position_Y,
                      entry->aiData.path[i].position_X,
-                     V_SIZE - entry->aiData.path[i].position_Y);
+                     m_pitchHeight - entry->aiData.path[i].position_Y);
     }
 
     if (i == 1) return;
