@@ -101,18 +101,18 @@ RobotState Eagle::IdentifyTarget(RobotState ourRobotState, RobotState enemyRobot
 		// Check if the proposed position is too close to the enemy robot to be used.
 		if (proposedPosition.Distance(&enemyRobotPosition) < 2*ROBOT_RADIUS)
 		{
-			float adjustedXPosition;
+			float adjustedYPosition;
 
 			if (isEnemyOnBottomSide)
 			{
-				adjustedXPosition = kickingPosition + 2*ROBOT_RADIUS;
+				adjustedYPosition = proposedPosition.Y() + 2*ROBOT_RADIUS;
 			}
 			else
 			{
-				adjustedXPosition = kickingPosition - 2*ROBOT_RADIUS;
+				adjustedYPosition = proposedPosition.Y() - 2*ROBOT_RADIUS;
 			}
 
-			proposedPosition = Vector2(adjustedXPosition, proposedPosition.Y());
+			proposedPosition = Vector2( proposedPosition.X(), adjustedYPosition);
 		}
 
 		Vector2 goalCentre = GoalCentrePosition();
