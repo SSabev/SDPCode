@@ -2,6 +2,9 @@
 
 #include <cmath>
 
+#define KICKING_THRESHOLD 0.33
+#define ROBOT_RADIUS 35
+
 Eagle::Eagle()
 {
 	m_intersection = Intersection();
@@ -26,19 +29,101 @@ RobotState Eagle::IdentifyTarget(RobotState ourRobotState, RobotState enemyRobot
 {
 	// For now, this is just the ball position.
 	RobotState targetState;
+	ballPos.Clamp(Vector2(0,0), Vector2(m_pitchSizeX-1, m_pitchSizeY-1));
 
 	if (!DoWeHaveBall(ourRobotState, ballPos))
 	{
-		// If we don't have the ball, the aim should be to move to the ball.
-		ballPos.Clamp(Vector2(0,0), Vector2(m_pitchSizeX-1, m_pitchSizeY-1));
-		targetState.SetPosition(ballPos);
-		targetState.SetOrientation(0);
+		// TODO - If we're not behind the ball, make this a position behind the ball.
+		if ((m_pitchSide == eLeftSide) && (ourRobotState.Position().X() < ballPos.X() - 30))
+		{
+			targetState.SetPosition(ballPos - Vector2(30,0));
+			targetState.SetOrientation(0);
+		}
+		else if ((m_pitchSide == eRightSide) && (ourRobotState.Position().X() > ballPos.X() + 30))
+		{
+			targetState.SetPosition(ballPos + Vector2(30,0));
+			targetState.SetOrientation(M_PI);
+		}
+		else
+		{
+			// If we don't have the ball, the aim should be to move to the ball.
+			targetState.SetPosition(ballPos);
+			
+			if (m_pitchSide == eLeftSide)
+			{
+				targetState.SetOrientation(0);
+			}
+			else
+			{
+				targetState.SetOrientation(M_PI);
+			}
+		}
 	}
 	else
 	{
-		// If we have the ball, but shouldn't shoot, let's move to a more appropriate place.
+		// If we have the ball, let's move to a more appropriate place.
 		// This is done regardless of whether we're shooting or not.
-		// TODO
+		// TODO: Add logic for moving to a better position.
+		/*
+			This should depend on:
+			1. The opposite half of the pitch to the enemy robot.
+			2. Within the kicking threshold.
+			3. Fairly central, but outside of the enemy robot's radius
+			4. Orientated towards the goal
+		*/
+		bool isEnemyOnBottomSide;
+	
+		// Determine which half of the pitch the enemy robot is on.
+		if (enemyRobotState.Position().Y() < m_pitchSizeY/2)
+		{
+			isEnemyOnBottomSide = true;
+		}
+		else
+		{
+			isEnemyOnBottomSide = false;
+		}
+
+		// Determine where the kicking threshold is for this side of the pitch.
+		float kickingPosition;
+
+		if (m_pitchSide == eLeftSide)
+		{
+			kickingPosition = m_pitchSizeX - ((KICKING_THRESHOLD/2)*m_pitchSizeX);
+		}
+		else
+		{
+			kickingPosition = (KICKING_THRESHOLD/2)*m_pitchSizeX;
+		}
+
+		Vector2 goalCentre = GoalCentrePosition();
+
+		// Check if the position is within two robot radii of the enemy.
+		Vector2 proposedPosition = Vector2(kickingPosition,m_pitchSizeY/2);
+		Vector2 enemyRobotPosition = enemyRobotState.Position();
+
+		if (proposedPosition.Distance(&enemyRobotPosition) < 2*ROBOT_RADIUS)
+		{
+			// In this case, the proposed position is too close to the enemy robot to be used.
+			if (isEnemyOnBottomSide)
+			{
+				float adjustedXPosition = kickingPosition + 2*ROBOT_RADIUS;
+				Vector2 newPosition = Vector2(adjustedXPosition, proposedPosition.Y());
+				targetState.SetPosition(newPosition);
+				targetState.SetOrientation(newPosition.GetAngleTo(&goalCentre));
+			}
+			else
+			{
+				float adjustedXPosition = kickingPosition - 2*ROBOT_RADIUS;
+				Vector2 newPosition = Vector2(adjustedXPosition, proposedPosition.Y());
+				targetState.SetPosition(newPosition);
+				targetState.SetOrientation(newPosition.GetAngleTo(&goalCentre));
+			}
+		}
+		else
+		{
+			targetState.SetPosition(proposedPosition);
+			targetState.SetOrientation(proposedPosition.GetAngleTo(&goalCentre));
+		}
 	}
 
 	return targetState;
@@ -100,18 +185,16 @@ bool Eagle::ShouldWeShoot(RobotState ourRobotState, RobotState enemyRobotState, 
 	float distToGoal = ourRobotState.Position().Distance(&goalPosition);
 
 	// Ian reckons this should be 1/4 of the pitch, but I'm living dangerously and have gone for 1/3.
-	float distanceThreshold = 0.33f * m_pitchSizeX;
+	float distanceThreshold = KICKING_THRESHOLD * m_pitchSizeX;
 
 	bool weHaveBall = DoWeHaveBall(ourRobotState, ballPos);
 	bool closeToGoal = distToGoal < distanceThreshold;
-
-	// We're going to put a circle around the enemy robot to make sure we don't collide with it.
-	float robotRadius = 40;
+	
 
 	// Check that the enemy robot isn't obstructing the ball.
 	bool isGoalClear = false;
 
-	if (!m_intersection.LineCircleIntersection(ourRobotState.Position(), enemyRobotState.Position(), goalPosition, robotRadius))
+	if (!m_intersection.LineCircleIntersection(ourRobotState.Position(), enemyRobotState.Position(), goalPosition, ROBOT_RADIUS))
 	{
 		isGoalClear = true;
 	}
