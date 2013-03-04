@@ -35,6 +35,7 @@ public:
 private:
 	bool CoordinatesAreBad(Vector2 objectPosition);
 	bool IsFailedFrame(RobotState ourRobot, Vector2 ball);
+	float WrapValue(float orientation);
 
 #if defined(STANDALONE)
 	void Plot(std::list<RobotState> aStarPath, std::vector<RobotState> ourPrevious, RobotState destination, std::vector<Vector2> ballPrevious, Vector2 ballFuture, std::vector<RobotState> enemyRobotPrevious, RobotState enemyRobotFuture);

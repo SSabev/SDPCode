@@ -4,6 +4,7 @@
 
 #include "../Shared/SharedMem.h"
 
+#include <cmath>
 #include <string.h>
 #include <iostream>
 #include <fstream>
@@ -145,7 +146,7 @@ void AIControl::RunAI()
 
 		currentEntry->aiData.path[pointsWritten].position_X = it->Position().X();
 		currentEntry->aiData.path[pointsWritten].position_Y = it->Position().Y();
-		currentEntry->aiData.path[pointsWritten].orientation = it->Orientation();
+		currentEntry->aiData.path[pointsWritten].orientation = WrapValue(it->Orientation());
 
 		pointsWritten++;
 	}
@@ -172,6 +173,22 @@ bool AIControl::CoordinatesAreBad(Vector2 objectPosition)
 	}
 	
 	return false;
+}
+
+/*!
+ * Wrap ma values yo.
+ */
+float AIControl::WrapValue(float orientation) {
+	
+	// orientation = orientation < 0 ? -orientation : orientation ;
+	// just kidding, Richard... although the above is totally fabs.
+		
+	if(orientation < 0)
+	{
+		orientation  = -orientation;
+	}
+	
+	return fmod(orientation, 2*M_PI);
 }
 
 /*!
