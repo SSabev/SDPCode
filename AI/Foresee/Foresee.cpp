@@ -105,6 +105,7 @@ Vector2 Foresee::ExtrapolatePosition(std::vector<Vector2> positions)
 
 	// Ensure that the extrapolated position is within the confines of the pitch.
 	extrapolatedPosition.Clamp(Vector2(0,0), Vector2(m_pitchSizeX-1, m_pitchSizeY-1));
+	extrapolatedPosition = Vector2((int) extrapolatedPosition.X(), (int) extrapolatedPosition.Y());
 	
 	return extrapolatedPosition;
 }
