@@ -6,13 +6,19 @@ import lejos.util.Delay;
 
 public class DuoNXT implements Runnable {
 
-  private static NXTConnection connection;
+	private static NXTConnection connection;
 	private static DataInputStream dataIn;
 	private static DataOutputStream dataOut;
 	
 	private static boolean listening = true;
 	private static boolean connected = false;
-	
+
+	public static void kick() {
+		Motor.A.setSpeed(1000);
+		Motor.A.rotate(50);
+		Motor.A.rotateTo(0);
+	}
+
 	public static void main(String[] args) throws Exception {
 
 		new Thread( new DuoNXT() ).start();
@@ -43,38 +49,38 @@ public class DuoNXT implements Runnable {
 				 */
 				if(bytes_read > 0) {
 					
-					int left_speed = (b[0] & 0x7F) * 10;
-					int right_speed = (b[1] & 0x7F) * 10;
+					int motorB_speed = (b[0] & 0x7F) * 10;
+					int motorC_speed = (b[1] & 0x7F) * 10;
 					
-					int left_dir = b[0] & 0x80;
-					int right_dir = b[1] & 0x80;
-					
-					LCD.drawString("L speed: " + left_speed + "     ", 0, 0);
-					LCD.drawString("R speed: " + right_speed + "     ", 0, 1);
-					LCD.drawString("L direc: " + left_dir + "     ", 0, 2);
-					LCD.drawString("R direc: " + right_dir + "     ", 0, 3);
+					int motorB_dir = b[0] & 0x80;
+					int motorC_dir = b[1] & 0x80;
 					
 					if(b[2] == (byte) 1) {
-						Motor.A.setSpeed(1000);
-						Motor.A.rotate(50);
-						Motor.A.rotateTo(0);
+						// If kick bit has been set, kick!
+						kick();
 					}
 					
-					if(left_dir == 0) {
-						Motor.B.setSpeed(left_speed);
+					if(motorB_dir == 0) {
+						Motor.B.setSpeed(motorB_speed);
 						Motor.B.forward();
 					} else {
-						Motor.B.setSpeed(left_speed);
+						Motor.B.setSpeed(motorB_speed);
 						Motor.B.backward();
 					}
 					
-					if(right_dir == 0) {
-						Motor.C.setSpeed(right_speed);
+					if(motorC_dir == 0) {
+						Motor.C.setSpeed(motorC_speed);
 						Motor.C.forward();
 					} else {
-						Motor.C.setSpeed(right_speed);
+						Motor.C.setSpeed(motorC_speed);
 						Motor.C.backward();
 					}
+					
+					
+					LCD.drawString("B speed: " + motorB_speed + "     ", 0, 0);
+					LCD.drawString("C speed: " + motorC_speed + "     ", 0, 1);
+					LCD.drawString("B direc: " + motorB_dir + "     ", 0, 2);
+					LCD.drawString("C direc: " + motorC_dir + "     ", 0, 3);
 				}
 				
 			}
@@ -116,7 +122,8 @@ public class DuoNXT implements Runnable {
 					shutdown(false);
 				}
 				
-				/* Only try to send feedback data if we're connected
+				/* I've stopped the brick sending feedback to the Comms until we
+				 * for milestone 3! Keeping it simple yo.
 				 */
 				if(connected) {
 					boolean touchA = sensorA.isPressed();
@@ -126,7 +133,8 @@ public class DuoNXT implements Runnable {
 					byte sensorBval = touchB ? (byte) 1 : (byte) 0;
 					
 					if (!reacting && (touchA || touchB)) {
-						// If sensor A or B are pressed, activate start reacting
+						// If sensor A or B are pressed, start reacting
+						
 						reacting = true;
 						Sound.beep();
 						LCD.drawString("Sensor A: " +  sensorAval, 0, 6);
@@ -156,6 +164,7 @@ public class DuoNXT implements Runnable {
 		}
 		
 	}
+
 	
 	private static void shutdown(boolean forced) {
 		listening = false;
