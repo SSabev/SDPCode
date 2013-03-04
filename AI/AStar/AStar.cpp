@@ -233,7 +233,7 @@ std::list<RobotState> AStar::GeneratePath(RobotState startingState, RobotState d
 					// Check proximity of the point first
 					if (distanceToBallSquared <= biasMaxThresholdSquared)
 					{
-						/*if (m_pitchSide == eLeftSide)
+						if (m_pitchSide == eLeftSide)
 						{
 							// If we're on the left side of the pitch, the open side of the U needs to be that way.
 							if ((currentAdjacentVector != ballPos) && ((currentAdjacentVector.X() >= ballPos.X()) || (pow(fabs(currentAdjacentVector.Y() - ballPos.Y()),2) > biasMinThresholdSquared)))
@@ -254,22 +254,19 @@ std::list<RobotState> AStar::GeneratePath(RobotState startingState, RobotState d
 
 								p_newAStarNode->setBias(biasToApply);
 							}
-						}*/
-
-						float biasToApply = defaultBias/distanceToBallSquared;
-						p_newAStarNode->setBias(biasToApply);
+						}
 					}
+				}
 
-					// Add bias to a radius around the enemy robot.
-					Vector2 enemyRobotPosition = enemyRobotFuture.Position();
+				// Add bias to a radius around the enemy robot.
+				Vector2 enemyRobotPosition = enemyRobotFuture.Position();
 
-					float distanceToEnemyRobotSqd = currentAdjacentVector.DistanceSquared(&enemyRobotPosition);
-					float robotRadiusSquared = 3600.0f;
+				float distanceToEnemyRobotSqd = currentAdjacentVector.DistanceSquared(&enemyRobotPosition);
+				float robotRadiusSquared = 3600.0f;
 
-					if (distanceToEnemyRobotSqd < robotRadiusSquared)
-					{
-						p_newAStarNode->setBias(defaultBias / distanceToEnemyRobotSqd);
-					}
+				if (distanceToEnemyRobotSqd < robotRadiusSquared)
+				{
+					p_newAStarNode->setBias(defaultBias / distanceToEnemyRobotSqd);
 				}
 			}
 		}
