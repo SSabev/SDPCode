@@ -8,8 +8,8 @@
 
 #define _USE_MATH_DEFINES
 
-#define MoveSpeed     (40)
-#define RotSpeed	  (5)
+#define MOVE_SPEED     (40)
+#define ROT_SPEED	   (5)
 
 int abs(int val){
     if(val < 0) return -val;
@@ -27,6 +27,62 @@ CNavigation::CNavigation()
 
 void CNavigation::GenerateValues()
 {
+    TEntry *entry;
+
+    float dx;
+    float dy;
+    float theta;
+    float dtheta;
+    int vf; // front velocity
+    int vs; // sideways velocity
+
+    int front;
+    int rear;
+    int left;
+    int right;
+
+    entry = &sharedMem.positioning[sharedMem.currentIdx];
+
+    dx = (entry->aiData.path[1].position_X - entry->aiData.path[0].position_X);
+    dy = (entry->aiData.path[1].position_Y - entry->aiData.path[0].position_Y);
+
+    theta = dy/dx;
+    vf = MOVE_SPEED * cos(theta);
+    vs = MOVE_SPEED * sin(theta);
+
+    dtheta = entry->aiData.path[1].orientation - entry->aiData.path[0].orientation;
+    if(abs((int)dtheta) > 0.2) {
+        if(dtheta > 0){
+            front = vs  + ROT_SPEED;
+            rear  = -vs + ROT_SPEED;
+
+            left  = vf  + ROT_SPEED;
+            right = -vf + ROT_SPEED;
+        }
+        else{
+            front = vs  - ROT_SPEED;
+            rear  = -vs - ROT_SPEED;
+
+            left  = vf  - ROT_SPEED;
+            right = -vf - ROT_SPEED;
+        }
+    }
+
+    //Send the speeds
+    entry->robot.sendData.motor_left_speed =  abs(left);
+    entry->robot.sendData.motor_right_speed = abs(right);
+    entry->robot.sendData.motor_front_speed = abs(front);
+    entry->robot.sendData.motor_rear_speed =  abs(rear);
+
+    entry->robot.sendData.motor_front_dir = front >= 0 ? 1 : 0;
+    entry->robot.sendData.motor_rear_dir  = rear  >= 0 ? 1 : 0;
+    entry->robot.sendData.motor_left_dir  = left  >= 0 ? 1 : 0;
+    entry->robot.sendData.motor_right_dir = right >= 0 ? 1 : 0;
+}
+
+/*
+void CNavigation::GenerateValues()
+{
     TEntry *entry = &sharedMem.positioning[sharedMem.currentIdx];
     m_ourOrientation = entry->aiData.path[0].orientation;
     float dx;
@@ -41,6 +97,7 @@ void CNavigation::GenerateValues()
 
 
     //make theta the direction to move in.
+
     if ((dx > 0) && (dy < 0)) {
         theta = atan((-dy)/dx);
     }
@@ -64,6 +121,7 @@ void CNavigation::GenerateValues()
     else {
         theta = 0;
     }
+
 
     //set the forward and backwards speeds.
     int forwardspeed;
@@ -128,6 +186,7 @@ void CNavigation::GenerateValues()
     entry->robot.sendData.motor_left_dir = motorSpeed[3] >= 0 ? 1 : 0;
     entry->robot.sendData.motor_right_dir = motorSpeed[1] >= 0 ? 1 : 0;
 }
+*/
 
 void CNavigation::GenerateStop()
 {
