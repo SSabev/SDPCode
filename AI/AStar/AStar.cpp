@@ -153,6 +153,10 @@ std::list<RobotState> AStar::GeneratePath(RobotState startingState, RobotState d
 				{
 					angleToNextPoint = destinationState.Orientation();
 				}
+				else if (i==0)
+				{
+					angleToNextPoint = startingState.Orientation();
+				}
 				else
 				{
 					angleToNextPoint = nodesOnPath[i].GetAngleTo(&nodesOnPath[i+1]);
