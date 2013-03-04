@@ -3,15 +3,18 @@
 #include <float.h>
 #include <assert.h>
 #include <iostream>
+#include <fstream>
 
 #include <vector>
+
+#include <cmath>
 
 // I'm experimenting with penalising the heuristic, otherwise it results in expanding 
 // too many nodes needlessly.
 // This will make it inadmissable (not really A* anymore), but given that we know there are 
 // few obstacles on the pitch and a truly optimal path isn't really necessary, we can 
 // probably get away with it. **The speed benefit is insane - factor of 100s**
-const float HEURISTIC_PENALTY = 1.5;
+const float HEURISTIC_PENALTY = 150;
 
 /* This is an experimental optimisation for early termination of paths. As there are few 
  * obstacles on the pitch, in most cases, we can assume that the straightest path is also 
@@ -115,20 +118,34 @@ std::list<RobotState> AStar::GeneratePath(RobotState startingState, RobotState d
 				}
 			}
 
+			// DEBUG
+			int openSetSize = openSet.size();
+			int closedSetSize = closedSet.size();
+
 			// Finally, add the starting node to the path.
 			nodesOnPath.insert(nodesOnPath.begin(), startingVector);
 
+			// DEBUG
+			//std::ofstream myfile;
+			//myfile.open("expanded_points_new.dat");
+
 			for (openSetIt = openSet.begin(); openSetIt != openSet.end(); openSetIt++)
 			{
+				//myfile << openSetIt->first.ToString() << std::endl;
+
 				delete(openSetIt->second);
 				openSetIt->second = NULL;
 			}
 
 			for (closedSetIt = closedSet.begin(); closedSetIt != closedSet.end(); closedSetIt++)
 			{
+				//myfile << closedSetIt->first.ToString() << std::endl;
+
 				delete(closedSetIt->second);
 				closedSetIt->second = NULL;
 			}
+
+			//myfile.close();
 
 			// statesOnPath describes both the positions and orientations on the path.
 			std::list<RobotState> statesOnPath;
@@ -210,38 +227,39 @@ std::list<RobotState> AStar::GeneratePath(RobotState startingState, RobotState d
 				p_newAStarNode->setPreviousNode(currentVector);
 
 				// We're dealing with a squared threshold so we don't have to bother with square roots.
-				const float biasThresholdSquared = 1500.0f;
-				const float defaultBias = 100000.0f;
+				const float biasMinThresholdSquared = 250.0f;
+				const float biasMaxThresholdSquared = 2500.0f;
+				const float defaultBias = 10000000.0f;
 
-				// TODO: If we're moving to the ball and we want to get behind it, add bias in a U-shape around it
+				// If we're moving to the ball and we want to get behind it, add bias in a U-shape around it
 				// If we don't have the ball, we want to ensure that we come from behind it. 
 				if (!doWeHaveBall)
 				{
 					float distanceToBallSquared = currentAdjacentVector.DistanceSquared(&ballPos);
 
 					// Check proximity of the point first
-					if (distanceToBallSquared <= biasThresholdSquared)
+					if (distanceToBallSquared <= biasMaxThresholdSquared)
 					{
 						if (m_pitchSide == eLeftSide)
 						{
 							// If we're on the left side of the pitch, the open side of the U needs to be that way.
-							if ((currentAdjacentVector.X() >= ballPos.X()) && (currentAdjacentVector != ballPos))
+							if ((currentAdjacentVector != ballPos) && ((currentAdjacentVector.X() >= ballPos.X()) || (pow(fabs(currentAdjacentVector.Y() - ballPos.Y()),2) > biasMinThresholdSquared)))
 							{
 								// Let's apply a radial bias.
-								// We multiply distance from node to ball by 10 to allow a greater difference
-								// between waypoints.
 								float biasToApply = defaultBias/distanceToBallSquared;
 
-								p_newAStarNode->setBias(defaultBias / distanceToBallSquared);
+								p_newAStarNode->setBias(biasToApply);
 							}
 						}
 						else
 						{
 							// If we're on the right side of the pitch, the open side of the U needs to be that way.
-							if ((currentAdjacentVector.X() <= ballPos.X()) && (currentAdjacentVector != ballPos))
+							if ((currentAdjacentVector != ballPos) && ((currentAdjacentVector.X() <= ballPos.X()) || (pow(fabs(currentAdjacentVector.Y() - ballPos.Y()),2) > biasMinThresholdSquared)))
 							{
 								// Let's apply a radial bias.
-								p_newAStarNode->setBias(defaultBias / distanceToBallSquared);
+								float biasToApply = defaultBias/distanceToBallSquared;
+
+								//p_newAStarNode->setBias(biasToApply);
 							}
 						}
 					}
@@ -250,7 +268,7 @@ std::list<RobotState> AStar::GeneratePath(RobotState startingState, RobotState d
 					Vector2 enemyRobotPosition = enemyRobotFuture.Position();
 
 					float distanceToEnemyRobotSqd = currentAdjacentVector.DistanceSquared(&enemyRobotPosition);
-					float robotRadiusSquared = 625.0f;
+					float robotRadiusSquared = 3600.0f;
 
 					if (distanceToEnemyRobotSqd < robotRadiusSquared)
 					{
