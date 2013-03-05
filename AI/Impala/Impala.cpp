@@ -50,6 +50,10 @@ std::list<RobotState> Impala::SmoothPath(std::list<RobotState> aStarPath, int nu
 		{
 			angleToNextPoint = aStarPath.back().Orientation();
 		}
+		else if (i==0)
+		{
+			angleToNextPoint = aStarPath.front().Orientation();
+		}
 		else
 		{
 			angleToNextPoint = collapsedPositions[i].GetAngleTo(&collapsedPositions[i+1]);
