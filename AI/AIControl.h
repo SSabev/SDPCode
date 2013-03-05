@@ -34,7 +34,7 @@ public:
 	
 private:
 	bool CoordinatesAreBad(Vector2 objectPosition);
-	bool IsFailedFrame(RobotState ourRobot, Vector2 ball);
+	bool IsFailedFrame(RobotState ourRobot);
 	float WrapValue(float orientation);
 
 #if defined(STANDALONE)
@@ -45,6 +45,8 @@ private:
 	Eagle m_eagle;
 	AStar m_aStar;
 	Impala m_impala;
+
+	Vector2 m_lastKnownBallPosition;
 
 #if defined(STANDALONE)
 	// Simulate the shared memory if we're running standalone.

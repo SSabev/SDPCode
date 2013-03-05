@@ -71,7 +71,7 @@ void AIControl::RunAI()
 	Vector2 ballPos(currentEntry->visionData.ball_x, currentEntry->visionData.ball_y);
 
 	// Check that the data that's coming in from shared memory is correct and can be used.
-	if (IsFailedFrame(ourRobot, ballPos))
+	if (IsFailedFrame(ourRobot))
 	{
 		// In this case, the data from vision can't be used.
 		std::string logMessage = "AI believes that data from Vision is bad and can't be used.";
@@ -80,7 +80,30 @@ void AIControl::RunAI()
 
 		currentEntry->aiData.isFailedFrame = 1;
 		return;
-    	}
+	}
+
+	// Check if the ball position is valid and can be used, or if we have to rely on last known position.
+	if (!CoordinatesAreBad(ballPos))
+	{
+		m_lastKnownBallPosition = ballPos;
+	}
+	else
+	{
+		if (m_lastKnownBallPosition.IsSet())
+		{
+			ballPos = m_lastKnownBallPosition;
+		}
+		else
+		{
+			// In this case, the data from vision can't be used.
+			std::string logMessage = "AI believes that data from Vision is bad and can't be used.";
+		
+			loggingObj->ShowMsg(logMessage.c_str());
+
+			currentEntry->aiData.isFailedFrame = 1;
+			return;
+		}
+	}
 
 	RobotState ourRobotFuture;
 	RobotState enemyRobotFuture;
@@ -194,12 +217,11 @@ float AIControl::WrapValue(float orientation) {
 /*!
  * Passes the (X,Y) coordinates of robot1, robot2 and ball objects into the CoordinatesAreBad method, returning true if any one coordinate is invalid.
  */
-bool AIControl::IsFailedFrame(RobotState ourRobot, Vector2 ball) {
+bool AIControl::IsFailedFrame(RobotState ourRobot) {
 	
 	bool isInvalidRobot = AIControl::CoordinatesAreBad(ourRobot.Position());
-	bool isInvalidBall = AIControl::CoordinatesAreBad(ball);
 
-	return isInvalidRobot || isInvalidBall;
+	return isInvalidRobot;
 }
 
 #if defined(STANDALONE)
