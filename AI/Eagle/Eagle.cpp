@@ -35,57 +35,53 @@ RobotState Eagle::IdentifyTarget(RobotState ourRobotState, RobotState enemyRobot
 
 	if (!DoWeHaveBall(ourRobotState, ballPos))
 	{
-		// If we're not behind the ball, make this a position behind the ball.
-		/*if ((m_pitchSide == eLeftSide) && (ourRobotState.Position().X() > ballPos.X() - 40))
+		// Check if the ball is within the enemy robot's radius or if it's against our back wall.
+		if ((enemyRobotPosition.Distance(&ballPos) < 2*ROBOT_RADIUS) || ((m_pitchSide == eLeftSide) && (ballPos.X() < 50)) || ((m_pitchSide == eRightSide) && (ballPos.X() > m_pitchSizeX - 50)))
+		{
+			/*// TODO: In this case, we want to assume a defensive position at our goal mouth.
+			Vector2 proposedDefensivePosition;
+
+			if (m_pitchSide == eLeftSide)
+			{
+				proposedDefensivePosition = Vector2(40, m_pitchSizeY/2);
+			}
+			else
+			{
+				proposedDefensivePosition = Vector2(m_pitchSizeX - 40, m_pitchSizeY/2);
+			}
+
+			// TODO: Check if the enemy robot is in the way of the position we want.
+
+			targetState.SetPosition(proposedDefensivePosition);
+			targetState.SetOrientation(proposedDefensivePosition.GetAngleTo(&ballPos));*/
+
+			// Temporary - robot will stop still in this instance.
+			targetState = ourRobotState;
+		}
+		else if ((m_pitchSide == eLeftSide) && (ourRobotState.Position().X() > ballPos.X() - 30))
 		{
 			targetState.SetPosition(ballPos - Vector2(40,0));
 			targetState.SetOrientation(0);
 		}
-		else if ((m_pitchSide == eRightSide) && (ourRobotState.Position().X() < ballPos.X() + 40))
+		else if ((m_pitchSide == eRightSide) && (ourRobotState.Position().X() < ballPos.X() + 30))
 		{
 			targetState.SetPosition(ballPos + Vector2(40,0));
 			targetState.SetOrientation(M_PI);
 		}
 		else
-		{*/
-			// Check if the ball is within the enemy robot's radius or if it's against our back wall.
-			if ((enemyRobotPosition.Distance(&ballPos) < 2*ROBOT_RADIUS) || ((m_pitchSide == eLeftSide) && (ballPos.X() < 50)) || ((m_pitchSide == eRightSide) && (ballPos.X() > m_pitchSizeX - 50)))
+		{
+			// If we don't have the ball, the aim should be to move to the ball.
+			targetState.SetPosition(ballPos);
+			
+			if (m_pitchSide == eLeftSide)
 			{
-				/*// TODO: In this case, we want to assume a defensive position at our goal mouth.
-				Vector2 proposedDefensivePosition;
-
-				if (m_pitchSide == eLeftSide)
-				{
-					proposedDefensivePosition = Vector2(40, m_pitchSizeY/2);
-				}
-				else
-				{
-					proposedDefensivePosition = Vector2(m_pitchSizeX - 40, m_pitchSizeY/2);
-				}
-
-				// TODO: Check if the enemy robot is in the way of the position we want.
-
-				targetState.SetPosition(proposedDefensivePosition);
-				targetState.SetOrientation(proposedDefensivePosition.GetAngleTo(&ballPos));*/
-
-				// Temporary - robot will stop still in this instance.
-				targetState = ourRobotState;
+				targetState.SetOrientation(0);
 			}
 			else
 			{
-				// If we don't have the ball, the aim should be to move to the ball.
-				targetState.SetPosition(ballPos);
-				
-				if (m_pitchSide == eLeftSide)
-				{
-					targetState.SetOrientation(0);
-				}
-				else
-				{
-					targetState.SetOrientation(M_PI);
-				}
+				targetState.SetOrientation(M_PI);
 			}
-		//}
+		}
 	}
 	else
 	{
