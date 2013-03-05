@@ -82,13 +82,18 @@ void AIControl::RunAI()
 		return;
 	}
 
+	bool isBallPositionBad;
+
 	// Check if the ball position is valid and can be used, or if we have to rely on last known position.
 	if (!CoordinatesAreBad(ballPos))
 	{
 		m_lastKnownBallPosition = ballPos;
+		isBallPositionBad = false;
 	}
 	else
 	{
+		isBallPositionBad = true;
+
 		if (m_lastKnownBallPosition.IsSet())
 		{
 			ballPos = m_lastKnownBallPosition;
@@ -117,6 +122,7 @@ void AIControl::RunAI()
 	// Given the positions of the robots and ball, identify the ideal position 
 	// and orientation for us to reach.
 	m_eagle.SetSharedData(sharedMem.systemState, sharedMem.pitchCfg.pitchWidth, sharedMem.pitchCfg.pitchHeight, sharedMem.pitchSide);
+	m_eagle.SetHadBallLastFrame(m_hadBallLastFrame, isBallPositionBad);
 	RobotState targetState = m_eagle.IdentifyTarget(ourRobotFuture, enemyRobotFuture, ballFuture);
 
 	// Check if we have the ball and should kick from our current state.

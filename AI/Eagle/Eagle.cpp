@@ -22,6 +22,12 @@ void Eagle::SetSharedData(TSystemState state, int pitchSizeX, int pitchSizeY, TP
 	m_pitchSizeY = pitchSizeY;
 }
 
+void Eagle::SetHadBallLastFrame(bool hadBallLastFrame, bool ballPositionBad)
+{
+	m_hadBallLastFrame = hadBallLastFrame;
+	m_ballPositionBad = ballPositionBad;
+}
+
 /*!
 * Identify the target state that we wish the robot to be in. This will be the target which the A* algorithm plots towards.
 */
@@ -154,7 +160,17 @@ bool Eagle::DoWeHaveBall(RobotState ourRobotState, Vector2 ballPos)
 {
 	Vector2 robotPos = ourRobotState.Position();
 
-    const float angleThresh = M_PI_2;
+    float angleThresh;
+
+	if (m_hadBallLastFrame)
+	{
+		angleThresh = M_PI_2;
+	}
+	else
+	{
+		angleThresh = M_PI_4;
+	}
+
 	const float distanceThresh = 75.0f;
 	
 	float angleToBall = fmod(robotPos.GetAngleTo(&ballPos), (2*M_PI));
@@ -170,6 +186,11 @@ bool Eagle::DoWeHaveBall(RobotState ourRobotState, Vector2 ballPos)
 	{
 		return true;
 	} 
+
+	if (m_hadBallLastFrame && m_ballPositionBad)
+	{
+		return true;
+	}
 	
 	return false;
 }
