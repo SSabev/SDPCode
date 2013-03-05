@@ -171,6 +171,20 @@ void AIControl::RunAI()
 	currentEntry->aiData.shouldKick = shouldKick;
 	currentEntry->aiData.doWeHaveBall = doWeHaveBall;
 
+    //DEBUG
+    if (doWeHaveBall)
+    {
+        std::string logMessage = "I have the ball.";
+
+        loggingObj->ShowMsg(logMessage.c_str());
+    }
+    else
+    {
+        std::string logMessage = "I do NOT have the ball.";
+
+        loggingObj->ShowMsg(logMessage.c_str());
+    }
+
 	const int maxPathSize = 30;
 	const int pointsToWrite = std::min((int)smoothedPath.size(), maxPathSize);
 	int pointsWritten = 0;
