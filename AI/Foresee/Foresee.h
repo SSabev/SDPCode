@@ -20,6 +20,10 @@ public:
 	
 	void ExtrapolateEnvironment(RobotState ourRobotCurrent, RobotState enemyRobotCurrent, Vector2 ballCurrent, RobotState &ourRobotFuture, RobotState &enemyRobotFuture, Vector2 &ballFuture);
 	void SetPitchDimensions(int pitchSizeX, int pitchSizeY);
+
+	void ResetOurRobotHistory();
+	void ResetEnemyRobotHistory();
+	void ResetBallHistory();
 	
 private: 
 	RobotState ExtrapolateRobotState(std::vector<RobotState> states);

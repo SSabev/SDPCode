@@ -109,3 +109,18 @@ Vector2 Foresee::ExtrapolatePosition(std::vector<Vector2> positions)
 	
 	return extrapolatedPosition;
 }
+
+void Foresee::ResetOurRobotHistory()
+{
+	m_ourRobotStates.clear();
+}
+
+void Foresee::ResetEnemyRobotHistory()
+{
+	m_enemyRobotStates.clear();
+}
+
+void Foresee::ResetBallHistory()
+{
+	m_ballPositions.clear();
+}
