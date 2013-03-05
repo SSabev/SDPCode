@@ -26,6 +26,11 @@ void Vector2::Set(float x, float y)
 	m_isSet = true;
 }
 
+const bool Vector2::IsSet() const
+{
+	return m_isSet;
+}
+
 /*! 
  * Returns the X co-ordinate of the Vector2 object.
 */

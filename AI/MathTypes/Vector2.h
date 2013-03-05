@@ -12,6 +12,8 @@ public:
 	Vector2();
 	Vector2(float x, float y);
 	void Set(float x, float y);
+
+	const bool IsSet() const;
 	
 	const float X() const;
 	const float Y() const;
