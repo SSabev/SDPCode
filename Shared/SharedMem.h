@@ -44,6 +44,7 @@ typedef struct{
     unsigned      pathLength;
     TAIWaypoint    path[MAX_PATH_SIZE];
     uint32_t      shouldKick    : 1;
+    uint32_t      doWeHaveBall  : 1;
     // This indicates that the AI couldn't calculate a path.
     // Data in shared memory may be out of date or garbage.
     uint32_t      isFailedFrame    : 1;
