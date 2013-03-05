@@ -3,8 +3,10 @@ import lejos.pc.comm.NXTCommException;
 
 public class DuoNXTCommunicator implements Runnable {
 
-  private Communicator brick1; // brick 1 is RHS brick; ctrls front and rear wheels
+	private Communicator brick1; // brick 1 is RHS brick; ctrls front and rear wheels
 	private Communicator brick2; // brick 2 is LHS brick; ctrls left and right wheels
+	
+	private boolean suppressNav = false;
 	
 	public DuoNXTCommunicator() throws NXTCommException {
 
@@ -18,9 +20,9 @@ public class DuoNXTCommunicator implements Runnable {
 		
 		// Start listener threads on Communicator objects for each brick
 		// UPDATE: don't bother - no need for listening
-		//new Thread( brick1 ).start();
-		//new Thread( brick2 ).start();
-
+		new Thread( brick1 ).start();
+		new Thread( brick2 ).start();
+		new Thread( this ).start();
 		
 	}
 	
@@ -33,16 +35,21 @@ public class DuoNXTCommunicator implements Runnable {
 	
 	public void run() {
 		while(true) {
-			System.out.print(brick1.isTouched() +""+ brick2.isTouched());
-			if(brick2.isTouched()) { }
-			
-			if(brick1.isTouched() || brick2.isTouched()) {
-
-				byte[] stop = new byte[]{(byte) 0, (byte) 0};
-
-				brick1.sendPacket(stop);
-				brick2.sendPacket(stop);
+			boolean touchSensor1 = brick1.isTouched();
+			boolean touchSensor2 = brick2.isTouched();
+						
+			if(!suppressNav && (touchSensor1 || touchSensor2)) {
+				suppressNav = true;
 				
+				byte[] react = new byte[]{(byte) 0, (byte) 0, (byte) 50};
+				byte[] stop = new byte[]{(byte) 0, (byte) 0, (byte) 0};
+				
+				brick1.sendPacket(react);
+				brick2.sendPacket(stop);
+			}
+			
+			if(suppressNav && !(touchSensor1 || touchSensor2)) {
+				suppressNav = false;
 			}
 		}
 	}
