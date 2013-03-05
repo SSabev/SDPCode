@@ -16,7 +16,7 @@ public:
 
     virtual void ShowMsg(const char *msg);
 
-    void ShowMsg(QString msg);
+    void ShowMyMsg(QString msg);
 
     void ShowCriticalError(QString msg);
 };

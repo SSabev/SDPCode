@@ -12,7 +12,7 @@ void CLoggingWdgt::ShowMsg(const char *msg)
     append(msg);
 }
 
-void CLoggingWdgt::ShowMsg(QString msg)
+void CLoggingWdgt::ShowMyMsg(QString msg)
 {
     append(msg);
 }
