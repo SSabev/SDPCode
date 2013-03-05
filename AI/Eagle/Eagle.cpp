@@ -154,7 +154,7 @@ bool Eagle::DoWeHaveBall(RobotState ourRobotState, Vector2 ballPos)
 {
 	Vector2 robotPos = ourRobotState.Position();
 
-	const float angleThresh = M_PI_4;
+    const float angleThresh = M_PI_2;
 	const float distanceThresh = 75.0f;
 	
 	float angleToBall = fmod(robotPos.GetAngleTo(&ballPos), (2*M_PI));
@@ -162,8 +162,9 @@ bool Eagle::DoWeHaveBall(RobotState ourRobotState, Vector2 ballPos)
 
 	float distanceToBall = robotPos.Distance(&ballPos);
 	
-	bool withinOrientationThresh = fabs(robotOrientation - angleToBall) < angleThresh;
-	bool withinProximityThresh = distanceToBall < distanceThresh;
+    float orientationDiff = fmod(fabs(robotOrientation - angleToBall), (2*M_PI));
+    bool withinOrientationThresh = orientationDiff < angleThresh;
+    bool withinProximityThresh = distanceToBall < distanceThresh;
 	
 	if(withinOrientationThresh && withinProximityThresh)
 	{
@@ -199,7 +200,9 @@ bool Eagle::ShouldWeShoot(RobotState ourRobotState, RobotState enemyRobotState, 
 {
 	// In simplistic terms, we should shoot if we're close enough to the goal,
 	// we've got the ball, and there is clear line-of-sight to goal
-	Vector2 goalPosition = GoalCentrePosition();
+    Vector2 goalPosition = GoalCentrePosition();
+
+    const float angleThresh = M_PI_4;
 
 	float distToGoal = ourRobotState.Position().Distance(&goalPosition);
 
@@ -211,14 +214,19 @@ bool Eagle::ShouldWeShoot(RobotState ourRobotState, RobotState enemyRobotState, 
 	bool closeToGoal = distToGoal < distanceThreshold;
 	
 	// Check that the enemy robot isn't obstructing the ball.
-	bool isGoalClear = false;
+    bool isGoalClear = false;
+
+    float angleToGoal = fmod(ourRobotState.Position().GetAngleTo(&goalPosition), 2*M_PI);
+    float ourOrientation = fmod(ourRobotState.Orientation(), 2*M_PI);
+
+    bool isFacingGoal = fmod(fabs(angleToGoal - ourOrientation), 2*M_PI) < angleThresh;
 
 	if (!m_intersection.LineCircleIntersection(ourRobotState.Position(), enemyRobotState.Position(), goalPosition, ROBOT_RADIUS))
 	{
 		isGoalClear = true;
 	}
 
-	if (closeToGoal && isGoalClear)
+    if (closeToGoal && isGoalClear && isFacingGoal)
 	{
 		return true;
 	}
