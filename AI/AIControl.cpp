@@ -121,13 +121,23 @@ void AIControl::RunAI()
 
 	// Check if we have the ball and should kick from our current state.
 	bool doWeHaveBall = false;
-	
+
 	if ((m_eagle.DoWeHaveBall(ourRobotFuture, ballFuture)) || (CoordinatesAreBad(ballPos) && (m_hadBallLastFrame)))
 	{
 		doWeHaveBall = true;
 	}
 
 	bool shouldKick = m_eagle.ShouldWeShoot(ourRobotFuture, enemyRobotFuture, ballFuture) && doWeHaveBall;
+
+	// Set if we have the ball this frame, to be used next frame.
+	if (m_eagle.DoWeHaveBall(ourRobotFuture, ballFuture))
+	{
+		m_hadBallLastFrame = true;
+	}
+	else
+	{
+		m_hadBallLastFrame = false;
+	}
 
 	// Using A*, generate the best path to the target.
 	m_aStar.SetSharedData(sharedMem.pitchCfg.pitchWidth, sharedMem.pitchCfg.pitchHeight, sharedMem.pitchSide);
