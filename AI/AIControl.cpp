@@ -70,22 +70,6 @@ void AIControl::RunAI()
 
 	Vector2 ballPos(currentEntry->visionData.ball_x, currentEntry->visionData.ball_y);
 
-	// Let's reset the linear extrapolation histories if these are bad frames.
-	if (CoordinatesAreBad(ballPos))
-	{
-		m_foresee.ResetBallHistory();
-	}
-
-	if (CoordinatesAreBad(ourRobot.Position()))
-	{
-		m_foresee.ResetOurRobotHistory();
-	}
-
-	if (CoordinatesAreBad(enemyRobot.Position()))
-	{
-		m_foresee.ResetEnemyRobotHistory();
-	}
-
 	// Check that the data that's coming in from shared memory is correct and can be used.
 	if (IsFailedFrame(ourRobot))
 	{
