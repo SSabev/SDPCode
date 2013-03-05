@@ -210,10 +210,10 @@ bool Eagle::ShouldWeShoot(RobotState ourRobotState, RobotState enemyRobotState, 
 	// Ian reckons this should be 1/4 of the pitch, but I'm living dangerously and have gone for 1/3.
 	float distanceThreshold = KICKING_THRESHOLD * m_pitchSizeX;
 
-	bool weHaveBall = DoWeHaveBall(ourRobotState, ballPos);
+	// Commenting this out now - we need to account for the ball being invisible.
+	//bool weHaveBall = DoWeHaveBall(ourRobotState, ballPos);
 	bool closeToGoal = distToGoal < distanceThreshold;
 	
-
 	// Check that the enemy robot isn't obstructing the ball.
 	bool isGoalClear = false;
 
@@ -222,7 +222,7 @@ bool Eagle::ShouldWeShoot(RobotState ourRobotState, RobotState enemyRobotState, 
 		isGoalClear = true;
 	}
 
-	if (weHaveBall && closeToGoal && isGoalClear)
+	if (closeToGoal && isGoalClear)
 	{
 		return true;
 	}

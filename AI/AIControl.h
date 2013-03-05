@@ -47,6 +47,7 @@ private:
 	Impala m_impala;
 
 	Vector2 m_lastKnownBallPosition;
+	bool m_hadBallLastFrame;
 
 #if defined(STANDALONE)
 	// Simulate the shared memory if we're running standalone.
