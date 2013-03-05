@@ -130,7 +130,7 @@ void AIControl::RunAI()
 	bool shouldKick = m_eagle.ShouldWeShoot(ourRobotFuture, enemyRobotFuture, ballFuture) && doWeHaveBall;
 
 	// Set if we have the ball this frame, to be used next frame.
-	if (m_eagle.DoWeHaveBall(ourRobotFuture, ballFuture))
+	if ((m_eagle.DoWeHaveBall(ourRobotFuture, ballFuture)) || (CoordinatesAreBad(ballPos) && (m_hadBallLastFrame)))
 	{
 		m_hadBallLastFrame = true;
 	}
