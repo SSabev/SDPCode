@@ -169,6 +169,7 @@ void AIControl::RunAI()
 	currentEntry->aiData.isFailedFrame = 0;
 	currentEntry->aiData.pathLength = smoothedPath.size();
 	currentEntry->aiData.shouldKick = shouldKick;
+	currentEntry->aiData.doWeHaveBall = doWeHaveBall;
 
 	const int maxPathSize = 30;
 	const int pointsToWrite = std::min((int)smoothedPath.size(), maxPathSize);
