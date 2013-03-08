@@ -179,9 +179,9 @@ void MainWindow::TimerCallBack()
     // 5. Send motor values to robot
     mIBtComm->SendData(&entry->robot.sendData);
 
-    // 6. Increment index
-    sharedMem.currentIdx = (sharedMem.currentIdx+1) & SH_MEM_SIZE_MASK;
-
     // Update visualization window with new points
     vision->UpdateWindow();
+
+    // 6. Increment index
+    sharedMem.currentIdx = (sharedMem.currentIdx+1) & SH_MEM_SIZE_MASK;
 }
