@@ -182,9 +182,9 @@ void CMainWidget::SendVals()
     _robotData.motor_front_speed = (unsigned char) frontBox->value();
 
     _robotData.motor_front_dir = frontChBx->isChecked() ? 1 : 0;
-    _robotData.motor_rear_dir = frontChBx->isChecked() ? 1 : 0;
-    _robotData.motor_left_dir = frontChBx->isChecked() ? 1 : 0;
-    _robotData.motor_right_dir = frontChBx->isChecked() ? 1 : 0;
+    _robotData.motor_rear_dir = rearChBx->isChecked() ? 1 : 0;
+    _robotData.motor_left_dir = leftChBx->isChecked() ? 1 : 0;
+    _robotData.motor_right_dir = rightChBx->isChecked() ? 1 : 0;
 
     status = ::send (m_Socket, (void *) &_robotData, sizeof(_robotData), 0);
 
@@ -234,11 +234,11 @@ void CMainWidget::MoveInDir(int dir)
     _robotData.motor_left_dir = leftChBx->isChecked() ? 1 : 0;
     _robotData.motor_right_dir = rightChBx->isChecked() ? 1 : 0;
 
-    printf("Front: %d\nRear: %d\nLeft: %d\nRight: %d\n\n\n",
-           (int)_robotData.motor_front_speed,
-           (int)_robotData.motor_right_speed,
-           (int)_robotData.motor_left_speed,
-           (int)_robotData.motor_rear_speed);
+//    printf("Front: %d\nRear: %d\nLeft: %d\nRight: %d\n\n\n",
+//           (int)_robotData.motor_front_speed,
+//           (int)_robotData.motor_right_speed,
+//           (int)_robotData.motor_left_speed,
+//           (int)_robotData.motor_rear_speed);
 
     status = ::send (m_Socket, (void *) &_robotData, sizeof(_robotData), 0);
 
