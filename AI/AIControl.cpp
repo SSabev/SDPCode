@@ -82,10 +82,11 @@ void AIControl::RunAI()
 		return;
 	}
 
-	bool isBallPositionBad;
+	bool isBallPositionBad = false;
+	bool doWeHaveBall = false;
 
 	// Check if the ball position is valid and can be used, or if we have to rely on last known position.
-	if (!CoordinatesAreBad(ballPos))
+	/*if (!CoordinatesAreBad(ballPos))
 	{
 		m_lastKnownBallPosition = ballPos;
 		isBallPositionBad = false;
@@ -107,7 +108,12 @@ void AIControl::RunAI()
 
 			currentEntry->aiData.isFailedFrame = 1;
 			return;
-		}
+		}*/
+
+	if (CoordinatesAreBad(ballPos))
+	{
+		// For the milestone, we're assuming that if we can't see the ball, we have it.
+		doWeHaveBall = true;
 	}
 
 	RobotState ourRobotFuture;
@@ -122,13 +128,11 @@ void AIControl::RunAI()
 	// Given the positions of the robots and ball, identify the ideal position 
 	// and orientation for us to reach.
 	m_eagle.SetSharedData(sharedMem.systemState, sharedMem.pitchCfg.pitchWidth, sharedMem.pitchCfg.pitchHeight, sharedMem.pitchSide);
-	m_eagle.SetHadBallLastFrame(m_hadBallLastFrame, isBallPositionBad);
+	m_eagle.SetHadBallLastFrame(CoordinatesAreBad(ballPos), isBallPositionBad);
 	RobotState targetState = m_eagle.IdentifyTarget(ourRobotFuture, enemyRobotFuture, ballFuture);
 
 	// Check if we have the ball and should kick from our current state.
-	bool doWeHaveBall = false;
-
-	if ((m_eagle.DoWeHaveBall(ourRobotFuture, ballFuture)) || (CoordinatesAreBad(ballPos) && (m_hadBallLastFrame)))
+	if (m_eagle.DoWeHaveBall(ourRobotFuture, ballFuture))
 	{
 		doWeHaveBall = true;
 	}
@@ -136,7 +140,7 @@ void AIControl::RunAI()
 	bool shouldKick = m_eagle.ShouldWeShoot(ourRobotFuture, enemyRobotFuture, ballFuture) && doWeHaveBall;
 
 	// Set if we have the ball this frame, to be used next frame.
-	if ((m_eagle.DoWeHaveBall(ourRobotFuture, ballFuture)) || (CoordinatesAreBad(ballPos) && (m_hadBallLastFrame)))
+	if (doWeHaveBall)
 	{
 		m_hadBallLastFrame = true;
 	}
@@ -173,7 +177,6 @@ void AIControl::RunAI()
 
 	// Results should be written to shared memory.
 	currentEntry->aiData.isFailedFrame = 0;
-	currentEntry->aiData.pathLength = smoothedPath.size();
 	currentEntry->aiData.shouldKick = shouldKick;
 	currentEntry->aiData.doWeHaveBall = doWeHaveBall;
 
@@ -193,6 +196,8 @@ void AIControl::RunAI()
 
 	const int maxPathSize = 30;
 	const int pointsToWrite = std::min((int)smoothedPath.size(), maxPathSize);
+	currentEntry->aiData.pathLength = pointsToWrite;
+
 	int pointsWritten = 0;
 
 	std::list<RobotState>::iterator it;
