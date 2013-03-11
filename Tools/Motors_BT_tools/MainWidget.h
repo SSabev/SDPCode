@@ -45,8 +45,6 @@ private slots:
     void ConnLost();
     void SocketError();
 
-    void on_frontChBx_clicked();
-
 private:
     EStatus m_status;
 
