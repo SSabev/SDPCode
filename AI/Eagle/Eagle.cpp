@@ -179,7 +179,7 @@ bool Eagle::DoWeHaveBall(RobotState ourRobotState, Vector2 ballPos)
 	float distanceToBall = robotPos.Distance(&ballPos);
 	
     float orientationDiff = fmod(fabs(robotOrientation - angleToBall), (2*M_PI));
-    bool withinOrientationThresh = orientationDiff < angleThresh;
+    bool withinOrientationThresh = (orientationDiff < angleThresh) || (2*M_PI - orientationDiff < angleThresh);
     bool withinProximityThresh = distanceToBall < distanceThresh;
 	
 	if(withinOrientationThresh && withinProximityThresh)
