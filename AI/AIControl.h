@@ -45,8 +45,11 @@ private:
 	Eagle m_eagle;
 	AStar m_aStar;
 	Impala m_impala;
+	bool m_isLastKnownBallPosSet;
+	bool m_isLastKnownRobotStateSet;
 
 	Vector2 m_lastKnownBallPosition;
+	RobotState m_lastKnownRobotState;
 	bool m_hadBallLastFrame;
 
 #if defined(STANDALONE)

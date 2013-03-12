@@ -19,6 +19,8 @@ void AIControl::Initialise()
 	m_eagle = Eagle();
 	m_aStar = AStar();
 	m_impala = Impala();
+	m_isLastKnownBallPosSet = false;
+	m_isLastKnownRobotStateSet = false;
 }
 
 #if defined(STANDALONE)
@@ -120,15 +122,56 @@ void AIControl::RunAI()
 	RobotState enemyRobotFuture;
 	Vector2 ballFuture;
 
+	// If vision data for ball is good, we set lastKnownBallPosition to be the vision position
+	if(!CoordinatesAreBad(ballPos))
+	{
+		// Set the ball position and update our flag
+		m_lastKnownBallPosition = ballPos;
+		m_isLastKnownBallPosSet = true;
+	}
+	else 
+	{
+		// If we've no previous knowledge of where the ball is, throw the frame
+		if(!m_isLastKnownBallPosSet)
+		{
+		std::string logMessage = "AI refused frame at linear extrapolation (ball position: " + ballPos.ToString();
+	
+		loggingObj->ShowMsg(logMessage.c_str());
+		return;	
+		}
+	}
+	
+	// If vision data for our robot is good, we set lastKnownRobotState position to be the vision position
+	if(!CoordinatesAreBad(ourRobot.Position()))
+	{	
+		// Set the robot state and update our flag
+		m_lastKnownRobotState = ourRobot;
+		m_isLastKnownRobotStateSet = true;
+	}
+	else
+	{
+		// If we've no previous knowledge of where our robot is, throw the frame
+		if(!m_isLastKnownRobotStateSet)
+		{
+		std::string logMessage = "AI refused frame at linear extrapolation (robot position: " + ourRobot.Position().ToString();
+	
+		loggingObj->ShowMsg(logMessage.c_str());
+		return;	
+		}
+	}
+
 	// Given the current position and a certain number of previous positions, 
 	// approximate where the bot will be when it receives our next transmission.
 	m_foresee.SetPitchDimensions(sharedMem.pitchCfg.pitchWidth, sharedMem.pitchCfg.pitchHeight);
-	m_foresee.ExtrapolateEnvironment(ourRobot, enemyRobot, ballPos, ourRobotFuture, enemyRobotFuture, ballFuture);
+	m_foresee.ExtrapolateEnvironment(m_lastKnownRobotState, enemyRobot, m_lastKnownBallPosition, ourRobotFuture, enemyRobotFuture, ballFuture);
+
+	m_lastKnownBallPosition = ballFuture;
+	m_lastKnownRobotState = ourRobotFuture;
 
 	// Given the positions of the robots and ball, identify the ideal position 
 	// and orientation for us to reach.
 	m_eagle.SetSharedData(sharedMem.systemState, sharedMem.pitchCfg.pitchWidth, sharedMem.pitchCfg.pitchHeight, sharedMem.pitchSide);
-	m_eagle.SetHadBallLastFrame(m_hadBallLastFrame, isBallPositionBad);
+	m_eagle.SetHadBallLastFrame(CoordinatesAreBad(ballPos), isBallPositionBad);
 	RobotState targetState = m_eagle.IdentifyTarget(ourRobotFuture, enemyRobotFuture, ballFuture);
 
 	// Check if we have the ball and should kick from our current state.
