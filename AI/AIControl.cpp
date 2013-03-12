@@ -211,6 +211,7 @@ void AIControl::RunAI()
 	if (aStarPath.size() > 2)
 	{
 		// Smooth and optimise the path using knowledge of our bot's capabilities.
+		m_impala.SetSharedData(sharedMem.systemState, sharedMem.pitchCfg.pitchWidth, sharedMem.pitchCfg.pitchHeight, sharedMem.pitchSide);
 		smoothedPath = m_impala.SmoothPath(aStarPath, 9);
 	}
 	else 
