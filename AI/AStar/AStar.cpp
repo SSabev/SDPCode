@@ -230,7 +230,7 @@ std::list<RobotState> AStar::GeneratePath(RobotState startingState, RobotState d
 
 				// If we're moving to the ball and we want to get behind it, add bias in a U-shape around it
 				// If we don't have the ball, we want to ensure that we come from behind it. 
-				if (!doWeHaveBall)
+				/*if (!doWeHaveBall)
 				{
 					float distanceToBallSquared = currentAdjacentVector.DistanceSquared(&ballPos);
 
@@ -260,7 +260,7 @@ std::list<RobotState> AStar::GeneratePath(RobotState startingState, RobotState d
 							}
 						}
 					}
-				}
+				}*/
 
 				// Add bias to a radius around the enemy robot.
 				Vector2 enemyRobotPosition = enemyRobotFuture.Position();
