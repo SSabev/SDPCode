@@ -161,17 +161,18 @@ bool Eagle::DoWeHaveBall(RobotState ourRobotState, Vector2 ballPos)
 	Vector2 robotPos = ourRobotState.Position();
 
     float angleThresh;
+	float distanceThresh;
 
 	if (m_hadBallLastFrame)
 	{
 		angleThresh = M_PI_2;
+		distanceThresh = 90.0f;
 	}
 	else
 	{
 		angleThresh = M_PI_4;
+		distanceThresh = 55.0f;
 	}
-
-	const float distanceThresh = 75.0f;
 	
 	float angleToBall = fmod(robotPos.GetAngleTo(&ballPos), (2*M_PI));
 	float robotOrientation = fmod(ourRobotState.Orientation(), (2*M_PI));
@@ -179,7 +180,7 @@ bool Eagle::DoWeHaveBall(RobotState ourRobotState, Vector2 ballPos)
 	float distanceToBall = robotPos.Distance(&ballPos);
 	
     float orientationDiff = fmod(fabs(robotOrientation - angleToBall), (2*M_PI));
-    bool withinOrientationThresh = orientationDiff < angleThresh;
+    bool withinOrientationThresh = (orientationDiff < angleThresh) || (2*M_PI - orientationDiff < angleThresh);
     bool withinProximityThresh = distanceToBall < distanceThresh;
 	
 	if(withinOrientationThresh && withinProximityThresh)

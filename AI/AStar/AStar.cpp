@@ -6,7 +6,7 @@
 #include <fstream>
 
 #include <vector>
-
+#include <sys/time.h>
 #include <cmath>
 
 // I'm experimenting with penalising the heuristic, otherwise it results in expanding 
@@ -15,6 +15,8 @@
 // few obstacles on the pitch and a truly optimal path isn't really necessary, we can 
 // probably get away with it. **The speed benefit is insane - factor of 100s**
 const float HEURISTIC_PENALTY = 2.5f;
+
+const double TIMER_EXPIRY = 0.8f;
 
 AStar::AStar()
 {
@@ -50,6 +52,12 @@ std::list<RobotState> AStar::GeneratePath(RobotState startingState, RobotState d
 	openSet.push_front(std::make_pair(startingVector, p_startingNode));
 	p_startingNode->setGScore(0.0f);
 	p_startingNode->setHScore(startingVector.Distance(&destinationVector));
+
+	// Start our timer.
+	timeval startTimeStruct;
+	gettimeofday(&startTimeStruct, NULL);
+	
+	double startTime = startTimeStruct.tv_sec+(startTimeStruct.tv_usec/1000000.0);
 
 	// If the open set's not empty, that means we still have some nodes to explore.
 	while (!openSet.empty())
@@ -230,7 +238,7 @@ std::list<RobotState> AStar::GeneratePath(RobotState startingState, RobotState d
 
 				// If we're moving to the ball and we want to get behind it, add bias in a U-shape around it
 				// If we don't have the ball, we want to ensure that we come from behind it. 
-				if (!doWeHaveBall)
+				/*if (!doWeHaveBall)
 				{
 					float distanceToBallSquared = currentAdjacentVector.DistanceSquared(&ballPos);
 
@@ -260,7 +268,7 @@ std::list<RobotState> AStar::GeneratePath(RobotState startingState, RobotState d
 							}
 						}
 					}
-				}
+				}*/
 
 				// Add bias to a radius around the enemy robot.
 				Vector2 enemyRobotPosition = enemyRobotFuture.Position();
@@ -273,6 +281,20 @@ std::list<RobotState> AStar::GeneratePath(RobotState startingState, RobotState d
 					p_newAStarNode->setBias(defaultBias / distanceToEnemyRobotSqd);
 				}
 			}
+		}
+
+		// Update our timer.
+		timeval currentTimeStruct;
+		gettimeofday(&currentTimeStruct, NULL);
+		double currentTime = currentTimeStruct.tv_sec+(currentTimeStruct.tv_usec/1000000.0);
+
+		// Check if this A* pass has been running for too long.
+		double timeTaken = currentTime - startTime;
+
+		if (timeTaken >= TIMER_EXPIRY)
+		{
+			std::list<RobotState> blankList;
+			return blankList;
 		}
 	}
 
