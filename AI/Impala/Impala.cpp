@@ -40,23 +40,20 @@ std::list<RobotState> Impala::SmoothPath(std::list<RobotState> aStarPath, int nu
 
 	std::list<Vector2>::iterator positionIt;
 
-	for (int i=0; i<collapsedPositions.size(); i++)
+
+    for (int i=0; i<collapsedPositions.size(); i++)
 	{
 		float angleToNextPoint;
+        Vector2 goalCentrePos = GoalCentrePosition();
 
-		// If this is the last point, we want to face the target direction.
-		// Otherwise, just face towards the next point.
-		if (i >= collapsedPositions.size()-1)
-		{
-			angleToNextPoint = aStarPath.back().Orientation();
-		}
-		else if (i==0)
+		// If this is any point other than the first point, we want to be facing the goal.
+		if (i==0)
 		{
 			angleToNextPoint = aStarPath.front().Orientation();
 		}
 		else
 		{
-			angleToNextPoint = collapsedPositions[i].GetAngleTo(&collapsedPositions[i+1]);
+			angleToNextPoint = collapsedPositions[i].GetAngleTo(&goalCentrePos);
 		}
 
 		collapsedPath.push_back(RobotState(collapsedPositions[i], angleToNextPoint));
@@ -97,6 +94,38 @@ std::list<Vector2> Impala::RunPass(std::list<Vector2> path)
 	return smoothedPath;
 }
 
+
+
+void Impala::SetSharedData(TSystemState state, int pitchSizeX, int pitchSizeY, TPitchSide pitchSide)
+{
+	m_state = state;
+	m_pitchSide = pitchSide;
+
+	m_pitchSizeX = pitchSizeX;
+	m_pitchSizeY = pitchSizeY;
+}
+
+Vector2 Impala::GoalCentrePosition()
+{
+	// If we're the left side, then the goal we're aiming for is at the right side of the pitch
+	// Else, we're aiming for the goal on the far left
+	int goalX;
+	if(m_pitchSide == eLeftSide)
+	{
+		goalX = m_pitchSizeX;
+	}
+	else
+	{
+		goalX = 0;
+	}
+	
+	int goalY = m_pitchSizeY / 2;
+
+	Vector2 goalPosition = Vector2(goalX, goalY);
+
+	return goalPosition;
+}
+
 /*!
 * Reduces the number of waypoints by removing those which are on a straight line (and not the endpoints), making
 * them redundant. This is done by comparing the initial pair of points and finding the gradient between them (the 
@@ -107,6 +136,8 @@ std::list<Vector2> Impala::RunPass(std::list<Vector2> path)
 * Otherwise, if the gradient difference is too high, this is not a straight line, no points can be collapsed and 
 * the second gradient becomes the new 'original gradient'.
 */
+
+
 std::vector<Vector2> Impala::CollapsePoints(std::list<Vector2> path)
 {
 	const float GRADIENT_THRESHOLD = 0.1;
