@@ -293,6 +293,9 @@ std::list<RobotState> AStar::GeneratePath(RobotState startingState, RobotState d
 
 		if (timeTaken >= TIMER_EXPIRY)
 		{
+			std::string logMessage = "AI: The A* time limit has expired.";
+			loggingObj->ShowMsg(logMessage.c_str());
+
 			std::list<RobotState> blankList;
 			return blankList;
 		}
