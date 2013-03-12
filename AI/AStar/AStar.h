@@ -6,6 +6,7 @@
 #include "AStarNode.h"
 
 #include "../../Shared/SharedMem.h"
+#include "../../Shared/Logging.h"
 
 #include <list>
 
@@ -35,6 +36,11 @@ private:
 	TPitchSide m_pitchSide;
 
 	Vector2 m_ballPos;
+
+	#if defined(STANDALONE)
+	// Simulate the logging object if we're running standalone.
+	ILogging* loggingObj;
+#endif
 };
 
 #endif
