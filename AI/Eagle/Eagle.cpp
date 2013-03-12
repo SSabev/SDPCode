@@ -187,11 +187,6 @@ bool Eagle::DoWeHaveBall(RobotState ourRobotState, Vector2 ballPos)
 	{
 		return true;
 	} 
-
-	if (m_hadBallLastFrame && m_ballPositionBad)
-	{
-		return true;
-	}
 	
 	return false;
 }
