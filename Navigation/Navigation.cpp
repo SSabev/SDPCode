@@ -5,10 +5,11 @@
 #include "QString"
 #include <string.h>
 #include <cmath>
+#include <time.h>
 
 #define _USE_MATH_DEFINES
 
-#define MOVE_SPEED     (20)
+#define MOVE_SPEED     (80)
 #define ROT_SPEED	   (5)
 
 int abs(int val){
@@ -36,7 +37,7 @@ CNavigation::CNavigation()
     int vf; // front velocity
     int vs; // sideways velocity
 
-    int front;
+    int front;8
     int rear;
     int left;
     int right;
@@ -86,15 +87,39 @@ void CNavigation::GenerateValues()
     TEntry *entry = &sharedMem.positioning[sharedMem.currentIdx];
     m_ourOrientation = entry->aiData.path[0].orientation;
     //m_ourOrientation = entry->visionData.yellow_angle;
+
+    loggingObj->ShowMsg(QString("ourOrientation: %1")
+                            .arg( m_ourOrientation)
+                            .toAscii()
+                            .data());
+
+
     float dx;
     float dy;
     float theta;
     int  motorSpeed[4];
-//    int distToTarget;
+    int distToTarget;
     dx = (int)entry->aiData.path[1].position_X - (int)entry->aiData.path[0].position_X;
     dy = (int)entry->aiData.path[1].position_Y - (int)entry->aiData.path[0].position_Y;
 
-//    distToTarget = (int) sqrt((dx * dx)+(dy * dy));
+ //  distToTarget = (int) sqrt((dx * dx)+(dy * dy));
+
+
+
+
+   if(entry->aiData.doWeHaveBall == 0){
+        int ax = (int)entry->visionData.ball_x - (int)entry->aiData.path[0].position_X;
+        int ay =(int)entry->visionData.ball_y - (int)entry->aiData.path[0].position_Y;
+        distToTarget = (int) sqrt((ax * ax)+(ay * ay));
+   }
+   else{
+       distToTarget = 0;
+   }
+
+   loggingObj->ShowMsg(QString("distToBall: %1")
+                          .arg(distToTarget)
+                          .toAscii()
+                          .data());
 
 
     //make theta the direction to move in.
@@ -123,13 +148,22 @@ void CNavigation::GenerateValues()
     else {
     theta = 0;
     }
-
+ /*   loggingObj->ShowMsg(QString("theta: %1")
+                        .arg(theta)
+                        .toAscii()
+                        .data());*/
     int forwardspeed;
     int rightspeed;
     int robotspeed;
     int rotatespeed;
 
+    if (entry->aiData.doWeHaveBall == 0){
     robotspeed = MOVE_SPEED;
+    }
+    else{
+        robotspeed =  25;
+    }
+
   //  forwardspeed = cos(theta + m_ourOrientation + M_PI_2) * robotspeed;
   //  rightspeed = sin(theta + m_ourOrientation + M_PI_2) * robotspeed;
 
@@ -137,32 +171,83 @@ void CNavigation::GenerateValues()
    rightspeed = - sin(theta - m_ourOrientation) * robotspeed;
 
 
+
+
     //set the rotate speed
 
     float rotate_dir;
     rotate_dir = entry->aiData.path[1].orientation - m_ourOrientation;
 
-    if (rotate_dir < 0) {
+    if (entry->aiData.doWeHaveBall == 1){
+        rotate_dir = entry->aiData.path[1].orientation - m_ourOrientation;
+    }
+    else
+    {
+        if (distToTarget < 75) {
+                    rotate_dir = theta- m_ourOrientation;
+        }
+        else {
+            rotate_dir = 0.0;
+
+        }
+    }
+
+/*    while (rotate_dir < 0)
+    {
+        rotate_dir += 2*M_PI;
+    }
+
+    rotate_dir = fmod(rotate_dir, 2*M_PI);*/
+
+    if (rotate_dir < 0){
         rotate_dir = rotate_dir + 2*M_PI;
     }
 
     if ((rotate_dir > 0.2) && (rotate_dir <= M_PI)){
         rotatespeed = -ROT_SPEED;
+     //   forwardspeed = 0;
+     //   rightspeed = 0;
     }
     else if ((rotate_dir > M_PI) && (rotate_dir <= (2*M_PI-0.2))){
         rotatespeed = ROT_SPEED;
+    //    forwardspeed = 0;
+    //    rightspeed = 0;
     }
     else {
         rotatespeed = 0;
     }
 
 
+    if(entry->aiData.doWeHaveBall == 1 && forwardspeed < 10){
+        forwardspeed = 10;
+        rightspeed = 0;
+        //rotatespeed = rotatespeed/2;
+     }
+
+    loggingObj->ShowMsg(QString("forwardSpeed: %1")
+                            .arg(forwardspeed)
+                            .toAscii()
+                            .data());
+
+    loggingObj->ShowMsg(QString("rightSpeed: %1")
+                            .arg(rightspeed)
+                            .toAscii()
+                            .data());
+
+    loggingObj->ShowMsg(QString("rotateSpeed: %1")
+                            .arg(rotatespeed)
+                            .toAscii()
+                            .data());
+
+
 
     //set the motor speeds
     motorSpeed[0] = -forwardspeed + rotatespeed;
-    motorSpeed[1] = -rightspeed + rotatespeed;
+    motorSpeed[1] = rightspeed + rotatespeed;
     motorSpeed[2] = forwardspeed + rotatespeed;
-    motorSpeed[3] = rightspeed + rotatespeed;
+    motorSpeed[3] = -rightspeed + rotatespeed;
+
+
 
     //Decide whever to kick or not
 
@@ -199,4 +284,19 @@ void CNavigation::GenerateStop()
     entry->robot.sendData.motor_front_speed =  0;
     entry->robot.sendData.motor_rear_speed  =  0;
     entry->robot.sendData.kicker            =  0;
+}
+
+void CNavigation::kickerP()
+{
+    TEntry *entry = &sharedMem.positioning[sharedMem.currentIdx];
+
+    entry->robot.sendData.motor_left_speed  =  0;
+    entry->robot.sendData.motor_right_speed =  0;
+    entry->robot.sendData.motor_front_speed =  0;
+    entry->robot.sendData.motor_rear_speed  =  0;
+    entry->robot.sendData.kicker            =  1;
+
+
+
+
 }
