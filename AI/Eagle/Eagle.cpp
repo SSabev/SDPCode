@@ -236,7 +236,8 @@ bool Eagle::ShouldWeShoot(RobotState ourRobotState, RobotState enemyRobotState, 
     float angleToGoal = fmod(ourRobotState.Position().GetAngleTo(&goalPosition), 2*M_PI);
     float ourOrientation = fmod(ourRobotState.Orientation(), 2*M_PI);
 
-    bool isFacingGoal = fmod(fabs(angleToGoal - ourOrientation), 2*M_PI) < angleThresh;
+    float angleDifference = fmod(fabs(angleToGoal - ourOrientation), 2*M_PI);
+    bool isFacingGoal = (angleDifference < angleThresh) || (angleDifference > (2*M_PI) - angleThresh);
 
 	if (!m_intersection.LineCircleIntersection(ourRobotState.Position(), goalPosition, enemyRobotState.Position(), ROBOT_RADIUS))
 	{
