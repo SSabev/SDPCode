@@ -16,7 +16,7 @@
 // probably get away with it. **The speed benefit is insane - factor of 100s**
 const float HEURISTIC_PENALTY = 2.5f;
 
-const double TIMER_EXPIRY = 0.8f;
+const double TIMER_EXPIRY = 1.0f;
 
 AStar::AStar()
 {

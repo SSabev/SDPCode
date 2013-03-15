@@ -31,9 +31,7 @@ class Vision:
 
         self.pipe = pipe
         
-        # vision can skip 3 bad frames in a row
-        #self.skip = 0;
-        #self.max_skip = 3;
+
         
         if sourcefile is None:
             self.camera = Camera()
@@ -61,9 +59,9 @@ class Vision:
         # Ugly stuff for smoothing coordinates - should probably move it
         self._pastSize = 5
         self._pastCoordinates = {
-                            'yellow': [(-1, -1)] * self._pastSize,
-                            'blue': [(-1, -1)] * self._pastSize,
-                            'ball': [(-1, -1)] * self._pastSize
+                            'yellow': [(0, 0)] * self._pastSize,
+                            'blue': [(0, 0)] * self._pastSize,
+                            'ball': [(0, 0)] * self._pastSize
                             }
         self._pastAngles = {
                             'yellow': [1.0] * self._pastSize,
@@ -133,7 +131,13 @@ class Vision:
 
     def addCoordinates(self, entity, coordinates):
         self._pastCoordinates[entity].pop(0)
-        self._pastCoordinates[entity].append(coordinates)
+        (x, y) = coordinates;
+        
+        # if the frame is bad(-1) then add the most recent coordinate instead
+        if (x != -1):
+            self._pastCoordinates[entity].append(coordinates)
+        else:
+            self._pastCoordinates[entity].append(self._pastCoordinates[entity][-1])
 
     def smoothCoordinates(self, entity):
         x = sum(map(lambda (x, _): x, self._pastCoordinates[entity])) / self._pastSize
@@ -142,16 +146,28 @@ class Vision:
 
     def addAngle(self, entity, angle):
         self._pastAngles[entity].pop(0)
-        self._pastAngles[entity].append(angle)
+        
+        # if the frame is bad(-1) then add the most recent angle instead
+        # good angle is always in (0,2pi), bad angle is -1, careful with real number
+        if (angle > -0.5):
+            self._pastAngles[entity].append(angle)
+        else:
+            self._pastAngles[entity].append(self._pastAngles[entity][-1])
+
 
     def smoothAngle(self, entity):
+        # angle is periodic (of 2pi) and a bit tricky to smooth
         temp = sorted (self._pastAngles[entity])
-        #if entity == 'blue': print (temp);
+        
+        # if max_angle > min_angle > pi, those angles are crossing 0
+        # we must add a period to the small ones
         if (temp[-1] - temp[0] > math.pi):
             temp = map(lambda angle: angle + 2*math.pi if angle < math.pi else angle, temp)
-        #if entity == 'blue': print (temp);
+        
         return sum(temp) / self._pastSize
         
+    # add/substract period (2pi) so angle is always in (0,2pi)
+    # assume they are off by at most a period
     def standardize_angle(self, angle):
         if (angle > 2*math.pi):
             return angle - 2*math.pi
@@ -191,6 +207,8 @@ class Vision:
             if name == 'ball':
                 # self.send('{0} {1} '.format(x, y))
                 msg_data += [int(x), int(y)]
+                #print (self._pastCoordinates[name])
+                #print(coordinates)
             else:
                 # angle is currently clockwise, this makes it anti-clockwise
                 angle = self.standardize_angle( 2*math.pi - entity.angle() )
