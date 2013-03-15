@@ -238,7 +238,7 @@ bool Eagle::ShouldWeShoot(RobotState ourRobotState, RobotState enemyRobotState, 
 
     bool isFacingGoal = fmod(fabs(angleToGoal - ourOrientation), 2*M_PI) < angleThresh;
 
-	if (!m_intersection.LineCircleIntersection(ourRobotState.Position(), enemyRobotState.Position(), goalPosition, ROBOT_RADIUS))
+	if (!m_intersection.LineCircleIntersection(ourRobotState.Position(), goalPosition, enemyRobotState.Position(), ROBOT_RADIUS))
 	{
 		isGoalClear = true;
 	}
