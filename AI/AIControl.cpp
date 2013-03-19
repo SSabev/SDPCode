@@ -171,7 +171,6 @@ void AIControl::RunAI()
 	// Given the positions of the robots and ball, identify the ideal position 
 	// and orientation for us to reach.
 	m_eagle.SetSharedData(sharedMem.systemState, sharedMem.pitchCfg.pitchWidth, sharedMem.pitchCfg.pitchHeight, sharedMem.pitchSide);
-	m_eagle.SetHadBallLastFrame(CoordinatesAreBad(ballPos), isBallPositionBad);
 	RobotState targetState = m_eagle.IdentifyTarget(ourRobotFuture, enemyRobotFuture, ballFuture);
 
 	// Check if we have the ball and should kick from our current state.
