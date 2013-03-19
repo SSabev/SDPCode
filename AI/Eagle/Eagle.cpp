@@ -2,7 +2,7 @@
 
 #include <cmath>
 
-#define KICKING_THRESHOLD 0.33
+#define KICKING_THRESHOLD 0.6
 #define ROBOT_RADIUS 35
 
 Eagle::Eagle()
