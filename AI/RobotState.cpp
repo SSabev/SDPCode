@@ -4,6 +4,7 @@ RobotState::RobotState()
 {
 	m_isPositionSet = false;
 	m_isOrientationSet = false;
+	m_hasBall = false;
 }
 
 RobotState::RobotState(float posX, float posY, float orientation)
@@ -43,6 +44,11 @@ void RobotState::SetOrientation(float orientation)
 	m_orientation = orientation;
 	
 	m_isOrientationSet = true;
+}
+
+void RobotState::SetHasBall(bool hasBall)
+{
+	m_hasBall = hasBall;
 }
 
 // OPERATOR OVERLOADS
