@@ -22,12 +22,6 @@ void Eagle::SetSharedData(TSystemState state, int pitchSizeX, int pitchSizeY, TP
 	m_pitchSizeY = pitchSizeY;
 }
 
-void Eagle::SetHadBallLastFrame(bool hadBallLastFrame, bool ballPositionBad)
-{
-	m_hadBallLastFrame = hadBallLastFrame;
-	m_ballPositionBad = ballPositionBad;
-}
-
 /*!
 * Identify the target state that we wish the robot to be in. This will be the target which the A* algorithm plots towards.
 */
@@ -39,7 +33,10 @@ RobotState Eagle::IdentifyTarget(RobotState ourRobotState, RobotState enemyRobot
 
 	Vector2 enemyRobotPosition = enemyRobotState.Position();
 
-	if (!DoWeHaveBall(ourRobotState, ballPos))
+	ourRobotState.SetHasBall(DoesRobotHaveBall(ourRobotState, ballPos));
+	enemyRobotState.SetHasBall(DoesRobotHaveBall(enemyRobotState, ballPos));
+
+	if (!ourRobotState.HasBall())
 	{
 		// Check if the ball is within the enemy robot's radius or if it's against our back wall.
 		if ((enemyRobotPosition.Distance(&ballPos) < 2*ROBOT_RADIUS) || ((m_pitchSide == eLeftSide) && (ballPos.X() < 50)) || ((m_pitchSide == eRightSide) && (ballPos.X() > m_pitchSizeX - 50)))
@@ -156,14 +153,14 @@ RobotState Eagle::IdentifyTarget(RobotState ourRobotState, RobotState enemyRobot
 	return targetState;
 }
 
-bool Eagle::DoWeHaveBall(RobotState ourRobotState, Vector2 ballPos) 
+bool Eagle::DoesRobotHaveBall(RobotState robotState, Vector2 ballPos) 
 {
-	Vector2 robotPos = ourRobotState.Position();
+	Vector2 robotPos = robotState.Position();
 
     float angleThresh;
 	float distanceThresh;
 
-	if (m_hadBallLastFrame)
+	if (robotState.HasBall())
 	{
 		angleThresh = M_PI_2;
 		distanceThresh = 90.0f;
@@ -175,7 +172,7 @@ bool Eagle::DoWeHaveBall(RobotState ourRobotState, Vector2 ballPos)
 	}
 	
 	float angleToBall = fmod(robotPos.GetAngleTo(&ballPos), (2*M_PI));
-	float robotOrientation = fmod(ourRobotState.Orientation(), (2*M_PI));
+	float robotOrientation = fmod(robotState.Orientation(), (2*M_PI));
 
 	float distanceToBall = robotPos.Distance(&ballPos);
 	
