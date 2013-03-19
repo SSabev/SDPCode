@@ -16,10 +16,9 @@ public:
 	Eagle();
 	
 	void SetSharedData(TSystemState state, int pitchSizeX, int pitchSizeY, TPitchSide pitchSide);
-	void SetHadBallLastFrame(bool hadBallLastFrame, bool ballPositionBad);
 	RobotState IdentifyTarget(RobotState ourRobotState, RobotState enemyRobotState, Vector2 ballPos);
 	bool ShouldWeShoot(RobotState ourRobotState, RobotState enemyRobotState, Vector2 ballPos);
-	bool DoWeHaveBall(RobotState ourRobotState, Vector2 ballPos); 
+	bool DoesRobotHaveBall(RobotState robotState, Vector2 ballPos); 
 
 private:
 	Vector2 GoalCentrePosition();
@@ -28,9 +27,6 @@ private:
 
 	int m_pitchSizeX;
 	int m_pitchSizeY;
-
-	bool m_hadBallLastFrame;
-	bool m_ballPositionBad;
 
 	Intersection m_intersection;
 };
