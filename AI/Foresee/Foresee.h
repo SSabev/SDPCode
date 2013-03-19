@@ -28,6 +28,7 @@ public:
 private: 
 	RobotState ExtrapolateRobotState(std::vector<RobotState> states);
 	Vector2 ExtrapolatePosition(std::vector<Vector2> positions);
+	Vector2 ExtrapolateBall(std::vector<Vector2> positions);
 	
 	std::vector<RobotState> m_ourRobotStates;
 	std::vector<RobotState> m_enemyRobotStates;
