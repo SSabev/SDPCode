@@ -80,6 +80,7 @@ RobotState Foresee::ExtrapolateRobotState(std::vector<RobotState> states)
 	float extrapolatedAngle = states[0].Orientation() + (states[0].Orientation() - states[1].Orientation());
 	
 	RobotState extrapolatedState(extrapolatedPosition, extrapolatedAngle);
+	extrapolatedState.SetHasBall(states[0].HasBall());
 
 	return extrapolatedState;
 }
