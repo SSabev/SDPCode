@@ -19,10 +19,16 @@ public:
 	{
 		return m_orientation;
 	}
+	
+	const bool HasBall() const
+	{
+		return m_hasBall;
+	}
 
 	void SetPosition(float posX, float posY);
 	void SetPosition(Vector2 pos);
 	void SetOrientation(float orientation);
+	void SetHasBall(bool hasBall);
 
 private:
 	bool m_isPositionSet;
@@ -30,6 +36,7 @@ private:
 
 	Vector2 m_position;
 	float m_orientation;
+	bool m_hasBall;
 };
 
 // Operator overloads.
