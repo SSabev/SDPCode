@@ -18,6 +18,8 @@ const float HEURISTIC_PENALTY = 2.5f;
 
 const double TIMER_EXPIRY = 1.0f;
 
+const int ROBOT_RADIUS = 35;
+
 AStar::AStar()
 {
 
@@ -274,7 +276,7 @@ std::list<RobotState> AStar::GeneratePath(RobotState startingState, RobotState d
 				Vector2 enemyRobotPosition = enemyRobotFuture.Position();
 
 				float distanceToEnemyRobotSqd = currentAdjacentVector.DistanceSquared(&enemyRobotPosition);
-				float robotRadiusSquared = 3600.0f;
+				float robotRadiusSquared = pow(2*ROBOT_RADIUS, 2);
 
 				if (distanceToEnemyRobotSqd < robotRadiusSquared)
 				{
