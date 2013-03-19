@@ -3,6 +3,7 @@
 #include <assert.h>
 
 const int POSITIONSTOKEEP = 10;
+const int FRAMES_AHEAD_TO_EXTRAPOLATE = 5;
 
 Foresee::Foresee()
 {
@@ -108,6 +109,31 @@ Vector2 Foresee::ExtrapolatePosition(std::vector<Vector2> positions)
 	extrapolatedPosition = Vector2((int) extrapolatedPosition.X(), (int) extrapolatedPosition.Y());
 	
 	return extrapolatedPosition;
+}
+
+// A special method for the ball, given that we might want to see further ahead with it.
+Vector2 Foresee::ExtrapolateBall(std::vector<Vector2> positions)
+{
+    assert(positions.size() > 0);
+
+    // If the list of positions only contains one entry, there's not
+    // enough data to extrapolate from.
+    if (positions.size() == 1)
+    {
+        return positions.front();
+    }
+
+    // For now, we're going to assume that the delay between frames is constant.
+    Vector2 positionDifference = positions[0] - positions[1];
+
+    // Multiplying like this lets us extrapolate further ahead.
+    Vector2 extrapolatedPosition = positions[0] + (positionDifference * FRAMES_AHEAD_TO_EXTRAPOLATE);
+
+    // Ensure that the extrapolated position is within the confines of the pitch.
+    extrapolatedPosition.Clamp(Vector2(0,0), Vector2(m_pitchSizeX-1, m_pitchSizeY-1));
+    extrapolatedPosition = Vector2((int) extrapolatedPosition.X(), (int) extrapolatedPosition.Y());
+
+    return extrapolatedPosition;
 }
 
 void Foresee::ResetOurRobotHistory()
