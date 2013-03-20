@@ -61,7 +61,7 @@ RobotState Eagle::IdentifyTarget(RobotState ourRobotState, RobotState enemyRobot
 			// Temporary - robot will stop still in this instance.
 			targetState = ourRobotState;
 		}
-		else if ((m_pitchSide == eLeftSide) && (ourRobotState.Position().X() > ballPos.X() - 30))
+		/*else if ((m_pitchSide == eLeftSide) && (ourRobotState.Position().X() > ballPos.X() - 30))
 		{
 			targetState.SetPosition(ballPos - Vector2(40,0));
 			targetState.SetOrientation(0);
@@ -70,7 +70,7 @@ RobotState Eagle::IdentifyTarget(RobotState ourRobotState, RobotState enemyRobot
 		{
 			targetState.SetPosition(ballPos + Vector2(40,0));
 			targetState.SetOrientation(M_PI);
-		}
+		}*/
 		else
 		{
 			// If we don't have the ball, the aim should be to move to the ball.
