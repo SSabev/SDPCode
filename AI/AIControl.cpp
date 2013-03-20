@@ -208,7 +208,7 @@ void AIControl::RunAI()
 	{
 		// Smooth and optimise the path using knowledge of our bot's capabilities.
 		m_impala.SetSharedData(sharedMem.systemState, sharedMem.pitchCfg.pitchWidth, sharedMem.pitchCfg.pitchHeight, sharedMem.pitchSide);
-		smoothedPath = m_impala.SmoothPath(aStarPath, 9);
+		smoothedPath = m_impala.SmoothPath(aStarPath, ourRobotFuture.HasBall(), 9);
 	}
 	else 
 	{
