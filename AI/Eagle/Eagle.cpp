@@ -234,9 +234,22 @@ bool Eagle::ShouldWeShoot(RobotState ourRobotState, RobotState enemyRobotState, 
     float ourOrientation = fmod(ourRobotState.Orientation(), 2*M_PI);
 
     float angleDifference = fmod(fabs(angleToGoal - ourOrientation), 2*M_PI);
-    bool isFacingGoal = (angleDifference < angleThresh) || (angleDifference > (2*M_PI) - angleThresh);
+   //bool isFacingGoal = (angleDifference < angleThresh) || (angleDifference > (2*M_PI) - angleThresh);
 
-	if (!m_intersection.LineCircleIntersection(ourRobotState.Position(), goalPosition, enemyRobotState.Position(), ROBOT_RADIUS))
+	// Check if we're facing somewhere into the goal.
+	// Extrapolate to the goal-line position we're facing.
+	float extrapolatedYCoord = ourRobotState.Position().Y() + (ourRobotState.Position().Gradient(&ballPos) * (m_pitchSizeX - ourRobotState.Position().X()));
+
+	// The goal is in the middle of the pitch, constituting half its length.
+	float goalTop = 0.75 * m_pitchSizeY;
+	float goalBottom = 0.25 * m_pitchSizeY;
+
+	bool isFacingGoal = (extrapolatedYCoord >= goalBottom) && (extrapolatedYCoord <= goalTop);
+	
+	// The position we're aiming for.
+	Vector2 goalTarget(m_pitchSizeX, extrapolatedYCoord);
+
+	if (!m_intersection.LineCircleIntersection(ourRobotState.Position(), goalTarget, enemyRobotState.Position(), ROBOT_RADIUS))
 	{
 		isGoalClear = true;
 	}
