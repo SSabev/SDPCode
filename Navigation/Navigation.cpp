@@ -85,11 +85,11 @@ CNavigation::CNavigation()
 #define KP 0.5
 #define KI 0
 #define KD 0
-#define MAX_SPEED 110
-#define MIN_SPEED 80
-#define HAVE_BALL_SPEED 20
+#define MAX_SPEED 120
+#define MIN_SPEED 110
+#define HAVE_BALL_SPEED 90
 #define MIN_TURN_ANGLE 0.2
-#define ROTATE_PERCENT 40
+#define ROTATE_PERCENT 50
 
 
 int pid(int error, int integral, int derivative)
@@ -262,7 +262,7 @@ void CNavigation::GenerateValues()
     target_x = (int)entry->aiData.path[1].position_X;
     target_y = (int)entry->aiData.path[1].position_Y;
     //target_theta = entry->aiData.path[entry->aiData.pathLength-1].orientation;
-    target_theta = entry->aiData.path[1].orientation;
+    target_theta = entry->aiData.path[entry->aiData.pathLength].orientation;
     target_theta = standardize_angle(target_theta);
 
     // go to the ball instead
@@ -275,8 +275,13 @@ void CNavigation::GenerateValues()
 
     //keep the ball
     if(entry->aiData.doWeHaveBall == 1){
-        if (res.left < 15) res.left = 15;
-        if (res.right < 15) res.right = 15;
+        //if (res.left < 15) res.left = 15;
+        //if (res.right < 15) res.right = 15;
+
+         res.left =  res.left;
+         res.right =  res.right;
+         res.rear = res.rear ;
+         res.front = res.front;
     }
 
 
@@ -315,10 +320,71 @@ void CNavigation::GenerateValues()
     //res.front = res.right = res.left = 100;
 
     //Send the speeds
-    entry->robot.sendData.motor_left_speed =  abs(res.rear);
-    entry->robot.sendData.motor_right_speed =  abs(res.front);
-    entry->robot.sendData.motor_front_speed =  abs(res.right);
-    entry->robot.sendData.motor_rear_speed =  abs(res.left);
+
+
+    if(entry->aiData.pathLength == 1)
+    {
+
+        entry->robot.sendData.motor_left_speed =  0;
+        entry->robot.sendData.motor_right_speed =  0;
+        entry->robot.sendData.motor_front_speed =  0;
+        entry->robot.sendData.motor_rear_speed =  0;
+
+        loggingObj->ShowMsg(QString("current rx = %1").arg(rx).toAscii().data());
+        loggingObj->ShowMsg(QString("current ry = %1").arg(ry).toAscii().data());
+        loggingObj->ShowMsg(QString("current target_x = %1").arg(target_x).toAscii().data());
+        loggingObj->ShowMsg(QString("current target_y = %1").arg(target_y).toAscii().data());
+
+        loggingObj->ShowMsg(QString("left %1").arg(res.left).toAscii().data());
+        loggingObj->ShowMsg(QString("right %1").arg(res.right).toAscii().data());
+        loggingObj->ShowMsg(QString("front %1").arg(res.front).toAscii().data());
+        loggingObj->ShowMsg(QString("rear %1").arg(res.rear).toAscii().data());
+
+
+
+        entry->robot.sendData.motor_left_dir = 0;
+        entry->robot.sendData.motor_right_dir = 0;
+
+       entry->robot.sendData.motor_front_dir = 0;
+        entry->robot.sendData.motor_rear_dir = 0;
+     }
+    else
+    {
+//        entry->robot.sendData.motor_left_speed =  abs(res.rear);
+//        entry->robot.sendData.motor_right_speed =  abs(res.front);
+//        entry->robot.sendData.motor_front_speed =  abs(res.right);
+//        entry->robot.sendData.motor_rear_speed =  abs(res.left);
+
+//        loggingObj->ShowMsg(QString("current rx = %1").arg(rx).toAscii().data());
+//        loggingObj->ShowMsg(QString("current ry = %1").arg(ry).toAscii().data());
+//        loggingObj->ShowMsg(QString("current target_x = %1").arg(target_x).toAscii().data());
+//        loggingObj->ShowMsg(QString("current target_y = %1").arg(target_y).toAscii().data());
+
+//        loggingObj->ShowMsg(QString("left %1").arg(res.left).toAscii().data());
+//        loggingObj->ShowMsg(QString("right %1").arg(res.right).toAscii().data());
+//        loggingObj->ShowMsg(QString("front %1").arg(res.front).toAscii().data());
+//        loggingObj->ShowMsg(QString("rear %1").arg(res.rear).toAscii().data());
+
+
+
+//        entry->robot.sendData.motor_left_dir = res.rear >= 0 ? 1 : 0;
+//        entry->robot.sendData.motor_right_dir = res.front >= 0 ? 0 : 1;
+
+//       entry->robot.sendData.motor_front_dir = res.right >= 0 ? 0 : 1;
+//        entry->robot.sendData.motor_rear_dir = res.left >= 0 ? 1 : 0;
+//}
+    
+    
+    entry->robot.sendData.motor_left_dir = res.left >= 0 ? 1 : 0;
+    entry->robot.sendData.motor_right_dir = res.right >= 0 ? 0 : 1;
+    
+    entry->robot.sendData.motor_front_dir = res.front >= 0 ? 0 : 1;
+    entry->robot.sendData.motor_rear_dir = res.rear >= 0 ? 1 : 0;
+    
+    entry->robot.sendData.motor_left_speed =  abs(res.left);
+    entry->robot.sendData.motor_right_speed =  abs(res.right);
+    entry->robot.sendData.motor_front_speed =  abs(res.front);
+    entry->robot.sendData.motor_rear_speed =  abs(res.rear);
 
     loggingObj->ShowMsg(QString("current rx = %1").arg(rx).toAscii().data());
     loggingObj->ShowMsg(QString("current ry = %1").arg(ry).toAscii().data());
@@ -330,14 +396,15 @@ void CNavigation::GenerateValues()
     loggingObj->ShowMsg(QString("front %1").arg(res.front).toAscii().data());
     loggingObj->ShowMsg(QString("rear %1").arg(res.rear).toAscii().data());
 
-    
-    
-    entry->robot.sendData.motor_left_dir = res.rear >= 0 ? 1 : 0;
-    entry->robot.sendData.motor_right_dir = res.front >= 0 ? 0 : 1;
-    
-    entry->robot.sendData.motor_front_dir = res.right >= 0 ? 0 : 1;
-    entry->robot.sendData.motor_rear_dir = res.left >= 0 ? 1 : 0;
-    
+
+
+    entry->robot.sendData.motor_left_dir = res.left >= 0 ? 1 : 0;
+    entry->robot.sendData.motor_right_dir = res.right >= 0 ? 0 : 1;
+
+    entry->robot.sendData.motor_front_dir = res.front >= 0 ? 0 : 1;
+    entry->robot.sendData.motor_rear_dir = res.rear >= 0 ? 1 : 0;
+}
+
 }
 
 
@@ -350,6 +417,11 @@ void CNavigation::GenerateStop()
     entry->robot.sendData.motor_front_speed =  0;
     entry->robot.sendData.motor_rear_speed  =  0;
     entry->robot.sendData.kicker            =  0;
+    entry->robot.sendData.motor_left_dir = 0;
+    entry->robot.sendData.motor_right_dir = 0;
+
+   entry->robot.sendData.motor_front_dir = 0;
+    entry->robot.sendData.motor_rear_dir = 0;
 }
 
 void CNavigation::kickerP()
