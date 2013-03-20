@@ -17,6 +17,7 @@ public:
     void GenerateValues();
 
     void GenerateStop();
+    void kickerP();
 private:
 
     TTarget m_target;
