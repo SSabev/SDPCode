@@ -16,7 +16,7 @@
 #error Must specify which type of communicator to use
 #endif
 
-#define TIMER_INTERVAL_MS 100
+#define TIMER_INTERVAL_MS 50
 
 MainWindow::MainWindow()
     : m_timer(this)

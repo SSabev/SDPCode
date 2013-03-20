@@ -14,12 +14,13 @@ class Impala
 public:
 	Impala();
 	
-    void SetSharedData(TSystemState state, int pitchSizeX, int pitchSizeY, TPitchSide pitchSide);
-	std::list<RobotState> SmoothPath(std::list<RobotState> aStarPath, int numAdditionalPasses=0);
+    	void SetSharedData(TSystemState state, int pitchSizeX, int pitchSizeY, TPitchSide pitchSide);
+	std::list<RobotState> SmoothPath(std::list<RobotState> aStarPath, bool doWeHaveBall, int numAdditionalPasses=0);
+
 
 private:
-    Vector2 GoalCentrePosition();
-    TSystemState m_state;
+ 	Vector2 GoalCentrePosition();
+  	TSystemState m_state;
 	TPitchSide m_pitchSide;
 
 	int m_pitchSizeX;

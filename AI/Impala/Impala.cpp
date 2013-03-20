@@ -16,7 +16,7 @@ Impala::Impala()
  * the path smoothing will always be executed, in addition to the number specified in the parameter. This 
  * parameter can be increased to provide a smoother path, but at the cost of processing time.
 */
-std::list<RobotState> Impala::SmoothPath(std::list<RobotState> aStarPath, int numAdditionalPasses)
+std::list<RobotState> Impala::SmoothPath(std::list<RobotState> aStarPath, bool doWeHaveBall, int numAdditionalPasses)
 {
 	std::list<Vector2> aStarPositions;
 	std::list<RobotState>::iterator it;
@@ -53,7 +53,14 @@ std::list<RobotState> Impala::SmoothPath(std::list<RobotState> aStarPath, int nu
 		}
 		else
 		{
-			angleToNextPoint = collapsedPositions[i].GetAngleTo(&goalCentrePos);
+			if (!doWeHaveBall)
+			{
+				angleToNextPoint = collapsedPositions[i].GetAngleTo(&aStarPositions.back());
+			}
+			else
+			{
+				angleToNextPoint = collapsedPositions[i].GetAngleTo(&goalCentrePos);
+			}
 		}
 
 		collapsedPath.push_back(RobotState(collapsedPositions[i], angleToNextPoint));

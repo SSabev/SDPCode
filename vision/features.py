@@ -15,7 +15,7 @@ class Features:
 
     # min and max area of the ball and the T shape
     Sizes = {'ball': (20, 300),
-             'T': (100, 1000),
+             'T': (100, 1500),
             }
 
     def __init__(self, display, threshold):

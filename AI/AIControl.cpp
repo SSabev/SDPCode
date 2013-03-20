@@ -84,9 +84,6 @@ void AIControl::RunAI()
 		return;
 	}
 
-	bool isBallPositionBad = false;
-	bool doWeHaveBall = false;
-
 	// Check if the ball position is valid and can be used, or if we have to rely on last known position.
 	/*if (!CoordinatesAreBad(ballPos))
 	{
@@ -179,7 +176,7 @@ void AIControl::RunAI()
 		doWeHaveBall = true;
 	}*/
 
-	bool shouldKick = m_eagle.ShouldWeShoot(ourRobotFuture, enemyRobotFuture, ballFuture) && doWeHaveBall;
+	bool shouldKick = m_eagle.ShouldWeShoot(ourRobotFuture, enemyRobotFuture, ballFuture) && ourRobotFuture.HasBall();
 
 	// Set if we have the ball this frame, to be used next frame.
 	/*if (doWeHaveBall)
@@ -193,7 +190,7 @@ void AIControl::RunAI()
 
 	// Using A*, generate the best path to the target.
 	m_aStar.SetSharedData(sharedMem.pitchCfg.pitchWidth, sharedMem.pitchCfg.pitchHeight, sharedMem.pitchSide);
-	std::list<RobotState> aStarPath = m_aStar.GeneratePath(ourRobotFuture, targetState, doWeHaveBall, ballFuture, enemyRobotFuture);
+	std::list<RobotState> aStarPath = m_aStar.GeneratePath(ourRobotFuture, targetState, ourRobotFuture.HasBall(), ballFuture, enemyRobotFuture);
 
 	// If the A* has returned a blank path, it found it impossible to complete.
 	if (aStarPath.size() == 0)
@@ -211,7 +208,7 @@ void AIControl::RunAI()
 	{
 		// Smooth and optimise the path using knowledge of our bot's capabilities.
 		m_impala.SetSharedData(sharedMem.systemState, sharedMem.pitchCfg.pitchWidth, sharedMem.pitchCfg.pitchHeight, sharedMem.pitchSide);
-		smoothedPath = m_impala.SmoothPath(aStarPath, 9);
+		smoothedPath = m_impala.SmoothPath(aStarPath, ourRobotFuture.HasBall(), 9);
 	}
 	else 
 	{
@@ -221,10 +218,10 @@ void AIControl::RunAI()
 	// Results should be written to shared memory.
 	currentEntry->aiData.isFailedFrame = 0;
 	currentEntry->aiData.shouldKick = shouldKick;
-	currentEntry->aiData.doWeHaveBall = doWeHaveBall;
+	currentEntry->aiData.doWeHaveBall = ourRobotFuture.HasBall();
 
     //DEBUG
-    if (doWeHaveBall)
+    if (ourRobotFuture.HasBall())
     {
         std::string logMessage = "I have the ball.";
 
