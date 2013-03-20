@@ -25,7 +25,7 @@ void Eagle::SetSharedData(TSystemState state, int pitchSizeX, int pitchSizeY, TP
 /*!
 * Identify the target state that we wish the robot to be in. This will be the target which the A* algorithm plots towards.
 */
-RobotState Eagle::IdentifyTarget(RobotState ourRobotState, RobotState enemyRobotState, Vector2 ballPos)
+RobotState Eagle::IdentifyTarget(RobotState &ourRobotState, RobotState &enemyRobotState, Vector2 ballPos)
 {
 	// For now, this is just the ball position.
 	RobotState targetState;
