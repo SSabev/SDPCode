@@ -56,7 +56,7 @@ void MainWindow::Action2Slot()
 void MainWindow::StopMvmntSlot()
 {
     unsigned nextIdx = (sharedMem.navIdx + 1)&SH_MEM_SIZE_MASK;
-    TNavEntry *nav = sharedMem.NavData[nextIdx];
+    TNavEntry *nav = &sharedMem.NavData[nextIdx];
 
     m_AI_Timer.stop();
     m_Nav_Timer.stop();
@@ -187,7 +187,7 @@ void MainWindow::AIStage1Callback()
 
     // 4. Immideatly generate motor values
     nav->visionData = ai->visionData;
-    m_nav.GenerateValues();
+    m_nav.GenerateValues(nav);
 
     // 5. Send motor values to robot
     m_pIBtComm->SendData(&nav->robot.sendData);

@@ -24,7 +24,7 @@ void CAICallback::process()
     }
 
     // 1. Read new coordinates from vision
-    m_pVisionComm->ReadData(ai->visionData);
+    m_pVisionComm->ReadData(&ai->visionData);
 
     // 2. Read robot state
     /// TODO: read data from robot if needed
@@ -52,7 +52,7 @@ CNavCallback::CNavCallback(CVisionComm *pVisionComm, IBTComm *pIBtComm, CNavigat
 void CNavCallback::process()
 {
     unsigned nextIdx = (sharedMem.navIdx + 1)&SH_MEM_SIZE_MASK;
-    TNavEntry *nav = sharedMem.NavData[nextIdx];
+    TNavEntry *nav = &sharedMem.NavData[nextIdx];
 
     /// Frst check if we are operational
 
@@ -67,7 +67,7 @@ void CNavCallback::process()
     }
 
     // 1. Read new coordinates from vision
-    m_pVisionComm->ReadData(nav->visionData);
+    m_pVisionComm->ReadData(&nav->visionData);
 
     // 2. Read robot state
     /// TODO: read data from robot if needed

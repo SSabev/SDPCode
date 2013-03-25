@@ -163,7 +163,7 @@ int max_abs(int x, int y){
 
 // fix the speeds so that the max speed is at (MIN_SPEED, MAX_SPEED)
 Speeds limit_speed(Speeds s){
-     TEntry *entry = &sharedMem.positioning[sharedMem.currentIdx];
+    TAIEntry *ai = &sharedMem.AIdata[sharedMem.aiIdx];
     int max_speed = max ( max_abs(s.left,s.right), max_abs(s.front, s.rear));
     if (max_speed == 0) return s;
     float ratio = 1;
@@ -177,7 +177,7 @@ Speeds limit_speed(Speeds s){
         ratio = MAX_SPEED*1.0/max_speed;
     }
 
-    if (entry->aiData.doWeHaveBall == 1){
+    if (ai->aiData.doWeHaveBall == 1){
         ratio = HAVE_BALL_SPEED *1.0/max_speed;
     }
 
@@ -233,10 +233,12 @@ Speeds find_speeds(int rx, int ry, float r_theta, int target_x, int target_y, fl
     return res;
 }
 
-void CNavigation::GenerateValues()
+void CNavigation::GenerateValues(TNavEntry *entry)
 {
-    TEntry *entry = &sharedMem.positioning[sharedMem.currentIdx];
-    m_ourOrientation = entry->aiData.path[0].orientation;
+//    TEntry *entry = &sharedMem.positioning[sharedMem.currentIdx];
+    TAIEntry *ai = &sharedMem.AIdata[sharedMem.aiIdx];
+
+    m_ourOrientation = ai->aiData.path[0].orientation;
     //m_ourOrientation = entry->visionData.yellow_angle;
 
     loggingObj->ShowMsg(QString("ourOrientation: %1")
@@ -254,15 +256,15 @@ void CNavigation::GenerateValues()
     float r_theta, target_theta;
     
     //current robot position
-    rx = (int)entry->aiData.path[0].position_X;
-    ry = (int)entry->aiData.path[0].position_Y;
+    rx = (int)ai->aiData.path[0].position_X;
+    ry = (int)ai->aiData.path[0].position_Y;
     r_theta = m_ourOrientation;
     
     //target position
-    target_x = (int)entry->aiData.path[1].position_X;
-    target_y = (int)entry->aiData.path[1].position_Y;
+    target_x = (int)ai->aiData.path[1].position_X;
+    target_y = (int)ai->aiData.path[1].position_Y;
     //target_theta = entry->aiData.path[entry->aiData.pathLength-1].orientation;
-    target_theta = entry->aiData.path[entry->aiData.pathLength].orientation;
+    target_theta = ai->aiData.path[ai->aiData.pathLength].orientation;
     target_theta = standardize_angle(target_theta);
 
     // go to the ball instead
@@ -274,7 +276,7 @@ void CNavigation::GenerateValues()
     Speeds res = find_speeds(rx, ry, r_theta, target_x, target_y, target_theta);
 
     //keep the ball
-    if(entry->aiData.doWeHaveBall == 1){
+    if(ai->aiData.doWeHaveBall == 1){
         //if (res.left < 15) res.left = 15;
         //if (res.right < 15) res.right = 15;
 
@@ -286,9 +288,9 @@ void CNavigation::GenerateValues()
 
 
     //dis to target
-   if(entry->aiData.doWeHaveBall == 0){
-        int ax = (int)entry->visionData.ball_x - (int)entry->aiData.path[0].position_X;
-        int ay =(int)entry->visionData.ball_y - (int)entry->aiData.path[0].position_Y;
+   if(ai->aiData.doWeHaveBall == 0){
+        int ax = (int)entry->visionData.ball_x - (int)ai->aiData.path[0].position_X;
+        int ay = (int)entry->visionData.ball_y - (int)ai->aiData.path[0].position_Y;
         distToTarget = (int) sqrt((ax * ax)+(ay * ay));
    }
    else{
@@ -307,7 +309,7 @@ void CNavigation::GenerateValues()
 
     if (_kickerCnt > 0)  _kickerCnt--;
 
-    if ((entry->aiData.shouldKick == 1) && (_kickerCnt == 0)){
+    if ((ai->aiData.shouldKick == 1) && (_kickerCnt == 0)){
         //    send kick command!
         entry->robot.sendData.kicker =  1;
         _kickerCnt = 10;
@@ -322,7 +324,7 @@ void CNavigation::GenerateValues()
     //Send the speeds
 
 
-    if(entry->aiData.pathLength == 1)
+    if(ai->aiData.pathLength == 1)
     {
 
         entry->robot.sendData.motor_left_speed =  0;
@@ -408,10 +410,8 @@ void CNavigation::GenerateValues()
 }
 
 
-void CNavigation::GenerateStop()
+void CNavigation::GenerateStop(TNavEntry *entry)
 {
-    TEntry *entry = &sharedMem.positioning[sharedMem.currentIdx];
-
     entry->robot.sendData.motor_left_speed  =  0;
     entry->robot.sendData.motor_right_speed =  0;
     entry->robot.sendData.motor_front_speed =  0;
@@ -420,21 +420,15 @@ void CNavigation::GenerateStop()
     entry->robot.sendData.motor_left_dir = 0;
     entry->robot.sendData.motor_right_dir = 0;
 
-   entry->robot.sendData.motor_front_dir = 0;
+    entry->robot.sendData.motor_front_dir = 0;
     entry->robot.sendData.motor_rear_dir = 0;
 }
 
-void CNavigation::kickerP()
+void CNavigation::kickerP(TNavEntry *entry)
 {
-    TEntry *entry = &sharedMem.positioning[sharedMem.currentIdx];
-
     entry->robot.sendData.motor_left_speed  =  0;
     entry->robot.sendData.motor_right_speed =  0;
     entry->robot.sendData.motor_front_speed =  0;
     entry->robot.sendData.motor_rear_speed  =  0;
     entry->robot.sendData.kicker            =  1;
-
-
-
-
 }

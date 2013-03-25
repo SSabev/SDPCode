@@ -14,10 +14,10 @@ class CNavigation
 public:
     CNavigation();
 
-    void GenerateValues();
+    void GenerateValues(TNavEntry *entry);
 
-    void GenerateStop();
-    void kickerP();
+    void GenerateStop(TNavEntry *entry);
+    void kickerP(TNavEntry *entry);
 private:
 
     TTarget m_target;
