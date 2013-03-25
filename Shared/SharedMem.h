@@ -104,9 +104,14 @@ typedef struct{
 typedef struct
 {
     TVisionData     visionData;
-    TRobot          robot;
     TAIData         aiData;
-} __attribute__ ((packed))  TEntry;
+} __attribute__ ((packed))  TAIEntry;
+
+typedef struct
+{
+    TVisionData     visionData;
+    TRobot          robot;
+} __attribute__ ((packed))  TNavEntry;
 
 typedef enum{
     eNonOperational = 0,
@@ -120,8 +125,10 @@ typedef enum{
 typedef struct
 {
     TSystemState  systemState;
-    unsigned      currentIdx;               // index of active TEntry frame
-    TEntry        positioning[SH_MEM_SIZE];
+    unsigned      aiIdx;               // index of the most recent & complete TAIEntry
+    TAIEntry      AIdata[SH_MEM_SIZE];
+    unsigned      navIdx;              // index of the most recent & complete TNavEntry
+    TNavEntry     NavData[SH_MEM_SIZE];
     TPitchSide    pitchSide;
     TTeamColor    teamColor;
     TPitchCfg     pitchCfg;

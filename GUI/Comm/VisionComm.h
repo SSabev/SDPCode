@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include <QLocalSocket>
+#include <QMutex>
 
 #include <SharedMem.h>
 
@@ -17,7 +18,7 @@ public:
     bool ReadData(TVisionData *data);
 
     void ConnectToVision();
-    void ShutdownVision();
+
     bool IsConnected();
 
 private slots:
@@ -26,7 +27,10 @@ private slots:
     void SockErr();
 
 private:
+    void ShutdownVision();
+
     QLocalSocket localSocket;
+    QMutex      m_mutex;
 };
 
 #endif // VISIONCOMM_H

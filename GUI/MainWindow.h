@@ -13,6 +13,8 @@
 
 #include <QMainWindow>
 #include <QTimer>
+#include <QThread>
+#include <QMutex>
 
 class MainWindow
         : public QMainWindow
@@ -27,26 +29,33 @@ public:
 private slots:
     void Action1Slot();
     void Action2Slot();
-    void StopeMvmntSlot();
+    void StopMvmntSlot();
 
     void TeamSetup();
     void ConnToVision();
     void ConnToBT();
 
-    void TimerCallBack();
+//    void TimerCallBack();
+    void NavTimerCallback();
+    void AIStage1Callback();
+    void AIStage2Callback();
 
 private:
     void SetupGUI();
     void InitSytem();
 
-    IBTComm        *mIBtComm;
-    CVisionComm    *m_visionComm;
+    IBTComm        *m_pIBtComm;
+    CVisionComm    *m_pVisionComm;
     CNavigation     m_nav;
     CVisionMod     *vision;
 
     AIControl       aiCtrl;
 
-    QTimer          m_timer;
+    QTimer          m_AI_Timer;
+    QTimer          m_Nav_Timer;
+
+    QThread        *m_pAIThread;
+    QThread        *m_pNavThread;
 };
 
 

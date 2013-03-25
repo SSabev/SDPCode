@@ -12,6 +12,7 @@
 CArduinoComm::CArduinoComm(QWidget *parent)
     : QWidget(parent)
     , m_status (eDisconnected)
+    , m_mutex(QMutex::Recursive)
 {
     memcpy(&m_arduinoMAC, ARDUINO_MAC, 18);
 
@@ -35,6 +36,8 @@ CArduinoComm::~CArduinoComm()
 
 bool CArduinoComm::ReadData(TRobotState *data)
 {
+    QMutexLocker locker(&m_mutex);
+
     if(m_status != eConnected){
         loggingObj->ShowMsg("BT: Can't read data - not connected");
         return false;
@@ -152,6 +155,8 @@ bool CArduinoComm::SendData(TRobotData *data)
 {
     int status;
     QString str;
+
+    QMutexLocker locker(&m_mutex);
 
     if(m_status != eConnected){
         loggingObj->ShowMsg("BT: Can't send data - not connected");

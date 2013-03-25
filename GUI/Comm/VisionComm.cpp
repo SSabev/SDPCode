@@ -1,4 +1,5 @@
 #include <QMessageBox>
+#include <QMutexLocker>
 
 #include <Sockets.h>
 #include <Logging.h>
@@ -9,6 +10,7 @@
 CVisionComm::CVisionComm(QWidget *parent)
     : QWidget(parent)
     , localSocket(this)
+    , m_mutex(QMutex::Recursive)
 {
     connect(&localSocket, SIGNAL(connected()), this, SLOT(ConnedToServ()));
     connect(&localSocket, SIGNAL(error(QLocalSocket::LocalSocketError)),
@@ -46,6 +48,8 @@ void CVisionComm::ConnedToServ()
 
 void CVisionComm::ConnectToVision()
 {
+    QMutexLocker locker(&m_mutex);
+
     if(localSocket.state() == QLocalSocket::ConnectedState)
         return;
 
@@ -96,6 +100,8 @@ bool CVisionComm::ReadData(TVisionData *data)
 {
     int net;
     char sendByte;
+
+    QMutexLocker locker(&m_mutex);
 
     if(localSocket.state() != QLocalSocket::ConnectedState){
         loggingObj->ShowMsg("VISIONCOMM: failed to read data - not connected");

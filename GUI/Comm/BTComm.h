@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include <QtNetwork/QTcpSocket>
+#include <QMutex>
 
 #include <SharedMem.h>
 
@@ -30,6 +31,7 @@ private slots:
 
 private:
     QTcpSocket  m_clientSock;
+    QMutex      m_mutex;
 };
 
 #endif // BTCOMM_H

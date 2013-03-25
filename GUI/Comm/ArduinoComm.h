@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include <QThread>
+#include <QMutex>
 
 #include <SharedMem.h>
 
@@ -44,17 +45,19 @@ private:
 
     EStatus m_status;
 
-    int m_Socket;
-    char m_arduinoMAC[18];// = "00:12:12:24:71:46";
-    struct sockaddr_rc m_arduinoAddr;
+    int                 m_Socket;
+    char                m_arduinoMAC[18];// = "00:12:12:24:71:46";
+    struct  sockaddr_rc m_arduinoAddr;
 
-    fd_set m_readFDs;
-    fd_set m_writeFDs;
-    int m_maxFD;
+    fd_set      m_readFDs;
+    fd_set      m_writeFDs;
+    int         m_maxFD;
 
-    QThread* m_thread;
+    QThread     *m_thread;
 
     TRobotState robotState;
+
+    QMutex      m_mutex;
 };
 
 #endif // ARDUINOCOMM_H
