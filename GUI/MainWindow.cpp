@@ -73,6 +73,10 @@ void MainWindow::StopMvmntSlot()
     sharedMem.navIdx = nextIdx;
 
     actionBtn1->setEnabled(true);
+
+    // 7. Reset the AI callback to stage 2 (threaded version)
+    disconnect(&m_AI_Timer, SIGNAL(timeout()), this, SLOT(AIStage2Callback()));
+    connect   (&m_AI_Timer, SIGNAL(timeout()), this, SLOT(AIStage1Callback()));
 }
 
 void MainWindow::SetupGUI()
@@ -235,36 +239,7 @@ void MainWindow::NavTimerCallback()
     connect(m_pNavThread, SIGNAL(terminated()), m_pNavThread, SLOT (deleteLater ()));
 
     m_pNavThread->start();
-}
-/*
-void MainWindow::TimerCallBack()
-{
-    TEntry *entry;
 
-
-    /// Now start the workload
-
-    entry = &sharedMem.positioning[sharedMem.currentIdx];
-
-    // 1. Read new coordinates from vision
-    m_pVisionComm->ReadData(&entry->visionData);
-
-    // 2. Read robot state
-    /// TODO: read data from robot
-
-    // 3. Run AI to generate new set of points
-    aiCtrl.RunAI();
-
-    // 4. Generate motor values
-    m_nav.GenerateValues();
-
-    // 5. Send motor values to robot
-    m_pIBtComm->SendData(&entry->robot.sendData);
-
-    // Update visualization window with new points
+    // Update plotter
     vision->UpdateWindow();
-
-    // 6. Increment index
-    sharedMem.currentIdx = (sharedMem.currentIdx+1) & SH_MEM_SIZE_MASK;
 }
-*/

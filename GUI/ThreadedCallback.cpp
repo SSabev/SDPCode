@@ -35,9 +35,6 @@ void CAICallback::process()
     // 4. Increment index
     sharedMem.aiIdx = nextIdx;
 
-    // 5. Update plotter
-    m_pPlotter->UpdateWindow();
-
     emit finished();
 }
 

@@ -72,7 +72,7 @@ void CVisionMod::DrawFrame (QPainter *painter)
 
     QVector<QPointF> orientations;
 
-    TEntry *entry = &sharedMem.positioning[sharedMem.currentIdx];
+    TAIEntry *entry = &sharedMem.AIdata[sharedMem.aiIdx];
     QBrush brushPen (sharedMem.teamColor == eBlueTeam ? QColor(0x00, 0x34, 0xff) : QColor(0xff, 0xC9, 0x00),
                      Qt::SolidPattern);
     QPen pen (brushPen, POSITION_THICKNESS, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
