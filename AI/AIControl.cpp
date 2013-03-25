@@ -40,7 +40,7 @@ void AIControl::Initialise(TShMem* pSharedMemory)
  * Impala. It reads data from shared memory (written by the Vision system) and writes data back to shared memory 
  * (for usage by the Navigation system).
  */
-void AIControl::RunAI()
+void AIControl::RunAI(TAIEntry* aiEntry)
 {	
 #if defined(STANDALONE)
 
@@ -49,12 +49,12 @@ void AIControl::RunAI()
 
 #endif
 
-	int currentFrameIndex = sharedMem.currentIdx;
+	/*int currentFrameIndex = sharedMem.currentIdx;
 
-	TEntry* currentEntry = &sharedMem.positioning[currentFrameIndex];
+	TEntry* currentEntry = &sharedMem.positioning[currentFrameIndex];*/
 
-	RobotState blueRobotState(currentEntry->visionData.blue_x, currentEntry->visionData.blue_y,currentEntry->visionData.blue_angle);
-	RobotState yellowRobotState(currentEntry->visionData.yellow_x, currentEntry->visionData.yellow_y, currentEntry->visionData.yellow_angle);
+	RobotState blueRobotState(aiEntry->visionData.blue_x, aiEntry->visionData.blue_y, aiEntry->visionData.blue_angle);
+	RobotState yellowRobotState(aiEntry->visionData.yellow_x, aiEntry->visionData.yellow_y, aiEntry->visionData.yellow_angle);
 
 	RobotState ourRobot;
 	RobotState enemyRobot;
@@ -70,7 +70,7 @@ void AIControl::RunAI()
 		enemyRobot = blueRobotState;
 	}
 
-	Vector2 ballPos(currentEntry->visionData.ball_x, currentEntry->visionData.ball_y);
+	Vector2 ballPos(aiEntry->visionData.ball_x, aiEntry->visionData.ball_y);
 
 	// Check that the data that's coming in from shared memory is correct and can be used.
 	if (IsFailedFrame(ourRobot))
@@ -80,7 +80,7 @@ void AIControl::RunAI()
 	
 		loggingObj->ShowMsg(logMessage.c_str());
 
-		currentEntry->aiData.isFailedFrame = 1;
+		aiEntry->aiData.isFailedFrame = 1;
 		return;
 	}
 
@@ -216,9 +216,9 @@ void AIControl::RunAI()
 	}
 
 	// Results should be written to shared memory.
-	currentEntry->aiData.isFailedFrame = 0;
-	currentEntry->aiData.shouldKick = shouldKick;
-	currentEntry->aiData.doWeHaveBall = ourRobotFuture.HasBall();
+	aiEntry->aiData.isFailedFrame = 0;
+	aiEntry->aiData.shouldKick = shouldKick;
+	aiEntry->aiData.doWeHaveBall = ourRobotFuture.HasBall();
 
     //DEBUG
     if (ourRobotFuture.HasBall())
@@ -236,7 +236,7 @@ void AIControl::RunAI()
 
 	const int maxPathSize = 30;
 	const int pointsToWrite = std::min((int)smoothedPath.size(), maxPathSize);
-	currentEntry->aiData.pathLength = pointsToWrite;
+	aiEntry->aiData.pathLength = pointsToWrite;
 
 	int pointsWritten = 0;
 
@@ -249,9 +249,9 @@ void AIControl::RunAI()
 			break;
 		}
 
-		currentEntry->aiData.path[pointsWritten].position_X = it->Position().X();
-		currentEntry->aiData.path[pointsWritten].position_Y = it->Position().Y();
-		currentEntry->aiData.path[pointsWritten].orientation = WrapValue(it->Orientation());
+		aiEntry->aiData.path[pointsWritten].position_X = it->Position().X();
+		aiEntry->aiData.path[pointsWritten].position_Y = it->Position().Y();
+		aiEntry->aiData.path[pointsWritten].orientation = WrapValue(it->Orientation());
 
 		pointsWritten++;
 	}

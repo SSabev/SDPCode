@@ -30,7 +30,7 @@ public:
 	void Initialise(TShMem* pSharedMemory);
 #endif
 
-	void RunAI();
+	void RunAI(TAIEntry* aiEntry);
 	
 private:
 	bool CoordinatesAreBad(Vector2 objectPosition);
