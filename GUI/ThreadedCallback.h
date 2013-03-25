@@ -17,18 +17,18 @@ class CAICallback
     Q_OBJECT
 
 public:
-    CAICallback(CVisionComm *pVisionComm, AIControl *pAICtrl, CVisionMod  *pPlotter);
+    CAICallback(CVisionComm *pVisionComm, AIControl *pAICtrl);
 
 public slots:
     void process();
 
 signals:
     void finished();
+    void UpdatePlotter();
 
 private:
     CVisionComm *m_pVisionComm;
     AIControl   *m_pAICtrl;
-    CVisionMod  *m_pPlotter;
 };
 
 

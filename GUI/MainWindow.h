@@ -34,15 +34,19 @@ private slots:
     void TeamSetup();
     void ConnToVision();
     void ConnToBT();
+    void UpdatePlotter();
 
 //    void TimerCallBack();
-    void NavTimerCallback();
-    void AIStage1Callback();
-    void AIStage2Callback();
+//    void NavTimerCallback();
+//    void AIStage1Callback();
+//    void AIStage2Callback();
 
 private:
     void SetupGUI();
     void InitSytem();
+
+    void StartGame();
+    void StartThreads();
 
     IBTComm        *m_pIBtComm;
     CVisionComm    *m_pVisionComm;
@@ -50,9 +54,6 @@ private:
     CVisionMod     *vision;
 
     AIControl       aiCtrl;
-
-    QTimer          m_AI_Timer;
-    QTimer          m_Nav_Timer;
 
     QThread        *m_pAIThread;
     QThread        *m_pNavThread;

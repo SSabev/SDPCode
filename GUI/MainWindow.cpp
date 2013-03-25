@@ -23,8 +23,6 @@
 #define NAV_CALL_PERIOD     10
 
 MainWindow::MainWindow()
-    : m_AI_Timer(this)
-    , m_Nav_Timer(this)
 {
     SetupGUI();
     InitSytem();
@@ -50,33 +48,17 @@ void MainWindow::Action1Slot()
 void MainWindow::Action2Slot()
 {
     actionBtn1->setDisabled(true);
-    m_AI_Timer.start(TIMER_INTERVAL_MS);
+    actionBtn2->setDisabled(true);
+
+    StartGame();
 }
 
 void MainWindow::StopMvmntSlot()
 {
-    unsigned nextIdx = (sharedMem.navIdx + 1)&SH_MEM_SIZE_MASK;
-    TNavEntry *nav = &sharedMem.NavData[nextIdx];
-
-    m_AI_Timer.stop();
-    m_Nav_Timer.stop();
-
     sharedMem.systemState = eStop;
 
-    // Generate stop values for the motors
-    m_nav.GenerateStop(nav);
-
-    // Send motor values to robot
-    m_pIBtComm->SendData(&nav->robot.sendData);
-
-    // Increment index
-    sharedMem.navIdx = nextIdx;
-
     actionBtn1->setEnabled(true);
-
-    // 7. Reset the AI callback to stage 2 (threaded version)
-    disconnect(&m_AI_Timer, SIGNAL(timeout()), this, SLOT(AIStage2Callback()));
-    connect   (&m_AI_Timer, SIGNAL(timeout()), this, SLOT(AIStage1Callback()));
+    actionBtn2->setEnabled(true);
 }
 
 void MainWindow::SetupGUI()
@@ -90,12 +72,6 @@ void MainWindow::SetupGUI()
     connect(connToVisionBtn, SIGNAL(clicked()), this, SLOT(ConnToVision()));
     connect(btConnectBtn, SIGNAL(clicked()), this, SLOT(ConnToBT()));
     connect(teamSetupBtn, SIGNAL(clicked()), this, SLOT(TeamSetup()));
-
-    m_AI_Timer.setSingleShot(false);
-    connect(&m_AI_Timer, SIGNAL(timeout()), this, SLOT(AIStage1Callback()));
-
-    m_Nav_Timer.setSingleShot(false);
-    connect(&m_Nav_Timer, SIGNAL(timeout()), this, SLOT(NavTimerCallback()));
 }
 
 void MainWindow::InitSytem()
@@ -150,10 +126,8 @@ void MainWindow::TeamSetup()
     dlg.exec();
 }
 
-void MainWindow::AIStage1Callback()
+void MainWindow::StartGame()
 {
-    // no need any threading - fist time we must evaluate the path before calling navigation
-
     sharedMem.aiIdx = (sharedMem.aiIdx + 1)&SH_MEM_SIZE_MASK; // safe to do so because this is done once/before Nav could be called
     sharedMem.navIdx = (sharedMem.navIdx + 1)&SH_MEM_SIZE_MASK;
 
@@ -196,50 +170,48 @@ void MainWindow::AIStage1Callback()
     // 5. Send motor values to robot
     m_pIBtComm->SendData(&nav->robot.sendData);
 
-    // 6. Start Nav timer
-    m_Nav_Timer.start(NAV_CALL_PERIOD);
+    // 6. Start Nav and AI threads
+    StartThreads();
 
-    // 7. Reset the AI callback to stage 2 (threaded version)
-    disconnect(&m_AI_Timer, SIGNAL(timeout()), this, SLOT(AIStage1Callback()));
-    connect   (&m_AI_Timer, SIGNAL(timeout()), this, SLOT(AIStage2Callback()));
-
-    // 8. Update plotter window with new data points
+    // 7. Update plotter window with new data points
     vision->UpdateWindow();
 }
 
-void MainWindow::AIStage2Callback()
+void MainWindow::StartThreads()
 {
-    // Threaded state
-
+    // AI thread
     m_pAIThread = new QThread;
-    CAICallback *cb = new CAICallback(m_pVisionComm, &aiCtrl, vision);
-    cb->moveToThread(m_pAIThread);
+    CAICallback *AIcb = new CAICallback(m_pVisionComm, &aiCtrl);
+    AIcb->moveToThread(m_pAIThread);
 
-    connect(cb, SIGNAL(finished()), m_pAIThread, SLOT(quit()));
-    connect(cb, SIGNAL(finished()), cb, SLOT(deleteLater()));
+    connect(AIcb, SIGNAL(finished()), m_pAIThread, SLOT(quit()));
+    connect(AIcb, SIGNAL(finished()), AIcb, SLOT(deleteLater()));
 
-    connect(m_pAIThread, SIGNAL(started()), cb, SLOT(process()));
+    connect(AIcb, SIGNAL(UpdatePlotter()), this, SLOT(UpdatePlotter()));
+
+    connect(m_pAIThread, SIGNAL(started()), AIcb, SLOT(process()));
     connect(m_pAIThread, SIGNAL(finished()), m_pAIThread, SLOT (deleteLater ()));
     connect(m_pAIThread, SIGNAL(terminated()), m_pAIThread, SLOT (deleteLater ()));
 
     m_pAIThread->start();
-}
 
-void MainWindow::NavTimerCallback()
-{
+    // Nav thread
+
     m_pNavThread = new QThread;
-    CNavCallback *cb = new CNavCallback(m_pVisionComm, m_pIBtComm, &m_nav);
-    cb->moveToThread(m_pNavThread);
+    CNavCallback *Navcb = new CNavCallback(m_pVisionComm, m_pIBtComm, &m_nav);
+    Navcb->moveToThread(m_pNavThread);
 
-    connect(cb, SIGNAL(finished()), m_pNavThread, SLOT(quit()));
-    connect(cb, SIGNAL(finished()), cb, SLOT(deleteLater()));
+    connect(Navcb, SIGNAL(finished()), m_pNavThread, SLOT(quit()));
+    connect(Navcb, SIGNAL(finished()), Navcb, SLOT(deleteLater()));
 
-    connect(m_pNavThread, SIGNAL(started()), cb, SLOT(process()));
+    connect(m_pNavThread, SIGNAL(started()), Navcb, SLOT(process()));
     connect(m_pNavThread, SIGNAL(finished()), m_pNavThread, SLOT (deleteLater ()));
     connect(m_pNavThread, SIGNAL(terminated()), m_pNavThread, SLOT (deleteLater ()));
 
     m_pNavThread->start();
+}
 
-    // Update plotter
+void MainWindow::UpdatePlotter()
+{
     vision->UpdateWindow();
 }
