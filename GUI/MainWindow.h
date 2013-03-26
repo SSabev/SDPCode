@@ -28,6 +28,8 @@ private slots:
     void Action1Slot();
     void Action2Slot();
     void StopeMvmntSlot();
+    void DefendPenaltySlot();
+    void DoPenaltySlot();
 
     void TeamSetup();
     void ConnToVision();

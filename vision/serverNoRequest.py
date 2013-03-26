@@ -4,7 +4,7 @@ import os
 from c_types import *
 
 
-class Server(object):
+class ServerNoRequest(object):
 
     def __init__(self, address, pipe, stdout):
         self.address = address
@@ -31,10 +31,9 @@ class Server(object):
         print 'Connection established'
         # readable, _, _ = select.select([self.sock], [], [], 100)
 
-        request = self.connection.recv(8)
         print 'Sending initial data to client'
         self.connection.send(pitch_data)
-        while (true)
+        while (true):
             if self.stdout:
                 print 'Sending data to the client'
             self.pipe.send(1)

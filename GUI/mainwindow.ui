@@ -34,7 +34,7 @@
        <item>
         <widget class="QPushButton" name="actionBtn1">
          <property name="sizePolicy">
-          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
@@ -46,14 +46,14 @@
           </size>
          </property>
          <property name="text">
-          <string>Action 1</string>
+          <string>Test</string>
          </property>
         </widget>
        </item>
        <item>
         <widget class="QPushButton" name="actionBtn2">
          <property name="sizePolicy">
-          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
@@ -65,14 +65,28 @@
           </size>
          </property>
          <property name="text">
-          <string>Action 2</string>
+          <string>Start Match</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="defendPenaltyBtn">
+         <property name="text">
+          <string>Defend Penalty</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="doPenaltyBtn">
+         <property name="text">
+          <string>Do Penalty</string>
          </property>
         </widget>
        </item>
        <item>
         <widget class="QPushButton" name="stopBtn">
          <property name="sizePolicy">
-          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>

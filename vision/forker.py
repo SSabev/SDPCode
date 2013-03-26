@@ -3,7 +3,7 @@ from optparse import OptionParser
 import os
 
 from vision import *
-from server import *
+from serverNoRequest import *
 
 
 class OptParser(OptionParser):
@@ -45,7 +45,7 @@ if __name__ == "__main__":
     srv_parent, srv_child = Pipe()
     vis_parent, vis_child = Pipe()
 
-    srv = Process(target=Server, args=(SOCK_ADDRESS, srv_child, options.stdout, ))
+    srv = Process(target=ServerNoRequest, args=(SOCK_ADDRESS, srv_child, options.stdout, ))
     vis = Process(target=Vision, args=(options.pitch, options.stdout,
                                          options.file, options.resetPitchSize, options.noGui, options.debug_window, vis_child, ))
     print 'Starting server'
