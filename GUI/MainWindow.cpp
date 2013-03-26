@@ -44,6 +44,13 @@ void MainWindow::Action1Slot()
 
 void MainWindow::Action2Slot()
 {
+    sharedMem.systemState = eMatch;
+    m_timer.start(TIMER_INTERVAL_MS);
+}
+
+void MainWindow::DefendPenaltySlot()
+{
+    sharedMem.systemState = ePenaltyDefend;
     m_timer.start(TIMER_INTERVAL_MS);
 }
 
@@ -78,6 +85,8 @@ void MainWindow::SetupGUI()
     connect(connToVisionBtn, SIGNAL(clicked()), this, SLOT(ConnToVision()));
     connect(btConnectBtn, SIGNAL(clicked()), this, SLOT(ConnToBT()));
     connect(teamSetupBtn, SIGNAL(clicked()), this, SLOT(TeamSetup()));
+    connect(defendPenaltyBtn, SIGNAL(clicked()), this, SLOT(DefendPenaltySlot()));
+    connect(doPenaltyBtn, SIGNAL(clicked()), this, SLOT(DoPenaltySlot()));
 
     m_timer.setSingleShot(false);
     connect(&m_timer, SIGNAL(timeout()), this, SLOT(TimerCallBack()));
