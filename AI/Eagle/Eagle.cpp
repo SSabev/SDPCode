@@ -27,128 +27,151 @@ void Eagle::SetSharedData(TSystemState state, int pitchSizeX, int pitchSizeY, TP
 */
 RobotState Eagle::IdentifyTarget(RobotState &ourRobotState, RobotState &enemyRobotState, Vector2 ballPos)
 {
-	// For now, this is just the ball position.
 	RobotState targetState;
-	ballPos.Clamp(Vector2(0,0), Vector2(m_pitchSizeX-1, m_pitchSizeY-1));
 
-	Vector2 enemyRobotPosition = enemyRobotState.Position();
-
-	ourRobotState.SetHasBall(DoesRobotHaveBall(ourRobotState, ballPos));
-	enemyRobotState.SetHasBall(DoesRobotHaveBall(enemyRobotState, ballPos));
-
-	if (!ourRobotState.HasBall())
+	if (m_state == ePenaltyAttack)
 	{
-		// Check if the ball is within the enemy robot's radius or if it's against our back wall.
-		if ((enemyRobotPosition.Distance(&ballPos) < 2*ROBOT_RADIUS) || ((m_pitchSide == eLeftSide) && (ballPos.X() < 50)) || ((m_pitchSide == eRightSide) && (ballPos.X() > m_pitchSizeX - 50)))
-		{
-			/*// TODO: In this case, we want to assume a defensive position at our goal mouth.
-			Vector2 proposedDefensivePosition;
+		
+	}
+	else if (m_state == ePenaltyDefend)
+	{
+		// When defending, we're permitted to move up and down the goalline.
+		// Orientation should stay the same.
+		targetState.SetOrientation(ourRobotState.Orientation());
 
-			if (m_pitchSide == eLeftSide)
-			{
-				proposedDefensivePosition = Vector2(40, m_pitchSizeY/2);
-			}
-			else
-			{
-				proposedDefensivePosition = Vector2(m_pitchSizeX - 40, m_pitchSizeY/2);
-			}
+		// X-axis position should be the same, y-axis should be a position extrapolated in the direction of the enemy robot.
+		Vector2 ourRobotPos = ourRobotState.Position();
+		Vector2 enemyRobotPos = enemyRobotState.Position();
+		float extrapolationGradient = enemyRobotPos.Gradient(&ourRobotPos);
 
-			// TODO: Check if the enemy robot is in the way of the position we want.
+		int extrapolatedY = enemyRobotPos.Y() + ((ourRobotPos.X() - enemyRobotPos.X()) * extrapolationGradient); 
 
-			targetState.SetPosition(proposedDefensivePosition);
-			targetState.SetOrientation(proposedDefensivePosition.GetAngleTo(&ballPos));*/
-
-			// Temporary - robot will stop still in this instance.
-			targetState = ourRobotState;
-		}
-		/*else if ((m_pitchSide == eLeftSide) && (ourRobotState.Position().X() > ballPos.X() - 30))
-		{
-			targetState.SetPosition(ballPos - Vector2(40,0));
-			targetState.SetOrientation(0);
-		}
-		else if ((m_pitchSide == eRightSide) && (ourRobotState.Position().X() < ballPos.X() + 30))
-		{
-			targetState.SetPosition(ballPos + Vector2(40,0));
-			targetState.SetOrientation(M_PI);
-		}*/
-		else
-		{
-			// If we don't have the ball, the aim should be to move to the ball.
-			targetState.SetPosition(ballPos);
-			
-			if (m_pitchSide == eLeftSide)
-			{
-				targetState.SetOrientation(0);
-			}
-			else
-			{
-				targetState.SetOrientation(M_PI);
-			}
-		}
+		targetState.SetPosition(ourRobotPos.X(), extrapolatedY);
 	}
 	else
 	{
-		// If we have the ball, let's move to a more appropriate place.
-		// This is done regardless of whether we're shooting or not.
-		/*
-			This should depend on:
-			1. The opposite half of the pitch to the enemy robot.
-			2. Within the kicking threshold.
-			3. Fairly central, but outside of the enemy robot's radius
-			4. Orientated towards the goal
-		*/
-		bool isEnemyOnBottomSide;
-	
-		// Determine which half of the pitch the enemy robot is on.
-		if (enemyRobotState.Position().Y() < m_pitchSizeY/2)
-		{
-			isEnemyOnBottomSide = true;
-		}
-		else
-		{
-			isEnemyOnBottomSide = false;
-		}
+		// If we're here, assume we're in open play.
+		ballPos.Clamp(Vector2(0,0), Vector2(m_pitchSizeX-1, m_pitchSizeY-1));
 
-		// Determine where the kicking threshold is for this side of the pitch.
-		float kickingPosition;
+		Vector2 enemyRobotPosition = enemyRobotState.Position();
 
-		if (m_pitchSide == eLeftSide)
+		ourRobotState.SetHasBall(DoesRobotHaveBall(ourRobotState, ballPos));
+		enemyRobotState.SetHasBall(DoesRobotHaveBall(enemyRobotState, ballPos));
+
+		if (!ourRobotState.HasBall())
 		{
-			kickingPosition = m_pitchSizeX - ((KICKING_THRESHOLD/2)*m_pitchSizeX);
-		}
-		else
-		{
-			kickingPosition = (KICKING_THRESHOLD/2)*m_pitchSizeX;
-		}
-
-		// Check if the position is within two robot radii of the enemy.
-		Vector2 proposedPosition = Vector2(kickingPosition,m_pitchSizeY/2);
-
-		// Check if the proposed position is too close to the enemy robot to be used.
-		if (proposedPosition.Distance(&enemyRobotPosition) < 2*ROBOT_RADIUS)
-		{
-			float adjustedYPosition;
-
-			if (isEnemyOnBottomSide)
+			// Check if the ball is within the enemy robot's radius or if it's against our back wall.
+			if ((enemyRobotPosition.Distance(&ballPos) < 2*ROBOT_RADIUS) || ((m_pitchSide == eLeftSide) && (ballPos.X() < 50)) || ((m_pitchSide == eRightSide) && (ballPos.X() > m_pitchSizeX - 50)))
 			{
-				adjustedYPosition = proposedPosition.Y() + 2*ROBOT_RADIUS;
+				/*// TODO: In this case, we want to assume a defensive position at our goal mouth.
+				Vector2 proposedDefensivePosition;
+
+				if (m_pitchSide == eLeftSide)
+				{
+					proposedDefensivePosition = Vector2(40, m_pitchSizeY/2);
+				}
+				else
+				{
+					proposedDefensivePosition = Vector2(m_pitchSizeX - 40, m_pitchSizeY/2);
+				}
+
+				// TODO: Check if the enemy robot is in the way of the position we want.
+
+				targetState.SetPosition(proposedDefensivePosition);
+				targetState.SetOrientation(proposedDefensivePosition.GetAngleTo(&ballPos));*/
+
+				// Temporary - robot will stop still in this instance.
+				targetState = ourRobotState;
+			}
+			/*else if ((m_pitchSide == eLeftSide) && (ourRobotState.Position().X() > ballPos.X() - 30))
+			{
+				targetState.SetPosition(ballPos - Vector2(40,0));
+				targetState.SetOrientation(0);
+			}
+			else if ((m_pitchSide == eRightSide) && (ourRobotState.Position().X() < ballPos.X() + 30))
+			{
+				targetState.SetPosition(ballPos + Vector2(40,0));
+				targetState.SetOrientation(M_PI);
+			}*/
+			else
+			{
+				// If we don't have the ball, the aim should be to move to the ball.
+				targetState.SetPosition(ballPos);
+				
+				if (m_pitchSide == eLeftSide)
+				{
+					targetState.SetOrientation(0);
+				}
+				else
+				{
+					targetState.SetOrientation(M_PI);
+				}
+			}
+		}
+		else
+		{
+			// If we have the ball, let's move to a more appropriate place.
+			// This is done regardless of whether we're shooting or not.
+			/*
+				This should depend on:
+				1. The opposite half of the pitch to the enemy robot.
+				2. Within the kicking threshold.
+				3. Fairly central, but outside of the enemy robot's radius
+				4. Orientated towards the goal
+			*/
+			bool isEnemyOnBottomSide;
+		
+			// Determine which half of the pitch the enemy robot is on.
+			if (enemyRobotState.Position().Y() < m_pitchSizeY/2)
+			{
+				isEnemyOnBottomSide = true;
 			}
 			else
 			{
-				adjustedYPosition = proposedPosition.Y() - 2*ROBOT_RADIUS;
+				isEnemyOnBottomSide = false;
 			}
 
-			proposedPosition = Vector2( proposedPosition.X(), adjustedYPosition);
+			// Determine where the kicking threshold is for this side of the pitch.
+			float kickingPosition;
+
+			if (m_pitchSide == eLeftSide)
+			{
+				kickingPosition = m_pitchSizeX - ((KICKING_THRESHOLD/2)*m_pitchSizeX);
+			}
+			else
+			{
+				kickingPosition = (KICKING_THRESHOLD/2)*m_pitchSizeX;
+			}
+
+			// Check if the position is within two robot radii of the enemy.
+			Vector2 proposedPosition = Vector2(kickingPosition,m_pitchSizeY/2);
+
+			// Check if the proposed position is too close to the enemy robot to be used.
+			if (proposedPosition.Distance(&enemyRobotPosition) < 2*ROBOT_RADIUS)
+			{
+				float adjustedYPosition;
+
+				if (isEnemyOnBottomSide)
+				{
+					adjustedYPosition = proposedPosition.Y() + 2*ROBOT_RADIUS;
+				}
+				else
+				{
+					adjustedYPosition = proposedPosition.Y() - 2*ROBOT_RADIUS;
+				}
+
+				proposedPosition = Vector2( proposedPosition.X(), adjustedYPosition);
+			}
+
+			Vector2 goalCentre = GoalCentrePosition();
+
+			proposedPosition.Clamp(Vector2(0,0), Vector2(m_pitchSizeX-1, m_pitchSizeY-1));
+			targetState.SetPosition(proposedPosition);
+			targetState.SetOrientation(proposedPosition.GetAngleTo(&goalCentre));
 		}
 
-		Vector2 goalCentre = GoalCentrePosition();
-
-		proposedPosition.Clamp(Vector2(0,0), Vector2(m_pitchSizeX-1, m_pitchSizeY-1));
-		targetState.SetPosition(proposedPosition);
-		targetState.SetOrientation(proposedPosition.GetAngleTo(&goalCentre));
+		targetState.SetPosition((int)targetState.Position().X(), (int)targetState.Position().Y());
 	}
-
-	targetState.SetPosition((int)targetState.Position().X(), (int)targetState.Position().Y());
 
 	return targetState;
 }
