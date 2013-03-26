@@ -37,6 +37,7 @@ CVisionMod::CVisionMod (QWidget *parent)
 
 void CVisionMod::UpdateWindow()
 {
+#ifndef DRY_RUN
     m_pixmap = QPixmap (size());
     m_pixmap.fill (this, 0, 0);
     QPainter painter (&m_pixmap);
@@ -45,6 +46,7 @@ void CVisionMod::UpdateWindow()
     DrawFrame (&painter);
 
     update();
+#endif
 }
 
 QSize CVisionMod::minimumSizeHint () const

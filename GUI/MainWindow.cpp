@@ -47,9 +47,6 @@ void MainWindow::Action1Slot()
 
 void MainWindow::Action2Slot()
 {
-    actionBtn1->setDisabled(true);
-    actionBtn2->setDisabled(true);
-
     StartGame();
 }
 
@@ -59,6 +56,7 @@ void MainWindow::StopMvmntSlot()
 
     actionBtn1->setEnabled(true);
     actionBtn2->setEnabled(true);
+    teamSetupBtn->setEnabled(true);
 }
 
 void MainWindow::SetupGUI()
@@ -127,7 +125,7 @@ void MainWindow::TeamSetup()
 }
 
 void MainWindow::StartGame()
-{
+{    
     sharedMem.aiIdx = (sharedMem.aiIdx + 1)&SH_MEM_SIZE_MASK; // safe to do so because this is done once/before Nav could be called
     sharedMem.navIdx = (sharedMem.navIdx + 1)&SH_MEM_SIZE_MASK;
 
@@ -154,19 +152,26 @@ void MainWindow::StartGame()
         return;
     }
 
+    // We are ready to start the game
+    sharedMem.systemState = eMatch;
+    // disable the buttons during the game
+    actionBtn1->setDisabled(true);
+    actionBtn2->setDisabled(true);
+    teamSetupBtn->setDisabled(true);
+
     // 1. Read new coordinates from vision
     m_pVisionComm->ReadData(&ai->visionData);
 
     // 2. Read robot state
     /// TODO: read data from robot if needed
-
+#ifndef DRY_RUN
     // 3. Run AI to generate new set of points
     aiCtrl.RunAI(ai);
 
     // 4. Immideatly generate motor values
     nav->visionData = ai->visionData;
     m_nav.GenerateValues(nav);
-
+#endif
     // 5. Send motor values to robot
     m_pIBtComm->SendData(&nav->robot.sendData);
 
@@ -209,6 +214,7 @@ void MainWindow::StartThreads()
     connect(m_pNavThread, SIGNAL(terminated()), m_pNavThread, SLOT (deleteLater ()));
 
     m_pNavThread->start();
+
 }
 
 void MainWindow::UpdatePlotter()

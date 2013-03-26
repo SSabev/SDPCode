@@ -7,6 +7,8 @@
 #include <fcntl.h>
 #include <errno.h>
 
+#include <stdio.h>
+
 #define ARDUINO_MAC "00:12:12:24:71:46"
 
 CArduinoComm::CArduinoComm(QWidget *parent)
@@ -28,15 +30,21 @@ CArduinoComm::CArduinoComm(QWidget *parent)
 
 CArduinoComm::~CArduinoComm()
 {
+#ifndef DRY_RUN
     if(m_status != eDisconnected){
         m_thread->terminate();
         ::close(m_Socket);
     }
+#endif
 }
 
 bool CArduinoComm::ReadData(TRobotState *data)
 {
     QMutexLocker locker(&m_mutex);
+
+#ifdef DRY_RUN
+    printf("CArduinoComm::ReadData\n");
+#else
 
     if(m_status != eConnected){
         loggingObj->ShowMsg("BT: Can't read data - not connected");
@@ -44,6 +52,7 @@ bool CArduinoComm::ReadData(TRobotState *data)
     }
 
     *data = robotState;
+#endif
     return true;
 }
 
@@ -54,6 +63,10 @@ bool CArduinoComm::IsConnected()
 
 void CArduinoComm::ConnectToRobot()
 {
+#ifdef DRY_RUN
+    m_status = eConnected;
+    loggingObj->ShowMsg("BT: Connected");
+#else
     int status;
 
     CConnector *connector;
@@ -89,6 +102,7 @@ void CArduinoComm::ConnectToRobot()
     connect (m_thread, SIGNAL (terminated ()), m_thread, SLOT (deleteLater ()));
 
     m_thread->start();
+#endif
 }
 
 void CArduinoComm::ConnResult(bool isConnected)
@@ -158,6 +172,11 @@ bool CArduinoComm::SendData(TRobotData *data)
 
     QMutexLocker locker(&m_mutex);
 
+#ifdef DRY_RUN
+    printf("CArduinoComm::SendData\n");
+#else
+
+
     if(m_status != eConnected){
         loggingObj->ShowMsg("BT: Can't send data - not connected");
         return false;
@@ -181,5 +200,7 @@ bool CArduinoComm::SendData(TRobotData *data)
         return false;
     }
     else
+#endif
         return true;
+
 }

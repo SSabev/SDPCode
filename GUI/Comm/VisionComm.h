@@ -31,6 +31,10 @@ private:
 
     QLocalSocket localSocket;
     QMutex      m_mutex;
+
+#ifdef DRY_RUN
+    bool m_isConnected;
+#endif
 };
 
 #endif // VISIONCOMM_H

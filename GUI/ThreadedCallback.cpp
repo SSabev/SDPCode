@@ -2,6 +2,7 @@
 #include <Logging.h>
 
 #include <time.h>
+#include <stdio.h>
 
 #include "ThreadedCallback.h"
 
@@ -22,7 +23,7 @@ void CAICallback::process()
     struct timespec tim;
 
     tim.tv_sec = 0;
-    tim.tv_nsec = 50000000L; // 10 ms
+    tim.tv_nsec = 50000000L; // 50 ms
 
     while(true){
         nanosleep(&tim, NULL);
@@ -46,6 +47,9 @@ void CAICallback::process()
         // 2. Read robot state
         /// TODO: read data from robot if needed
 
+#ifdef DRY_RUN
+        printf("AI cycle\n");
+#else
         // 3. Run AI to generate new set of points
         m_pAICtrl->RunAI(ai);
 
@@ -53,6 +57,7 @@ void CAICallback::process()
         sharedMem.aiIdx = nextIdx;
 
         emit UpdatePlotter();
+#endif
     }
 
     emit finished();
@@ -99,12 +104,15 @@ void CNavCallback::process()
         // 2. Read robot state
         /// TODO: read data from robot if needed
 
+#ifdef DRY_RUN
+        printf("NAV cycle\n");
+#else
         // 3. Generate motor values
         if(sharedMem.systemState == eStop)
             m_pCNav->GenerateStop(nav);
         else
             m_pCNav->GenerateValues(nav);
-
+#endif
         // 4. Send motor values to robot
         m_pIBtComm->SendData(&nav->robot.sendData);
 

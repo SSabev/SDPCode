@@ -3,6 +3,8 @@ DEFINES += ARDUINO_BLD
 
 #DEFINES += BUILDING_ON_DICE
 
+#DEFINES += DRY_RUN
+
 CONFIG += network
 QT += network
 

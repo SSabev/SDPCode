@@ -12,18 +12,24 @@ CVisionComm::CVisionComm(QWidget *parent)
     , localSocket(this)
     , m_mutex(QMutex::Recursive)
 {
+#ifdef DRY_RUN
+    m_isConnected = false;
+#else
     connect(&localSocket, SIGNAL(connected()), this, SLOT(ConnedToServ()));
     connect(&localSocket, SIGNAL(error(QLocalSocket::LocalSocketError)),
             this, SLOT(SockErr()));
     connect(&localSocket, SIGNAL(disconnected()), this, SLOT(ConnLost()));
 
     localSocket.connectToServer(VISION_SOCK_NAME);
+#endif
 }
 
 CVisionComm::~CVisionComm()
 {
+#ifndef DRY_RUN
     disconnect(&localSocket);
     ShutdownVision();
+#endif
 }
 
 void CVisionComm::ConnedToServ()
@@ -48,12 +54,16 @@ void CVisionComm::ConnedToServ()
 
 void CVisionComm::ConnectToVision()
 {
-    QMutexLocker locker(&m_mutex);
+#ifdef DRY_RUN
+    loggingObj->ShowMsg("VISIONCOMM: connected");
+    m_isConnected = true;
+#else
 
     if(localSocket.state() == QLocalSocket::ConnectedState)
         return;
 
     localSocket.connectToServer(VISION_SOCK_NAME);
+#endif
 }
 
 void CVisionComm::ShutdownVision()
@@ -70,7 +80,11 @@ void CVisionComm::ShutdownVision()
 
 bool CVisionComm::IsConnected()
 {
+#ifdef DRY_RUN
+    return m_isConnected;
+#else
     return localSocket.state() == QLocalSocket::ConnectedState;
+#endif
 }
 
 void CVisionComm::ConnLost()
@@ -103,6 +117,10 @@ bool CVisionComm::ReadData(TVisionData *data)
 
     QMutexLocker locker(&m_mutex);
 
+#ifdef DRY_RUN
+    printf("CVisionComm::ReadData\n");
+#else
+
     if(localSocket.state() != QLocalSocket::ConnectedState){
         loggingObj->ShowMsg("VISIONCOMM: failed to read data - not connected");
         return false;
@@ -121,5 +139,6 @@ bool CVisionComm::ReadData(TVisionData *data)
                             .data());
         return false;
     }
+#endif
     return true;
 }
