@@ -54,6 +54,12 @@ void MainWindow::DefendPenaltySlot()
     m_timer.start(TIMER_INTERVAL_MS);
 }
 
+void MainWindow::DoPenaltySlot()
+{
+    sharedMem.systemState = ePenaltyAttack;
+    m_timer.start(TIMER_INTERVAL_MS);
+}
+
 void MainWindow::StopeMvmntSlot()
 {
     TEntry *entry;
