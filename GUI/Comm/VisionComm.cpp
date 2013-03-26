@@ -36,7 +36,6 @@ CVisionComm::~CVisionComm()
 
 void CVisionComm::ConnedToServ()
 {
-    char sendByte;
     int read;
 
     TPitchCfg cfg;
@@ -44,8 +43,6 @@ void CVisionComm::ConnedToServ()
     loggingObj->ShowMsg("VISIONCOMM: connected");
 
     // read pitch cfg - first data block received from the Vision module
-    sendByte = VISION_REQUEST_CFG;
-    localSocket.write(&sendByte, 1);
     localSocket.waitForReadyRead();
     read = localSocket.read((char *) &cfg, sizeof(TPitchCfg));
     if(read != sizeof(TPitchCfg))
