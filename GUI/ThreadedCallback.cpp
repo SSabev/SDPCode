@@ -78,7 +78,7 @@ void CNavCallback::process()
     struct timespec tim;
 
     tim.tv_sec = 0;
-    tim.tv_nsec = 10000000L; // 10 ms
+    tim.tv_nsec = 50000000L; // 50 ms
 
     while(true){
         nanosleep(&tim, NULL);
@@ -90,12 +90,22 @@ void CNavCallback::process()
 
         if(!m_pVisionComm->IsConnected()){
             loggingObj->ShowCriticalError("Nav Callback: NO CONNECTION TO VISION");
-            continue;
+            if(sharedMem.systemState == eStop){
+                loggingObj->ShowCriticalError("Nav Callback terminated");
+                break;
+            }
+            else
+                continue;
         }
 
         if(!m_pIBtComm->IsConnected()){
             loggingObj->ShowCriticalError("Nav Callback: NO CONNECTION TO ROBOT");
-            continue;
+            if(sharedMem.systemState == eStop){
+                loggingObj->ShowCriticalError("Nav Callback terminated");
+                break;
+            }
+            else
+                continue;
         }
 
         // 1. Read new coordinates from vision

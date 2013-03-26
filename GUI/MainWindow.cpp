@@ -45,27 +45,15 @@ void MainWindow::Action1Slot()
     vision->UpdateWindow();
 }
 
-void MainWindow::Action2Slot()
-{
-    StartGame();
-}
-
-void MainWindow::StopMvmntSlot()
-{
-    sharedMem.systemState = eStop;
-
-    actionBtn1->setEnabled(true);
-    actionBtn2->setEnabled(true);
-    teamSetupBtn->setEnabled(true);
-}
-
 void MainWindow::SetupGUI()
 {
     setupUi(this);
 
     connect(actionBtn1, SIGNAL(clicked()), this, SLOT(Action1Slot()));
-    connect(actionBtn2, SIGNAL(clicked()), this, SLOT(Action2Slot()));
+    connect(actionBtn2, SIGNAL(clicked()), this, SLOT(StartMatch()));
     connect(stopBtn, SIGNAL(clicked()), this, SLOT(StopMvmntSlot()));
+    connect(doPenaltyBtn, SIGNAL(clicked()), this, SLOT(DoPenalty()));
+    connect(defendPenaltyBtn, SIGNAL(clicked()), this, SLOT(DefendPenalty()));
 
     connect(connToVisionBtn, SIGNAL(clicked()), this, SLOT(ConnToVision()));
     connect(btConnectBtn, SIGNAL(clicked()), this, SLOT(ConnToBT()));
@@ -124,7 +112,7 @@ void MainWindow::TeamSetup()
     dlg.exec();
 }
 
-void MainWindow::StartGame()
+void MainWindow::StartProcess(TSystemState state)
 {    
     sharedMem.aiIdx = (sharedMem.aiIdx + 1)&SH_MEM_SIZE_MASK; // safe to do so because this is done once/before Nav could be called
     sharedMem.navIdx = (sharedMem.navIdx + 1)&SH_MEM_SIZE_MASK;
@@ -152,12 +140,15 @@ void MainWindow::StartGame()
         return;
     }
 
-    // We are ready to start the game
-    sharedMem.systemState = eMatch;
-    // disable the buttons during the game
+    // We are ready to start the process
+    sharedMem.systemState = state;
+
+    // disable all control buttons except STOP button
     actionBtn1->setDisabled(true);
     actionBtn2->setDisabled(true);
     teamSetupBtn->setDisabled(true);
+    doPenaltyBtn->setDisabled(true);
+    defendPenaltyBtn->setDisabled(true);
 
     // 1. Read new coordinates from vision
     m_pVisionComm->ReadData(&ai->visionData);
@@ -215,6 +206,32 @@ void MainWindow::StartThreads()
 
     m_pNavThread->start();
 
+}
+
+void MainWindow::StopMvmntSlot()
+{
+    sharedMem.systemState = eStop;
+
+    actionBtn1->setEnabled(true);
+    actionBtn2->setEnabled(true);
+    teamSetupBtn->setEnabled(true);
+    doPenaltyBtn->setEnabled(true);
+    defendPenaltyBtn->setEnabled(true);
+}
+
+void MainWindow::StartMatch()
+{
+    StartProcess(eMatch);
+}
+
+void MainWindow::DefendPenalty()
+{
+    StartProcess(ePenaltyDefend);
+}
+
+void MainWindow::DoPenalty()
+{
+    StartProcess(ePenaltyAttack);
 }
 
 void MainWindow::UpdatePlotter()

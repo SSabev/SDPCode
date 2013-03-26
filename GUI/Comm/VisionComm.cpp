@@ -1,5 +1,4 @@
 #include <QMessageBox>
-#include <QMutexLocker>
 
 #include <Sockets.h>
 #include <Logging.h>
@@ -11,6 +10,7 @@ CVisionComm::CVisionComm(QWidget *parent)
     : QWidget(parent)
     , localSocket(this)
     , m_mutex(QMutex::Recursive)
+    , m_buffIdx(0)
 {
 #ifdef DRY_RUN
     m_isConnected = false;
@@ -20,6 +20,8 @@ CVisionComm::CVisionComm(QWidget *parent)
             this, SLOT(SockErr()));
     connect(&localSocket, SIGNAL(disconnected()), this, SLOT(ConnLost()));
 
+    memset(&m_visionBuff, 0xFF, sizeof(m_visionBuff)); // this makes it invalid according to AI
+
     localSocket.connectToServer(VISION_SOCK_NAME);
 #endif
 }
@@ -28,7 +30,7 @@ CVisionComm::~CVisionComm()
 {
 #ifndef DRY_RUN
     disconnect(&localSocket);
-    ShutdownVision();
+//    ShutdownVision();
 #endif
 }
 
@@ -50,6 +52,8 @@ void CVisionComm::ConnedToServ()
         loggingObj->ShowMsg("VISIONCOMM: failed to read the pitch configuration");
     else
         sharedMem.pitchCfg = cfg;
+
+    connect(&localSocket, SIGNAL(readyRead()), this, SLOT(DataReady()));
 }
 
 void CVisionComm::ConnectToVision()
@@ -89,6 +93,8 @@ bool CVisionComm::IsConnected()
 
 void CVisionComm::ConnLost()
 {
+    disconnect(&localSocket, SIGNAL(readyRead()), this, SLOT(DataReady()));
+
     QMessageBox msgBox(this);
 
     loggingObj->ShowMsg("VISIONCOMM: connection lost");
@@ -110,12 +116,33 @@ void CVisionComm::SockErr()
                         .data());
 }
 
+void CVisionComm::DataReady()
+{
+    unsigned nextIdx;
+    int net;
+    TVisionData data;
+
+    net = localSocket.read((char *) &data, sizeof(TVisionData));
+
+    if(net != sizeof(TVisionData)){
+        loggingObj->ShowMsg(QString("VISIONCOMM: read size differs from expected: expected %1, read %2")
+                            .arg(sizeof(TVisionData))
+                            .arg(net)
+                            .toAscii()
+                            .data());
+    }
+    else{
+        nextIdx = (m_buffIdx + 1)&BUFF_SIZE_MASK;
+        m_visionBuff[nextIdx] = data;
+
+        m_mutex.lock();
+        m_buffIdx = nextIdx;
+        m_mutex.unlock();
+    }
+}
+
 bool CVisionComm::ReadData(TVisionData *data)
 {
-    int net;
-    char sendByte;
-
-    QMutexLocker locker(&m_mutex);
 
 #ifdef DRY_RUN
     printf("CVisionComm::ReadData\n");
@@ -126,19 +153,10 @@ bool CVisionComm::ReadData(TVisionData *data)
         return false;
     }
 
-    sendByte = VISION_REQUEST_NAV;
-    localSocket.write(&sendByte, 1);
-    localSocket.waitForReadyRead();
-    net = localSocket.read((char *) data, sizeof(TVisionData));
+    m_mutex.lock();
+    *data = m_visionBuff[m_buffIdx];
+    m_mutex.unlock();
 
-    if(net != sizeof(TVisionData)){
-        loggingObj->ShowMsg(QString("VISIONCOMM: read size differs from expected: expected %1, read %2")
-                            .arg(sizeof(TVisionData))
-                            .arg(net)
-                            .toAscii()
-                            .data());
-        return false;
-    }
 #endif
     return true;
 }

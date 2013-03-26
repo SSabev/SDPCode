@@ -28,24 +28,22 @@ public:
 
 private slots:
     void Action1Slot();
-    void Action2Slot();
     void StopMvmntSlot();
+    void StartMatch();
+    void DoPenalty();
+    void DefendPenalty();
 
     void TeamSetup();
     void ConnToVision();
     void ConnToBT();
     void UpdatePlotter();
 
-//    void TimerCallBack();
-//    void NavTimerCallback();
-//    void AIStage1Callback();
-//    void AIStage2Callback();
 
 private:
     void SetupGUI();
     void InitSytem();
 
-    void StartGame();
+    void StartProcess(TSystemState state);
     void StartThreads();
 
     IBTComm        *m_pIBtComm;
