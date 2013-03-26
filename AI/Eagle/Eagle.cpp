@@ -29,9 +29,12 @@ RobotState Eagle::IdentifyTarget(RobotState &ourRobotState, RobotState &enemyRob
 {
 	RobotState targetState;
 
+	Vector2 ourRobotPos = ourRobotState.Position();
+	Vector2 enemyRobotPos = enemyRobotState.Position();
+
 	if (m_state == ePenaltyAttack)
 	{
-		
+		// When taking a penalty, we want to find a
 	}
 	else if (m_state == ePenaltyDefend)
 	{
@@ -40,20 +43,19 @@ RobotState Eagle::IdentifyTarget(RobotState &ourRobotState, RobotState &enemyRob
 		targetState.SetOrientation(ourRobotState.Orientation());
 
 		// X-axis position should be the same, y-axis should be a position extrapolated in the direction of the enemy robot.
-		Vector2 ourRobotPos = ourRobotState.Position();
-		Vector2 enemyRobotPos = enemyRobotState.Position();
 		float extrapolationGradient = enemyRobotPos.Gradient(&ourRobotPos);
 
 		int extrapolatedY = enemyRobotPos.Y() + ((ourRobotPos.X() - enemyRobotPos.X()) * extrapolationGradient); 
 
-		targetState.SetPosition(ourRobotPos.X(), extrapolatedY);
+		Vector2 proposedPosition(ourRobotPos.X(), extrapolatedY);
+		proposedPosition.Clamp(Vector2(0,0), Vector2(m_pitchSizeX-1, m_pitchSizeY-1));
+
+		targetState.SetPosition(proposedPosition);
 	}
 	else
 	{
 		// If we're here, assume we're in open play.
 		ballPos.Clamp(Vector2(0,0), Vector2(m_pitchSizeX-1, m_pitchSizeY-1));
-
-		Vector2 enemyRobotPosition = enemyRobotState.Position();
 
 		ourRobotState.SetHasBall(DoesRobotHaveBall(ourRobotState, ballPos));
 		enemyRobotState.SetHasBall(DoesRobotHaveBall(enemyRobotState, ballPos));
@@ -61,7 +63,7 @@ RobotState Eagle::IdentifyTarget(RobotState &ourRobotState, RobotState &enemyRob
 		if (!ourRobotState.HasBall())
 		{
 			// Check if the ball is within the enemy robot's radius or if it's against our back wall.
-			if ((enemyRobotPosition.Distance(&ballPos) < 2*ROBOT_RADIUS) || ((m_pitchSide == eLeftSide) && (ballPos.X() < 50)) || ((m_pitchSide == eRightSide) && (ballPos.X() > m_pitchSizeX - 50)))
+			if ((enemyRobotPos.Distance(&ballPos) < 2*ROBOT_RADIUS) || ((m_pitchSide == eLeftSide) && (ballPos.X() < 50)) || ((m_pitchSide == eRightSide) && (ballPos.X() > m_pitchSizeX - 50)))
 			{
 				/*// TODO: In this case, we want to assume a defensive position at our goal mouth.
 				Vector2 proposedDefensivePosition;
@@ -147,7 +149,7 @@ RobotState Eagle::IdentifyTarget(RobotState &ourRobotState, RobotState &enemyRob
 			Vector2 proposedPosition = Vector2(kickingPosition,m_pitchSizeY/2);
 
 			// Check if the proposed position is too close to the enemy robot to be used.
-			if (proposedPosition.Distance(&enemyRobotPosition) < 2*ROBOT_RADIUS)
+			if (proposedPosition.Distance(&enemyRobotPos) < 2*ROBOT_RADIUS)
 			{
 				float adjustedYPosition;
 
@@ -173,6 +175,7 @@ RobotState Eagle::IdentifyTarget(RobotState &ourRobotState, RobotState &enemyRob
 		targetState.SetPosition((int)targetState.Position().X(), (int)targetState.Position().Y());
 	}
 
+	
 	return targetState;
 }
 
