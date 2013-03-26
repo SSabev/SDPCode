@@ -9,13 +9,13 @@
 
 typedef enum {
     eIDLE,
-    eMatch,
+    eMatch,         // Football match
+    ePenaltyDefend,
+    ePenaltyAttack,
     eLeftPenalty,
     eRightPenalty,
-    eStop = eIDLE,   // Stop is the same as IDLE
+    eStop = eIDLE    // Stop is the same as IDLE
 
-    eDribbleBall,    // Second milestone
-    eNavToBall       // Second milestone
 } TSystemState;
 
 typedef enum{
