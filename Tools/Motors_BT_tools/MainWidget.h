@@ -34,9 +34,11 @@ signals:
 
 private slots:
     void SendVals ();
+    void SendZero ();
     void BT_Disconnect ();
     void BT_Connect ();
     void ExitSlot ();
+    void KickSlot ();
 
     void ConnResult(bool isConnected);
 
@@ -44,6 +46,8 @@ private slots:
 
     void ConnLost();
     void SocketError();
+
+    void on_sendValsBtn_clicked();
 
 private:
     EStatus m_status;

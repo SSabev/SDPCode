@@ -39,11 +39,14 @@ CMainWidget::CMainWidget (QWidget *parent)
 {
     setupUi (this);
     sendValsBtn->setEnabled(false);
+    stopBtn->setEnabled(false);
 
     connect (connectBtn,    SIGNAL (clicked()), this, SLOT (BT_Connect()));
     connect (disconnectBtn, SIGNAL (clicked()), this, SLOT (BT_Disconnect()));
     connect (sendValsBtn,   SIGNAL (clicked()),  this, SLOT (SendVals()));
+    connect (stopBtn,       SIGNAL (clicked()), this, SLOT (SendZero()));
     connect (exitBtn,       SIGNAL (clicked()), this, SLOT (ExitSlot()));
+    connect (kickBtn,       SIGNAL (clicked()), this, SLOT (KickSlot()));
 
     connect (&keysWdgt,     SIGNAL(Directions(int)), this, SLOT(MoveInDir(int)));
 
@@ -113,6 +116,7 @@ void CMainWidget::ConnResult(bool isConnected)
 
     statLabel->setText("Connected");
     sendValsBtn->setEnabled(true);
+    stopBtn->setEnabled(true);
 
     m_status = eConnected;
 
@@ -185,6 +189,60 @@ void CMainWidget::SendVals()
     _robotData.motor_rear_dir = rearChBx->isChecked() ? 1 : 0;
     _robotData.motor_left_dir = leftChBx->isChecked() ? 1 : 0;
     _robotData.motor_right_dir = rightChBx->isChecked() ? 1 : 0;
+
+    status = ::send (m_Socket, (void *) &_robotData, sizeof(_robotData), 0);
+
+    if (status != sizeof(_robotData)) {
+         QMessageBox::warning(this,
+                              "Sending Values",
+                              QString("Sending: %1 bytes, actually sent: %2 bytes")
+                                .arg(sizeof(_robotData))
+                                .arg(status),
+                              QMessageBox::Ok);
+    }
+}
+
+void CMainWidget::SendZero()
+{
+    int status;
+    _robotData.motor_left_speed = (unsigned char) 0;
+    _robotData.motor_right_speed = (unsigned char) 0;
+    _robotData.motor_rear_speed = (unsigned char) 0;
+    _robotData.motor_front_speed = (unsigned char) 0;
+
+    _robotData.motor_front_dir = 0;
+    _robotData.motor_rear_dir = 0;
+    _robotData.motor_left_dir = 0;
+    _robotData.motor_right_dir = 0;
+
+    status = ::send (m_Socket, (void *) &_robotData, sizeof(_robotData), 0);
+
+    if (status != sizeof(_robotData)) {
+         QMessageBox::warning(this,
+                              "Sending Values",
+                              QString("Sending: %1 bytes, actually sent: %2 bytes")
+                                .arg(sizeof(_robotData))
+                                .arg(status),
+                              QMessageBox::Ok);
+    }
+
+}
+
+
+void CMainWidget::KickSlot()
+{
+    int status;
+    _robotData.motor_left_speed = (unsigned char) 0;
+    _robotData.motor_right_speed = (unsigned char) 0;
+    _robotData.motor_rear_speed = (unsigned char) 0;
+    _robotData.motor_front_speed = (unsigned char) 0;
+
+    _robotData.motor_front_dir = 0;
+    _robotData.motor_rear_dir = 0;
+    _robotData.motor_left_dir = 0;
+    _robotData.motor_right_dir = 0;
+
+    _robotData.kicker = 1;
 
     status = ::send (m_Socket, (void *) &_robotData, sizeof(_robotData), 0);
 
