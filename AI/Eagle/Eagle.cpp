@@ -43,10 +43,62 @@ RobotState Eagle::IdentifyTarget(RobotState &ourRobotState, RobotState &enemyRob
     {
         enemyGoalCentre = GoalCentrePosition(eLeftSide);
     }
+    
+    ballPos.Clamp(Vector2(0,0), Vector2(m_pitchSizeX-1, m_pitchSizeY-1));
+
+    ourRobotState.SetHasBall(DoesRobotHaveBall(ourRobotState, ballPos));
+    enemyRobotState.SetHasBall(DoesRobotHaveBall(enemyRobotState, ballPos));
 
     if (m_state == ePenaltyAttack)
 	{
-        // When taking a penalty, we want to find a free position to kick to.
+         // When taking a penalty, we want to find a free position to kick to.
+        // Position should stay the same - we only want to re-orientate.
+        targetState.SetPosition(ourRobotPos);
+
+        // We'll do this by checking for intersections between us and three positions on the goal line.
+        Vector2 targetPositions[3];
+
+        targetPositions[0] = enemyGoalCentre;
+        targetPositions[1] = enemyGoalCentre - Vector2(0,50);
+        targetPositions[2] = enemyGoalCentre + Vector2(0,50);
+
+        int arrayLength = sizeof(targetPositions)/sizeof(Vector2);
+
+        Vector2 optimalShootingTarget;
+        float bestDistanceFromEnemy = 0;
+
+        // Iterate through the positions, finding the best one, based on if it's unblocked and how far it is from the enemy robot.
+        for (int i=0; i < arrayLength; i++)
+        {
+            // Check if the target is unblocked.
+            bool isBlocked = m_intersection.LineCircleIntersection(ourRobotPos, targetPositions[i], enemyRobotPos, ROBOT_RADIUS);
+
+            if (isBlocked)
+            {
+                continue;
+            }
+
+            float distanceSqdToEnemy = enemyRobotPos.DistanceSquared(&targetPositions[i]);
+
+            // Check if this beats our previous best distance.
+            if (distanceSqdToEnemy > bestDistanceFromEnemy)
+            {
+                bestDistanceFromEnemy = distanceSqdToEnemy;
+                optimalShootingTarget = targetPositions[i];
+            }
+
+            // Check that we do actually have a target set.
+            if (optimalShootingTarget.IsSet())
+            {
+                float angleToTarget = ourRobotPos.GetAngleTo(&optimalShootingTarget);
+
+                targetState.SetOrientation(angleToTarget);
+            }
+            else
+            {
+                targetState.SetOrientation(ourRobotState.Orientation());
+            }
+        }
 
 
 	}
