@@ -43,7 +43,7 @@ RobotState Eagle::IdentifyTarget(RobotState &ourRobotState, RobotState &enemyRob
 		targetState.SetOrientation(ourRobotState.Orientation());
 
 		// X-axis position should be the same, y-axis should be a position extrapolated in the direction of the enemy robot.
-		float extrapolationGradient = enemyRobotPos.Gradient(&ourRobotPos);
+		float extrapolationGradient = tan(enemyRobotState.Orientation());
 
 		int extrapolatedY = enemyRobotPos.Y() + ((ourRobotPos.X() - enemyRobotPos.X()) * extrapolationGradient); 
 
