@@ -176,7 +176,17 @@ void AIControl::RunAI()
 		doWeHaveBall = true;
 	}*/
 
-	bool shouldKick = m_eagle.ShouldWeShoot(ourRobotFuture, enemyRobotFuture, ballFuture) && ourRobotFuture.HasBall();
+	bool shouldKick;
+    
+    if (sharedMem.systemState == ePenaltyAttack)
+    {
+        // If this is an attacking penalty, just assume we have the ball.
+        shouldKick = m_eagle.ShouldWeShoot(ourRobotFuture, enemyRobotFuture, ballFuture);
+    }
+    else
+    {
+        shouldKick = m_eagle.ShouldWeShoot(ourRobotFuture, enemyRobotFuture, ballFuture) && ourRobotFuture.HasBall();
+    }
 
 	// Set if we have the ball this frame, to be used next frame.
 	/*if (doWeHaveBall)
