@@ -233,6 +233,19 @@ void AIControl::RunAI()
 
         loggingObj->ShowMsg(logMessage.c_str());
     }
+    
+    if (shouldKick)
+    {
+        std::string logMessage = "I wish to kick now.";
+
+        loggingObj->ShowMsg(logMessage.c_str());
+    }
+    else
+    {
+        std::string logMessage = "I do NOT wish to kick now.";
+
+        loggingObj->ShowMsg(logMessage.c_str());
+    }
 
 	const int maxPathSize = 30;
 	const int pointsToWrite = std::min((int)smoothedPath.size(), maxPathSize);
