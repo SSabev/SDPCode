@@ -32,9 +32,23 @@ RobotState Eagle::IdentifyTarget(RobotState &ourRobotState, RobotState &enemyRob
 	Vector2 ourRobotPos = ourRobotState.Position();
 	Vector2 enemyRobotPos = enemyRobotState.Position();
 
+    Vector2 ourGoalCentre = GoalCentrePosition(m_pitchSide);
+    Vector2 enemyGoalCentre;
+
+    if (m_pitchSide == eLeftSide)
+    {
+        enemyGoalCentre = GoalCentrePosition(eRightSide);
+    }
+    else
+    {
+        enemyGoalCentre = GoalCentrePosition(eLeftSide);
+    }
+
     if (m_state == ePenaltyAttack)
 	{
-		// When taking a penalty, we want to find a
+        // When taking a penalty, we want to find a free position to kick to.
+
+
 	}
     else if (m_state == ePenaltyDefend)
 	{
@@ -64,20 +78,18 @@ RobotState Eagle::IdentifyTarget(RobotState &ourRobotState, RobotState &enemyRob
 		{
 			// Check if the enemy robot has the ball.
 			if (enemyRobotState.HasBall())
-			{
-                		Vector2 ourGoalCentre = GoalCentrePosition(m_pitchSide);
-				
+            {
 				if (m_pitchSide == eLeftSide)
 				{
-                    			targetState.SetPosition(ourGoalCentre.X() + 50, ourGoalCentre.Y());
+                    targetState.SetPosition(ourGoalCentre.X() + 50, ourGoalCentre.Y());
 					targetState.SetOrientation(0);
 				}
 				else
 				{
-                    			targetState.SetPosition(ourGoalCentre.X() - 50, ourGoalCentre.Y());
+                    targetState.SetPosition(ourGoalCentre.X() - 50, ourGoalCentre.Y());
 					targetState.SetOrientation(M_PI);
 				}
-			}
+            }
 			else
 			{
 				// If we don't have the ball, the aim should be to move to the ball.
@@ -148,21 +160,9 @@ RobotState Eagle::IdentifyTarget(RobotState &ourRobotState, RobotState &enemyRob
 				proposedPosition = Vector2( proposedPosition.X(), adjustedYPosition);
 			}
 
-            // We want the centre of the enemy goal.
-            Vector2 goalCentre;
-
-            if (m_pitchSide == eLeftSide)
-            {
-                goalCentre = GoalCentrePosition(eRightSide);
-            }
-            else
-            {
-                goalCentre = GoalCentrePosition(eLeftSide);
-            }
-
 			proposedPosition.Clamp(Vector2(0,0), Vector2(m_pitchSizeX-1, m_pitchSizeY-1));
 			targetState.SetPosition(proposedPosition);
-			targetState.SetOrientation(proposedPosition.GetAngleTo(&goalCentre));
+            targetState.SetOrientation(proposedPosition.GetAngleTo(&enemyGoalCentre));
 		}
 
 		targetState.SetPosition((int)targetState.Position().X(), (int)targetState.Position().Y());
