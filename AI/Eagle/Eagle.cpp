@@ -284,7 +284,7 @@ Vector2 Eagle::GoalCentrePosition(TPitchSide pitchSide)
 
 bool Eagle::ShouldWeShoot(RobotState ourRobotState, RobotState enemyRobotState, Vector2 ballPos)
 {
-	// In simplistic terms, we should shoot if we're close enough to the goal,
+// In simplistic terms, we should shoot if we're close enough to the goal,
 	// we've got the ball, and there is clear line-of-sight to goal
     Vector2 goalPosition;
 
@@ -296,6 +296,8 @@ bool Eagle::ShouldWeShoot(RobotState ourRobotState, RobotState enemyRobotState, 
     {
         goalPosition = GoalCentrePosition(eLeftSide);
     }
+
+    Vector2 ourRobotPos = ourRobotState.Position();
 
     const float angleThresh = M_PI_4;
 
@@ -311,7 +313,7 @@ bool Eagle::ShouldWeShoot(RobotState ourRobotState, RobotState enemyRobotState, 
 	// Check that the enemy robot isn't obstructing the ball.
     bool isGoalClear = false;
 
-    float angleToGoal = fmod(ourRobotState.Position().GetAngleTo(&goalPosition), 2*M_PI);
+    float angleToGoal = fmod(ourRobotPos.GetAngleTo(&goalPosition), 2*M_PI);
     float ourOrientation = fmod(ourRobotState.Orientation(), 2*M_PI);
 
     float angleDifference = fmod(fabs(angleToGoal - ourOrientation), 2*M_PI);
@@ -319,7 +321,7 @@ bool Eagle::ShouldWeShoot(RobotState ourRobotState, RobotState enemyRobotState, 
 
 	// Check if we're facing somewhere into the goal.
 	// Extrapolate to the goal-line position we're facing.
-	float extrapolatedYCoord = ourRobotState.Position().Y() + (ourRobotState.Position().Gradient(&ballPos) * (m_pitchSizeX - ourRobotState.Position().X()));
+    float extrapolatedYCoord = ourRobotPos.Y() + (ourRobotPos.Gradient(&ballPos) * (goalPosition.X() - ourRobotPos.X()));
 
 	// The goal is in the middle of the pitch, constituting half its length.
 	float goalTop = 0.75 * m_pitchSizeY;
@@ -330,7 +332,7 @@ bool Eagle::ShouldWeShoot(RobotState ourRobotState, RobotState enemyRobotState, 
 	// The position we're aiming for.
 	Vector2 goalTarget(m_pitchSizeX, extrapolatedYCoord);
 
-	if (!m_intersection.LineCircleIntersection(ourRobotState.Position(), goalTarget, enemyRobotState.Position(), ROBOT_RADIUS))
+    if (!m_intersection.LineCircleIntersection(ourRobotPos, goalTarget, enemyRobotState.Position(), ROBOT_RADIUS))
 	{
 		isGoalClear = true;
 	}
@@ -340,5 +342,5 @@ bool Eagle::ShouldWeShoot(RobotState ourRobotState, RobotState enemyRobotState, 
 		return true;
 	}
 	
-	return false;	
+	return false;
 }
