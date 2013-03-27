@@ -236,7 +236,7 @@ bool Eagle::ShouldWeShoot(RobotState ourRobotState, RobotState enemyRobotState, 
 	// we've got the ball, and there is clear line-of-sight to goal
     Vector2 goalPosition;
 
-    if (m_pitchSide = eLeftSide)
+    if (m_pitchSide == eLeftSide)
     {
         goalPosition = GoalCentrePosition(eRightSide);
     }
