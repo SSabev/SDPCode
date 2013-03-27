@@ -62,8 +62,8 @@ RobotState Eagle::IdentifyTarget(RobotState &ourRobotState, RobotState &enemyRob
 
 		if (!ourRobotState.HasBall())
 		{
-			// Check if the ball is within the enemy robot's radius or if it's against our back wall.
-			if ((enemyRobotPos.Distance(&ballPos) < 2*ROBOT_RADIUS) || ((m_pitchSide == eLeftSide) && (ballPos.X() < 50)) || ((m_pitchSide == eRightSide) && (ballPos.X() > m_pitchSizeX - 50)))
+			// Check if the enemy robot has the ball.
+			if (enemyRobotState.HasBall())
 			{
 				/*// TODO: In this case, we want to assume a defensive position at our goal mouth.
 				Vector2 proposedDefensivePosition;
