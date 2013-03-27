@@ -189,7 +189,15 @@ void MainWindow::TimerCallBack()
     aiCtrl.RunAI();
 
     // 4. Generate motor values
+    if(sharedMem.systemStatus == ePenaltyDefend){
+        m_nav.PenaltyDefend();
+    }
+    else if(sharedMem.systemStatus == ePenaltyAttack){
+        m_nav.kickerP();
+    }
+    else{
     m_nav.GenerateValues();
+    }
 
     // 5. Send motor values to robot
     mIBtComm->SendData(&entry->robot.sendData);
