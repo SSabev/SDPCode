@@ -32,11 +32,11 @@ RobotState Eagle::IdentifyTarget(RobotState &ourRobotState, RobotState &enemyRob
 	Vector2 ourRobotPos = ourRobotState.Position();
 	Vector2 enemyRobotPos = enemyRobotState.Position();
 
-	if (m_state == ePenaltyAttack)
+    if (m_state == ePenaltyAttack)
 	{
 		// When taking a penalty, we want to find a
 	}
-	else if (m_state == ePenaltyDefend)
+    else if (m_state == ePenaltyDefend)
 	{
 		// When defending, we're permitted to move up and down the goalline.
 		// Orientation should stay the same.
@@ -81,16 +81,16 @@ RobotState Eagle::IdentifyTarget(RobotState &ourRobotState, RobotState &enemyRob
 
 				targetState.SetPosition(proposedDefensivePosition);
 				targetState.SetOrientation(proposedDefensivePosition.GetAngleTo(&ballPos));*/
-				Vector2 goalCentre = GoalCentrePosition();
+                		Vector2 ourGoalCentre = GoalCentrePosition(m_pitchSide);
 				
 				if (m_pitchSide == eLeftSide)
 				{
-					targetState.SetPosition(goalCentre.X() + 50, goalCentre.Y());
+                    			targetState.SetPosition(ourGoalCentre.X() + 50, ourGoalCentre.Y());
 					targetState.SetOrientation(0);
 				}
 				else
 				{
-					targetState.SetPosition(goalCentre.X() - 50, goalCentre.Y());
+                    			targetState.SetPosition(ourGoalCentre.X() - 50, ourGoalCentre.Y());
 					targetState.SetOrientation(M_PI);
 				}
 			}
@@ -174,7 +174,17 @@ RobotState Eagle::IdentifyTarget(RobotState &ourRobotState, RobotState &enemyRob
 				proposedPosition = Vector2( proposedPosition.X(), adjustedYPosition);
 			}
 
-			Vector2 goalCentre = GoalCentrePosition();
+            // We want the centre of the enemy goal.
+            Vector2 goalCentre;
+
+            if (m_pitchSide = eLeftSide)
+            {
+                goalCentre = GoalCentrePosition(eRightSide);
+            }
+            else
+            {
+                goalCentre = GoalCentrePosition(eLeftSide);
+            }
 
 			proposedPosition.Clamp(Vector2(0,0), Vector2(m_pitchSizeX-1, m_pitchSizeY-1));
 			targetState.SetPosition(proposedPosition);
@@ -223,18 +233,19 @@ bool Eagle::DoesRobotHaveBall(RobotState robotState, Vector2 ballPos)
 	return false;
 }
 
-Vector2 Eagle::GoalCentrePosition()
+Vector2 Eagle::GoalCentrePosition(TPitchSide pitchSide)
 {
 	// If we're the left side, then the goal we're aiming for is at the right side of the pitch
 	// Else, we're aiming for the goal on the far left
 	int goalX;
-	if(m_pitchSide == eLeftSide)
+
+    if(pitchSide == eLeftSide)
 	{
-		goalX = m_pitchSizeX;
+        goalX = 0;
 	}
 	else
 	{
-		goalX = 0;
+        goalX = m_pitchSizeX;
 	}
 	
 	int goalY = m_pitchSizeY / 2;
@@ -249,7 +260,16 @@ bool Eagle::ShouldWeShoot(RobotState ourRobotState, RobotState enemyRobotState, 
 {
 	// In simplistic terms, we should shoot if we're close enough to the goal,
 	// we've got the ball, and there is clear line-of-sight to goal
-    Vector2 goalPosition = GoalCentrePosition();
+    Vector2 goalPosition;
+
+    if (m_pitchSide = eLeftSide)
+    {
+        goalPosition = GoalCentrePosition(eRightSide);
+    }
+    else
+    {
+        goalPosition = GoalCentrePosition(eLeftSide);
+    }
 
     const float angleThresh = M_PI_4;
 
