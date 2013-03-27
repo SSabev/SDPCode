@@ -194,10 +194,10 @@ void MainWindow::TimerCallBack()
     aiCtrl.RunAI();
 
     // 4. Generate motor values
-    if(sharedMem.systemStatus == ePenaltyDefend){
+    if(sharedMem.systemState == ePenaltyDefend){
         m_nav.PenaltyDefend();
     }
-    else if(sharedMem.systemStatus == ePenaltyAttack){
+    else if(sharedMem.systemState == ePenaltyAttack){
        // m_nav.kickerP();
     }
     else{
