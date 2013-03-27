@@ -21,7 +21,7 @@ public:
 	bool DoesRobotHaveBall(RobotState robotState, Vector2 ballPos); 
 
 private:
-	Vector2 GoalCentrePosition();
+	Vector2 GoalCentrePosition(TPitchSide pitchSide);
 	TSystemState m_state;
 	TPitchSide m_pitchSide;
 
