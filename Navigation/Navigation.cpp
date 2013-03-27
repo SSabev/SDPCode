@@ -90,6 +90,7 @@ CNavigation::CNavigation()
 #define HAVE_BALL_SPEED 90
 #define MIN_TURN_ANGLE 0.2
 #define ROTATE_PERCENT 50
+#define ROT_BASE 1500
 
 
 int pid(int error, int integral, int derivative)
@@ -122,36 +123,41 @@ typedef struct{
     int right;
 } Speeds;
 
+Speeds add_rotation(Speeds s, float t_theta, float dist){
+    float rot_amount;
+    if (dist >0.00000001)
+        rot_amount = ROT_BASE*1.0/dist;
+    else
+        rot_amount = ROT_BASE;
 
-Speeds add_rotation(Speeds s, float t_theta){
-    float prop;
     if (t_theta < M_PI)
     {
         //turn left
-        prop = t_theta/M_PI;
-        s.front = s.front + get_percent(s.front, ROTATE_PERCENT*prop);
-        s.right = s.right + get_percent(s.right, ROTATE_PERCENT*prop);
+        rot_amount = rot_amount * (t_theta/M_PI);
+        s.front = (int) s.front + rot_amount;
+        s.right = (int) s.right + rot_amount;
 
-        //s.rear = s.rear - get_percent(s.rear, ROTATE_PERCENT*prop);
-        //s.left = s.left - get_percent(s.left, ROTATE_PERCENT*prop);
+        s.rear =  (int) s.rear - rot_amount;
+        s.left =  (int) s.left - rot_amount;
     }
     else
     {
         //turn right
-        prop = (2*M_PI - t_theta)/M_PI;
-        s.front = s.front - get_percent(s.front, ROTATE_PERCENT*prop);
-        s.right = s.right - get_percent(s.right, ROTATE_PERCENT*prop);
+        rot_amount = rot_amount * (2*M_PI - t_theta)/M_PI;
+        s.front = (int) s.front - rot_amount;
+        s.right = (int) s.right - rot_amount;
 
-        //s.rear = s.rear + get_percent(s.rear, ROTATE_PERCENT*prop);
-        //s.left = s.left + get_percent(s.left, ROTATE_PERCENT*prop);
+        s.rear =  (int) s.rear + rot_amount;
+        s.left =  (int)s.left + rot_amount;
     }
-    loggingObj->ShowMsg(QString("prop for rotate %1")
-                            .arg( prop )
+
+
+    loggingObj->ShowMsg(QString("rot_amount for rotate %1")
+                            .arg( rot_amount )
                             .toAscii()
                             .data());
     return s;
 }
-
 
 int max(int x, int y){
     return x>y ? x:y;
@@ -221,7 +227,7 @@ Speeds find_speeds(int rx, int ry, float r_theta, int target_x, int target_y, fl
 
     //if (t_theta > MIN_TURN_ANGLE && t_theta < 2*M_PI - MIN_TURN_ANGLE)
    // {
-        //res = add_rotation(res, t_theta);
+    res = add_rotation(res, t_theta, sqrt(tx*tx + ty*ty) );
         loggingObj->ShowMsg(QString("rotating %1")
                                 .arg( t_theta )
                                 .toAscii()
@@ -260,7 +266,7 @@ Speeds find_speeds_rot_only(int rx, int ry, float r_theta, int target_x, int tar
 
     //if (t_theta > MIN_TURN_ANGLE && t_theta < 2*M_PI - MIN_TURN_ANGLE)
    // {
-       // res = add_rotation(res, t_theta);
+       // res = add_rotation(res, t_theta, sqrt(tx*tx + ty*ty) );
         loggingObj->ShowMsg(QString("rotating %1")
                                 .arg( t_theta )
                                 .toAscii()

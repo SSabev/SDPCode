@@ -56,8 +56,13 @@ void MainWindow::DefendPenaltySlot()
 
 void MainWindow::DoPenaltySlot()
 {
+    TEntry *entry;
     sharedMem.systemState = ePenaltyAttack;
-    m_timer.start(TIMER_INTERVAL_MS);
+
+     m_nav.kickerP();
+     mIBtComm->SendData(&entry->robot.sendData);
+     sharedMem.systemState = eMatch;
+     m_timer.start(TIMER_INTERVAL_MS);
 }
 
 void MainWindow::StopeMvmntSlot()
@@ -193,7 +198,7 @@ void MainWindow::TimerCallBack()
         m_nav.PenaltyDefend();
     }
     else if(sharedMem.systemStatus == ePenaltyAttack){
-        m_nav.kickerP();
+       // m_nav.kickerP();
     }
     else{
     m_nav.GenerateValues();
