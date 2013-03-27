@@ -15,7 +15,8 @@ public:
     CNavigation();
 
     void GenerateValues();
-
+    void PenaltyDefend();
+    void PenaltyAttack();
     void GenerateStop();
     void kickerP();
 private:
