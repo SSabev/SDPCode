@@ -81,9 +81,18 @@ RobotState Eagle::IdentifyTarget(RobotState &ourRobotState, RobotState &enemyRob
 
 				targetState.SetPosition(proposedDefensivePosition);
 				targetState.SetOrientation(proposedDefensivePosition.GetAngleTo(&ballPos));*/
-
-				// Temporary - robot will stop still in this instance.
-				targetState = ourRobotState;
+				Vector2 goalCentre = GoalCentrePosition();
+				
+				if (m_pitchSide == eLeftSide)
+				{
+					targetState.SetPosition(goalCentre.X() + 50, goalCentre.Y());
+					targetState.SetOrientation(0);
+				}
+				else
+				{
+					targetState.SetPosition(goalCentre.X() - 50, goalCentre.Y());
+					targetState.SetOrientation(M_PI);
+				}
 			}
 			/*else if ((m_pitchSide == eLeftSide) && (ourRobotState.Position().X() > ballPos.X() - 30))
 			{
