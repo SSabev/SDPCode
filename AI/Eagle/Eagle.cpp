@@ -151,7 +151,7 @@ RobotState Eagle::IdentifyTarget(RobotState &ourRobotState, RobotState &enemyRob
             // We want the centre of the enemy goal.
             Vector2 goalCentre;
 
-            if (m_pitchSide = eLeftSide)
+            if (m_pitchSide == eLeftSide)
             {
                 goalCentre = GoalCentrePosition(eRightSide);
             }
