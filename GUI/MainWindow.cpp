@@ -33,73 +33,64 @@ MainWindow::~MainWindow()
 
 }
 
-void MainWindow::Action1Slot()
+void MainWindow::MatchTestSlot()
 {
     sharedMem.aiIdx = (sharedMem.aiIdx + 1)&SH_MEM_SIZE_MASK;
     TAIEntry *ai = &sharedMem.AIdata[sharedMem.aiIdx];
 
     m_pVisionComm->ReadData(&ai->visionData);
 
+    sharedMem.systemState = eMatch;
+
     aiCtrl.RunAI(ai);
 
     vision->UpdateWindow();
-}
-
-void MainWindow::Action2Slot()
-{
-    sharedMem.systemState = eMatch;
-    m_timer.start(TIMER_INTERVAL_MS);
-}
-
-void MainWindow::DefendPenaltySlot()
-{
-    sharedMem.systemState = ePenaltyDefend;
-    m_timer.start(TIMER_INTERVAL_MS);
-}
-
-void MainWindow::DoPenaltySlot()
-{
-    TEntry *entry;
-    sharedMem.systemState = ePenaltyAttack;
-
-     m_nav.kickerP();
-     mIBtComm->SendData(&entry->robot.sendData);
-     m_timer.start(TIMER_INTERVAL_MS);
-}
-
-void MainWindow::StopeMvmntSlot()
-{
-    TEntry *entry;
-
-    m_timer.stop();
 
     sharedMem.systemState = eStop;
+}
 
-    entry = &sharedMem.positioning[sharedMem.currentIdx];
+void MainWindow::PenaltyDefTestSlot()
+{
+    sharedMem.aiIdx = (sharedMem.aiIdx + 1)&SH_MEM_SIZE_MASK;
+    TAIEntry *ai = &sharedMem.AIdata[sharedMem.aiIdx];
 
-    // Generate stop values for the motors
-    m_nav.GenerateStop();
+    m_pVisionComm->ReadData(&ai->visionData);
+    sharedMem.systemState = ePenaltyDefend;
+    aiCtrl.RunAI(ai);
 
-    // Send motor values to robot
-    mIBtComm->SendData(&entry->robot.sendData);
+    vision->UpdateWindow();
+    sharedMem.systemState = eStop;
+}
 
-    // Increment index
-    sharedMem.currentIdx = (sharedMem.currentIdx+1) & SH_MEM_SIZE_MASK;
+void MainWindow::PenaltyTestSlot()
+{
+    sharedMem.aiIdx = (sharedMem.aiIdx + 1)&SH_MEM_SIZE_MASK;
+    TAIEntry *ai = &sharedMem.AIdata[sharedMem.aiIdx];
+
+    m_pVisionComm->ReadData(&ai->visionData);
+    sharedMem.systemState = ePenaltyAttack;
+    aiCtrl.RunAI(ai);
+
+    vision->UpdateWindow();
+    sharedMem.systemState = eStop;
 }
 
 void MainWindow::SetupGUI()
 {
     setupUi(this);
 
-    connect(actionBtn1, SIGNAL(clicked()), this, SLOT(Action1Slot()));
-    connect(actionBtn2, SIGNAL(clicked()), this, SLOT(StartMatch()));
+    connect(matchBtn, SIGNAL(clicked()), this, SLOT(StartMatchSlot()));
     connect(stopBtn, SIGNAL(clicked()), this, SLOT(StopMvmntSlot()));
-    connect(doPenaltyBtn, SIGNAL(clicked()), this, SLOT(DoPenalty()));
-    connect(defendPenaltyBtn, SIGNAL(clicked()), this, SLOT(DefendPenalty()));
+    connect(doPenaltyBtn, SIGNAL(clicked()), this, SLOT(DoPenaltySlot()));
+    connect(defendPenaltyBtn, SIGNAL(clicked()), this, SLOT(DefendPenaltySlot()));
 
     connect(connToVisionBtn, SIGNAL(clicked()), this, SLOT(ConnToVision()));
     connect(btConnectBtn, SIGNAL(clicked()), this, SLOT(ConnToBT()));
     connect(teamSetupBtn, SIGNAL(clicked()), this, SLOT(TeamSetup()));
+
+    connect(matchTestBtn, SIGNAL(clicked()), this, SLOT(MatchTestSlot()));
+    connect(defPenTestBtn, SIGNAL(clicked()), this, SLOT(PenaltyDefTestSlot()));
+    connect(penTestBtn, SIGNAL(clicked()), this, SLOT(PenaltyTestSlot()));
 }
 
 void MainWindow::InitSytem()
@@ -186,11 +177,11 @@ void MainWindow::StartProcess(TSystemState state)
     sharedMem.systemState = state;
 
     // disable all control buttons except STOP button
-    actionBtn1->setDisabled(true);
-    actionBtn2->setDisabled(true);
-    teamSetupBtn->setDisabled(true);
-    doPenaltyBtn->setDisabled(true);
-    defendPenaltyBtn->setDisabled(true);
+//    actionBtn1->setDisabled(true);
+//    actionBtn2->setDisabled(true);
+//    teamSetupBtn->setDisabled(true);
+//    doPenaltyBtn->setDisabled(true);
+//    defendPenaltyBtn->setDisabled(true);
 
     // 1. Read new coordinates from vision
     m_pVisionComm->ReadData(&ai->visionData);
@@ -261,25 +252,25 @@ void MainWindow::StopMvmntSlot()
     else{
         sharedMem.systemState = eStop;
 
-        actionBtn1->setEnabled(true);
-        actionBtn2->setEnabled(true);
-        teamSetupBtn->setEnabled(true);
-        doPenaltyBtn->setEnabled(true);
-        defendPenaltyBtn->setEnabled(true);
+//        actionBtn1->setEnabled(true);
+//        actionBtn2->setEnabled(true);
+//        teamSetupBtn->setEnabled(true);
+//        doPenaltyBtn->setEnabled(true);
+//        defendPenaltyBtn->setEnabled(true);
     }
 }
 
-void MainWindow::StartMatch()
+void MainWindow::StartMatchSlot()
 {
     StartProcess(eMatch);
 }
 
-void MainWindow::DefendPenalty()
+void MainWindow::DefendPenaltySlot()
 {
     StartProcess(ePenaltyDefend);
 }
 
-void MainWindow::DoPenalty()
+void MainWindow::DoPenaltySlot()
 {
     StartProcess(ePenaltyAttack);
 }

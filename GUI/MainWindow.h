@@ -27,12 +27,14 @@ public:
     ~MainWindow();
 
 private slots:
-    void Action1Slot();
+    void MatchTestSlot();
+    void PenaltyDefTestSlot();
+    void PenaltyTestSlot();
 
     void StopMvmntSlot();
-    void StartMatch();
-    void DoPenalty();
-    void DefendPenalty();
+    void StartMatchSlot();
+    void DoPenaltySlot();
+    void DefendPenaltySlot();
 
     void TeamSetup();
     void ConnToVision();
