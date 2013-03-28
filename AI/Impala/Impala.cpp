@@ -57,8 +57,15 @@ std::list<RobotState> Impala::SmoothPath(std::list<RobotState> aStarPath, bool d
 			{
 				if (i == collapsedPositions.size()-1)
 				{
-					// Accounting for incorrect orientation calculation at the destination point.
-					angleToNextPoint = collapsedPositions[i-1].GetAngleTo(&aStarPositions.back());
+				 	if ((m_state == eMatch) || (m_state == eIDLE))
+		                    	{
+		                   	     angleToNextPoint = collapsedPositions[i-1].GetAngleTo(&aStarPositions.back());
+		                    	}
+		                    	else
+		                    	{
+		                        	// We want to preserve the target orientation.
+		                        	angleToNextPoint = aStarPath.back().Orientation();
+		                    	}
 				}
 				else
 				{

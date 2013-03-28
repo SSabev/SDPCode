@@ -45,6 +45,48 @@ void MainWindow::Action1Slot()
     vision->UpdateWindow();
 }
 
+void MainWindow::Action2Slot()
+{
+    sharedMem.systemState = eMatch;
+    m_timer.start(TIMER_INTERVAL_MS);
+}
+
+void MainWindow::DefendPenaltySlot()
+{
+    sharedMem.systemState = ePenaltyDefend;
+    m_timer.start(TIMER_INTERVAL_MS);
+}
+
+void MainWindow::DoPenaltySlot()
+{
+    TEntry *entry;
+    sharedMem.systemState = ePenaltyAttack;
+
+     m_nav.kickerP();
+     mIBtComm->SendData(&entry->robot.sendData);
+     m_timer.start(TIMER_INTERVAL_MS);
+}
+
+void MainWindow::StopeMvmntSlot()
+{
+    TEntry *entry;
+
+    m_timer.stop();
+
+    sharedMem.systemState = eStop;
+
+    entry = &sharedMem.positioning[sharedMem.currentIdx];
+
+    // Generate stop values for the motors
+    m_nav.GenerateStop();
+
+    // Send motor values to robot
+    mIBtComm->SendData(&entry->robot.sendData);
+
+    // Increment index
+    sharedMem.currentIdx = (sharedMem.currentIdx+1) & SH_MEM_SIZE_MASK;
+}
+
 void MainWindow::SetupGUI()
 {
     setupUi(this);
