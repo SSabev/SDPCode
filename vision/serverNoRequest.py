@@ -33,7 +33,7 @@ class ServerNoRequest(object):
 
         print 'Sending initial data to client'
         self.connection.send(pitch_data)
-        while (true):
+        while (True):
             if self.stdout:
                 print 'Sending data to the client'
             self.pipe.send(1)
