@@ -435,42 +435,31 @@ void CNavigation::GenerateValues()
      }
     else
     {
-//        entry->robot.sendData.motor_left_speed =  abs(res.rear);
-//        entry->robot.sendData.motor_right_speed =  abs(res.front);
-//        entry->robot.sendData.motor_front_speed =  abs(res.right);
-//        entry->robot.sendData.motor_rear_speed =  abs(res.left);
+        
+#if defined(NXT_BUILD)
+    entry->robot.sendData.motor_left_speed =  abs(res.rear);
+    entry->robot.sendData.motor_right_speed =  abs(res.front);
+    entry->robot.sendData.motor_front_speed =  abs(res.right);
+    entry->robot.sendData.motor_rear_speed =  abs(res.left);
 
-//        loggingObj->ShowMsg(QString("current rx = %1").arg(rx).toAscii().data());
-//        loggingObj->ShowMsg(QString("current ry = %1").arg(ry).toAscii().data());
-//        loggingObj->ShowMsg(QString("current target_x = %1").arg(target_x).toAscii().data());
-//        loggingObj->ShowMsg(QString("current target_y = %1").arg(target_y).toAscii().data());
+    entry->robot.sendData.motor_left_dir = res.rear >= 0 ? 1 : 0;
+    entry->robot.sendData.motor_right_dir = res.front >= 0 ? 0 : 1;
 
-//        loggingObj->ShowMsg(QString("left %1").arg(res.left).toAscii().data());
-//        loggingObj->ShowMsg(QString("right %1").arg(res.right).toAscii().data());
-//        loggingObj->ShowMsg(QString("front %1").arg(res.front).toAscii().data());
-//        loggingObj->ShowMsg(QString("rear %1").arg(res.rear).toAscii().data());
-
-
-
-//        entry->robot.sendData.motor_left_dir = res.rear >= 0 ? 1 : 0;
-//        entry->robot.sendData.motor_right_dir = res.front >= 0 ? 0 : 1;
-
-//       entry->robot.sendData.motor_front_dir = res.right >= 0 ? 0 : 1;
-//        entry->robot.sendData.motor_rear_dir = res.left >= 0 ? 1 : 0;
-//}
-    
-    
-    entry->robot.sendData.motor_left_dir = res.left >= 0 ? 1 : 0;
-    entry->robot.sendData.motor_right_dir = res.right >= 0 ? 0 : 1;
-    
-    entry->robot.sendData.motor_front_dir = res.front >= 0 ? 0 : 1;
-    entry->robot.sendData.motor_rear_dir = res.rear >= 0 ? 1 : 0;
-    
+    entry->robot.sendData.motor_front_dir = res.right >= 0 ? 0 : 1;
+    entry->robot.sendData.motor_rear_dir = res.left >= 0 ? 1 : 0;
+#elif defined(ARDUINO_BLD)
     entry->robot.sendData.motor_left_speed =  abs(res.left);
     entry->robot.sendData.motor_right_speed =  abs(res.right);
     entry->robot.sendData.motor_front_speed =  abs(res.front);
     entry->robot.sendData.motor_rear_speed =  abs(res.rear);
 
+    entry->robot.sendData.motor_left_dir = res.left >= 0 ? 1 : 0;
+    entry->robot.sendData.motor_right_dir = res.right >= 0 ? 0 : 1;
+
+    entry->robot.sendData.motor_front_dir = res.front >= 0 ? 0 : 1;
+    entry->robot.sendData.motor_rear_dir = res.rear >= 0 ? 1 : 0;
+#endif
+    
     loggingObj->ShowMsg(QString("current rx = %1").arg(rx).toAscii().data());
     loggingObj->ShowMsg(QString("current ry = %1").arg(ry).toAscii().data());
     loggingObj->ShowMsg(QString("current target_x = %1").arg(target_x).toAscii().data());
@@ -480,14 +469,6 @@ void CNavigation::GenerateValues()
     loggingObj->ShowMsg(QString("right %1").arg(res.right).toAscii().data());
     loggingObj->ShowMsg(QString("front %1").arg(res.front).toAscii().data());
     loggingObj->ShowMsg(QString("rear %1").arg(res.rear).toAscii().data());
-
-
-
-    entry->robot.sendData.motor_left_dir = res.left >= 0 ? 1 : 0;
-    entry->robot.sendData.motor_right_dir = res.right >= 0 ? 0 : 1;
-
-    entry->robot.sendData.motor_front_dir = res.front >= 0 ? 0 : 1;
-    entry->robot.sendData.motor_rear_dir = res.rear >= 0 ? 1 : 0;
 }
 
 }
