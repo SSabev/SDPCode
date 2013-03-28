@@ -1,7 +1,9 @@
-#DEFINES += ARDUINO_BLD
-DEFINES += NXT_BUILD
+DEFINES += ARDUINO_BLD
+#DEFINES += NXT_BUILD
 
-#DEFINES += BUILDING_ON_DICE
+DEFINES += BUILDING_ON_DICE
+
+#DEFINES += DRY_RUN
 
 CONFIG += network
 QT += network
@@ -28,7 +30,8 @@ HEADERS += \
     GUI/Tools/LoggingWdgt.h \
     GUI/Tools/CVisionMod.h \
     GUI/Comm/IBTComm.h \
-    AI/MathTypes/Intersection.h
+    AI/MathTypes/Intersection.h \
+    GUI/ThreadedCallback.h
 
 SOURCES += \
     GUI/SharedMem.cpp \
@@ -48,7 +51,8 @@ SOURCES += \
     Navigation/Navigation.cpp \
     GUI/Tools/LoggingWdgt.cpp \
     GUI/Tools/CVisionMod.cpp \
-    AI/MathTypes/Intersection.cpp
+    AI/MathTypes/Intersection.cpp \
+    GUI/ThreadedCallback.cpp
 
 FORMS += \
     GUI/mainwindow.ui \

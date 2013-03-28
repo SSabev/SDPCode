@@ -2,6 +2,7 @@
 #define LOGGINGWDGT_H
 
 #include <QTextBrowser>
+#include <QMutex>
 
 #include <Logging.h>
 
@@ -15,10 +16,13 @@ public:
     CLoggingWdgt(QWidget *parent = 0);
 
     virtual void ShowMsg(const char *msg);
+    virtual void ShowCriticalError(const char *err);
 
     void ShowMyMsg(QString msg);
 
-    void ShowCriticalError(QString msg);
+    void CriticalError(QString msg);
+
+    QMutex      m_mutex;
 };
 
 

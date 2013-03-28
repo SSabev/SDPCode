@@ -14,18 +14,26 @@ class CNavigation
 public:
     CNavigation();
 
-    void GenerateValues();
-    void PenaltyDefend();
-    void PenaltyAttack();
-    void GenerateStop();
-    void kickerP();
+    void PenaltyDefend(TNavEntry *entry);
+    void PenaltyAttack(TNavEntry *entry);
+
+    void GenerateValues(TNavEntry *entry);
+
+    void GenerateStop(TNavEntry *entry);
+    void kickerP(TNavEntry *entry);
+
 private:
+
+    bool isNewPath(TAIEntry *ai);
+    void savePathState(TAIEntry *ai);
 
     TTarget m_target;
 
     float m_ourPos_x;
     float m_ourPos_y;
     float m_ourOrientation;
+    int targetId; // ID of the next taret point provided by AI
+    int lastPathLen, lastCurrentX, lastCurrentY; // for checking wheather AI has generated a new path
 };
 
 #endif // NAVIGATION_H

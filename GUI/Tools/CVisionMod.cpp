@@ -37,6 +37,7 @@ CVisionMod::CVisionMod (QWidget *parent)
 
 void CVisionMod::UpdateWindow()
 {
+#ifndef DRY_RUN
     m_pixmap = QPixmap (size());
     m_pixmap.fill (this, 0, 0);
     QPainter painter (&m_pixmap);
@@ -45,6 +46,7 @@ void CVisionMod::UpdateWindow()
     DrawFrame (&painter);
 
     update();
+#endif
 }
 
 QSize CVisionMod::minimumSizeHint () const
@@ -72,7 +74,7 @@ void CVisionMod::DrawFrame (QPainter *painter)
 
     QVector<QPointF> orientations;
 
-    TEntry *entry = &sharedMem.positioning[sharedMem.currentIdx];
+    TAIEntry *entry = &sharedMem.AIdata[sharedMem.aiIdx];
     QBrush brushPen (sharedMem.teamColor == eBlueTeam ? QColor(0x00, 0x34, 0xff) : QColor(0xff, 0xC9, 0x00),
                      Qt::SolidPattern);
     QPen pen (brushPen, POSITION_THICKNESS, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);

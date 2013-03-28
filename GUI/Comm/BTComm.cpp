@@ -7,6 +7,7 @@
 
 CBtComm::CBtComm(QWidget *parent)
     : QWidget(parent)
+    , m_mutex(QMutex::Recursive)
 {
     connect(&m_clientSock, SIGNAL(connected()), this, SLOT(ConnectedSlot()));
     connect(&m_clientSock, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(SockErr()));
@@ -65,6 +66,8 @@ bool CBtComm::SendData(TRobotData *data)
 {
     int written;
 
+    QMutexLocker locker(&m_mutex);
+
     if(m_clientSock.state() != QAbstractSocket::ConnectedState){
         loggingObj->ShowMsg("BTCOMM: failed to send data - not connected");
         return false;
@@ -87,6 +90,8 @@ bool CBtComm::SendData(TRobotData *data)
 bool CBtComm::ReadData(TRobotState *data)
 {
     int read;
+
+    QMutexLocker locker(&m_mutex);
 
     if(m_clientSock.state() != QAbstractSocket::ConnectedState){
         loggingObj->ShowMsg("BTCOMM: failed to read data - not connected");

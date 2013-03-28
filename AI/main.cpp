@@ -39,7 +39,8 @@ int main(int argc, char *argv[])
 
 #else
 
-	TShMem sharedMem;
+	// TODO: Rewrite the testing setup for shared memory changes
+	/*TShMem sharedMem;
 
 	AIControl aiControl;
 
@@ -61,7 +62,7 @@ int main(int argc, char *argv[])
 	sharedMem.positioning[0].visionData.ball_x = 270;
 	sharedMem.positioning[0].visionData.ball_y = 60;
 
-	aiControl.RunAI();	
+	aiControl.RunAI();	*/
 
 #endif
 	
