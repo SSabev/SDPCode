@@ -61,7 +61,6 @@ void MainWindow::DoPenaltySlot()
 
      m_nav.kickerP();
      mIBtComm->SendData(&entry->robot.sendData);
-     sharedMem.systemState = eMatch;
      m_timer.start(TIMER_INTERVAL_MS);
 }
 
