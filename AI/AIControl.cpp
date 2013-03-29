@@ -84,37 +84,6 @@ void AIControl::RunAI(TAIEntry* aiEntry)
 		return;
 	}
 
-	// Check if the ball position is valid and can be used, or if we have to rely on last known position.
-	/*if (!CoordinatesAreBad(ballPos))
-	{
-		m_lastKnownBallPosition = ballPos;
-		isBallPositionBad = false;
-	}
-	else
-	{
-		isBallPositionBad = true;
-
-		if (m_lastKnownBallPosition.IsSet())
-		{
-			ballPos = m_lastKnownBallPosition;
-		}
-		else
-		{
-			// In this case, the data from vision can't be used.
-			std::string logMessage = "AI believes that data from Vision is bad and can't be used.";
-		
-			loggingObj->ShowMsg(logMessage.c_str());
-
-			currentEntry->aiData.isFailedFrame = 1;
-			return;
-		}*/
-
-	/*if (CoordinatesAreBad(ballPos))
-	{
-		// For the milestone, we're assuming that if we can't see the ball, we have it.
-		doWeHaveBall = true;
-	}*/
-
 	RobotState ourRobotFuture;
 	RobotState enemyRobotFuture;
 	Vector2 ballFuture;
