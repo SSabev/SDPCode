@@ -5,13 +5,12 @@
 #include "QString"
 #include <string.h>
 #include <cmath>
-#include <time.h>
 
 #define _USE_MATH_DEFINES
 
-//#define MOVE_SPEED     (80)
-//#define ROT_SPEED	   (5)
-
+#define MOVE_SPEED     (20)
+#define ROT_SPEED	(1)
+#define MAX_SPEED	(100)
 
 int abs(int val){
     if(val < 0) return -val;
@@ -27,137 +26,12 @@ CNavigation::CNavigation()
 
 }
 
-/*void CNavigation::GenerateValues()
-{
-    TEntry *entry;
-
-    float dx;
-    float dy;
-    float theta;
-    float dtheta;
-    int vf; // front velocity
-    int vs; // sideways velocity
-
-    int front;8
-    int rear;
-    int left;
-    int right;
-
-    entry = &sharedMem.positioning[sharedMem.currentIdx];
-
-    dx = (entry->aiData.path[1].position_X - entry->aiData.path[0].position_X);
-    dy = (entry->aiData.path[1].position_Y - entry->aiData.path[0].position_Y);
-
-    theta = dy/dx;
-    vf = MOVE_SPEED * cos(theta);
-    vs = MOVE_SPEED * sin(theta);
-
-    dtheta = entry->aiData.path[1].orientation - entry->aiData.path[0].orientation;
-    if(abs((int)dtheta) > 0.2) {
-        if(dtheta > 0){
-            front = vs  + ROT_SPEED;
-            rear  = -vs + ROT_SPEED;
-
-            left  = vf  + ROT_SPEED;
-            right = -vf + ROT_SPEED;
-        }
-        else{
-            front = vs  - ROT_SPEED;
-            rear  = -vs - ROT_SPEED;
-
-            left  = vf  - ROT_SPEED;
-            right = -vf - ROT_SPEED;
-        }
-    }
-
-    //Send the speeds
-    entry->robot.sendData.motor_left_speed =  abs(left);
-    entry->robot.sendData.motor_right_speed = abs(right);
-    entry->robot.sendData.motor_front_speed = abs(front);
-    entry->robot.sendData.motor_rear_speed =  abs(rear);
-
-    entry->robot.sendData.motor_front_dir = front >= 0 ? 1 : 0;
-    entry->robot.sendData.motor_rear_dir  = rear  >= 0 ? 1 : 0;
-    entry->robot.sendData.motor_left_dir  = left  >= 0 ? 1 : 0;
-    entry->robot.sendData.motor_right_dir = right >= 0 ? 1 : 0;
-}*/
-
-#define KP 0.5
-#define KI 0
-#define KD 0
-#define MAX_SPEED 120
-#define MIN_SPEED 110
-#define HAVE_BALL_SPEED 90
-#define MIN_TURN_ANGLE 0.2
-#define ROTATE_PERCENT 50
-#define ROT_BASE 1500
-
-
-int pid(int error, int integral, int derivative)
-{
-    int temp =  KP*error + KI*integral + KD*derivative;
-    return temp;
-}
-
-float standardize_angle(float angle)
-{
-    //assume the angle is out-of-phrase by at most 2pi
-    if (angle < 0) angle = angle + 2*M_PI;
-    if (angle > 2*M_PI) angle = angle - 2*M_PI;
-    return angle;
-}
-
-//get p percent of abs(speed)
-int get_percent(int speed, float p)
-{
-    speed = abs(speed);
-    return (int) speed * (p*1.0 / 100);
-
-}
-
-
 typedef struct{
     int front;
     int rear;
     int left;
     int right;
 } Speeds;
-
-Speeds add_rotation(Speeds s, float t_theta, float dist){
-    float rot_amount;
-    if (dist >0.00000001)
-        rot_amount = ROT_BASE*1.0/dist;
-    else
-        rot_amount = ROT_BASE;
-
-    if (t_theta < M_PI)
-    {
-        //turn left
-        rot_amount = rot_amount * (t_theta/M_PI);
-        s.front = (int) s.front + rot_amount;
-        s.right = (int) s.right + rot_amount;
-
-        s.rear =  (int) s.rear - rot_amount;
-        s.left =  (int) s.left - rot_amount;
-    }
-    else
-    {
-        //turn right
-        rot_amount = rot_amount * (2*M_PI - t_theta)/M_PI;
-        s.front = (int) s.front - rot_amount;
-        s.right = (int) s.right - rot_amount;
-
-        s.rear =  (int) s.rear + rot_amount;
-        s.left =  (int)s.left + rot_amount;
-    }
-
-
-//    loggingObj->ShowMsg(QString("rot_amount for rotate %1")
-//                            .arg( rot_amount )
-//                            .toAscii()
-//                            .data());
-    return s;
-}
 
 int max(int x, int y){
     return x>y ? x:y;
@@ -167,715 +41,340 @@ int max_abs(int x, int y){
     return max (abs(x), abs(y));
 }
 
-// fix the speeds so that the max speed is at (MIN_SPEED, MAX_SPEED)
-Speeds limit_speed(Speeds s){
-    TAIEntry *ai = &sharedMem.AIdata[sharedMem.aiIdx];
-    int max_speed = max ( max_abs(s.left,s.right), max_abs(s.front, s.rear));
-    if (max_speed == 0) return s;
-    float ratio = 1;
+Speeds limit_speeds(Speeds speeds,int coeficient){
+    int max_speed = max ( max_abs(speeds.left,speeds.right), max_abs(speeds.front, speeds.rear));
+    speeds.left   = ((float)speeds.left/max_speed*MAX_SPEED)/coeficient;
+    speeds.right  = ((float)speeds.right/max_speed*MAX_SPEED)/coeficient;
+    speeds.front  = ((float)speeds.front/max_speed*MAX_SPEED)/coeficient;
+    speeds.rear   = ((float)speeds.rear/max_speed*MAX_SPEED)/coeficient;
 
+    return speeds;
+}
 
-    if (max_speed < MIN_SPEED){
-        ratio = MIN_SPEED*1.0/max_speed;
+Speeds add_rotation(Speeds speeds, float theta){
+    int rotatespeed;
+    if ((theta > 0.3) && (theta <= M_PI)){
+        rotatespeed = -ROT_SPEED;
+
+    }
+    else if ((theta > M_PI) && (theta <= (2*M_PI-0.3))){
+        rotatespeed = ROT_SPEED;
+
+    }
+    else {
+        rotatespeed = 0;
     }
 
-    if (max_speed > MAX_SPEED){
-        ratio = MAX_SPEED*1.0/max_speed;
-    }
+    speeds.left   =   speeds.left + rotatespeed;
+    speeds.right  =   speeds.right + rotatespeed;
+    speeds.front  =   speeds.front + rotatespeed;
+    speeds.rear   =   speeds.rear + rotatespeed;
 
-    if (ai->aiData.doWeHaveBall == 1){
-        ratio = HAVE_BALL_SPEED *1.0/max_speed;
-    }
+    return speeds;
 
-    //apply the ratio
-    s.left = (int) s.left * ratio;
-    s.right = (int) s.right * ratio;
-    s.front = (int) s.front * ratio;
-    s.rear = (int) s.rear * ratio;
-
-    return s;
 }
 
 
+Speeds find_speeds(float theta, float m_ourOrientation ){
+    Speeds speeds;
+    int speed1, speed2;
+    int  motorSpeed[4];
+     int angle = (theta- m_ourOrientation)*180/M_PI;
+    //angle =0;
+        if (angle <= 90) {
+            if (angle > (90 - angle)) {
+                speed1 = 100;
+                speed2 = ((90 - angle) * 100) / angle;
+            } else {
+                speed2 = 100;
+                speed1 = ((angle) * 100) / (90 - angle);
+            }
+            motorSpeed[0] = speed2;
+            motorSpeed[1] = speed1;
+            motorSpeed[2] = (speed2 * (-1));
+            motorSpeed[3] = (speed1 * (-1));
+        } else if (angle > 90 && angle <= 180) {
+            angle = angle - 90;
+            if (angle > (90 - angle)) {
+                speed1 = 100;
+                speed2 = ((90 - angle) * 100) / angle;
+            } else {
+                speed2 = 100;
+                speed1 = ((angle) * 100) / (90 - angle);
+            }
+            motorSpeed[0] = (speed1 * (-1));
+            motorSpeed[1] = (speed2);
+            motorSpeed[2] = speed1;
+            motorSpeed[3] = (speed2 * (-1));
+        } else if (angle > 180 && angle <= 270) {
+            angle = angle - 180;
+            if (angle > (90 - angle)) {
+                speed1 = 100;
+                speed2 = ((90 - angle) * 100) / angle;
+            } else {
+                speed2 = 100;
+                speed1 = ((angle) * 100) / (90 - angle);
+            }
+            motorSpeed[0] =  speed2 * (-1);
+            motorSpeed[1] = (speed1 * (-1));
+            motorSpeed[2] = speed2;
+            motorSpeed[3] = speed1;
+        } else {
+            angle = angle - 270;
+            if (angle > (90 - angle)) {
+                speed1 = 100;
+                speed2 = ((90 - angle) * 100) / angle;
+            } else {
+                speed2 = 100;
+                speed1 = ((angle) * 100) / (90 - angle);
+            }
+            motorSpeed[0] =  speed1;
+            motorSpeed[1] = (speed2 * (-1));
+            motorSpeed[2] = ((speed1) * (-1));
+            motorSpeed[3] = speed2;
+           }
 
 
-// Args: current (x,y,theta) and target (x,y,theta)
-Speeds find_speeds(int rx, int ry, float r_theta, int target_x, int target_y, float target_theta ){
-    Speeds res;
-    //target pos wrt the robot
-    int tx = target_x - rx;
-    int ty = target_y - ry;
-    float t_theta = standardize_angle(target_theta - r_theta);
+      speeds.left   =   -motorSpeed[0]/100*MAX_SPEED;
+      speeds.right  =   -motorSpeed[2]/100*MAX_SPEED;
+      speeds.front  =   -motorSpeed[3]/100*MAX_SPEED;
+      speeds.rear   =   -motorSpeed[1]/100*MAX_SPEED;
 
-    // rotate the point about r_theta
-    // |  cos(theta)   sin(theta) |
-    // | -sin(theta)   cos(theta) |
+      speeds = add_rotation(speeds,theta- m_ourOrientation);
 
-    int temp_x = tx* cos(r_theta) + ty*sin(r_theta);
-    int temp_y = tx*-sin(r_theta) + ty*cos(r_theta);
-
-    tx = temp_x;
-    ty = temp_y;
-
-    // at this point, (tx, ty, t_theta) is the coordinates of the target in the robot's system
+      speeds = limit_speeds(speeds,1);
 
 
-    res.left = res.right = pid (tx, 0, 0);
-    res.front = res.rear = pid (ty, 0, 0);
-
-    res = limit_speed(res);
-
-    //if (t_theta > MIN_TURN_ANGLE && t_theta < 2*M_PI - MIN_TURN_ANGLE)
-   // {
-    res = add_rotation(res, t_theta, sqrt(tx*tx + ty*ty) );
-//        loggingObj->ShowMsg(QString("rotating %1")
-//                                .arg( t_theta )
-//                                .toAscii()
-//                                .data());
-    //}
-
-    res = limit_speed(res);
-
-    return res;
+    return speeds;
 }
 
-Speeds find_speeds_rot_only(int rx, int ry, float r_theta, int target_x, int target_y, float target_theta ){
-    Speeds res;
-    //target pos wrt the robot
-    int tx = target_x - rx;
-    int ty = target_y - ry;
-    float t_theta = standardize_angle(target_theta - r_theta);
-
-    // rotate the point about r_theta
-    // |  cos(theta)   sin(theta) |
-    // | -sin(theta)   cos(theta) |
-
-    int temp_x = tx* cos(r_theta) + ty*sin(r_theta);
-    int temp_y = tx*-sin(r_theta) + ty*cos(r_theta);
-
-    tx = temp_x;
-    ty = temp_y;
-
-    // at this point, (tx, ty, t_theta) is the coordinates of the target in the robot's system
-
-
-    res.left = res.right = pid (tx, 0, 0);
-    res.front = res.rear = pid (ty, 0, 0);
-
-    res = limit_speed(res);
-
-    //if (t_theta > MIN_TURN_ANGLE && t_theta < 2*M_PI - MIN_TURN_ANGLE)
-   // {
-       // res = add_rotation(res, t_theta, sqrt(tx*tx + ty*ty) );
-//        loggingObj->ShowMsg(QString("rotating %1")
-//                                .arg( t_theta )
-//                                .toAscii()
-//                                .data());
-    //}
-
-    res = limit_speed(res);
-
-    return res;
+void setCurrentPos(TNavEntry *entry, int &x, int &y, float &theta, TTeamColor teamColor){
+    if (teamColor == eBlueTeam){
+        x = entry->visionData.blue_x;
+        y = entry->visionData.blue_y;
+        theta = entry->visionData.blue_angle;
+    }
+    else{
+        x = entry->visionData.yellow_x;
+        y = entry->visionData.yellow_y;
+        theta = entry->visionData.yellow_angle;
+    }
 }
 
-Speeds find_speeds_no_rot(int rx, int ry, float r_theta, int target_x, int target_y, float target_theta ){
-    Speeds res;
-    //target pos wrt the robot
-    int tx = target_x - rx;
-    int ty = target_y - ry;
-    float t_theta = standardize_angle(target_theta - r_theta);
+// true if a new path has been generated by AI
+bool CNavigation::isNewPath(TAIEntry *ai){
+    return (ai->aiData.pathLength != lastPathLen ||
+            ai->aiData.path[0].position_X != lastCurrentX ||
+            ai->aiData.path[0].position_Y != lastCurrentY);
+}
 
-    // rotate the point about r_theta
-    // |  cos(theta)   sin(theta) |
-    // | -sin(theta)   cos(theta) |
+void CNavigation::savePathState(TAIEntry *ai){
+    lastPathLen = ai->aiData.pathLength;
+    lastCurrentX = ai->aiData.path[0].position_X;
+    lastCurrentY = ai->aiData.path[0].position_Y;
+}
 
-    int temp_x = tx* cos(r_theta) + ty*sin(r_theta);
-    int temp_y = tx*-sin(r_theta) + ty*cos(r_theta);
+bool isAtTarget(int rx, int ry, float r_theta, int target_x, int target_y, float target_theta ){
+    float dx = rx - target_x;
+    float dy = ry - target_y;
+    float d_theta = 60 * (r_theta - target_theta);
+    float total_dist = dx*dx + dy*dy + d_theta*d_theta;
 
-    tx = temp_x;
-    ty = temp_y;
-
-    // at this point, (tx, ty, t_theta) is the coordinates of the target in the robot's system
-
-
-    res.left = res.right = pid (tx, 0, 0);
-    res.front = res.rear = pid (ty, 0, 0);
-
-    res = limit_speed(res);
-
-    //if (t_theta > MIN_TURN_ANGLE && t_theta < 2*M_PI - MIN_TURN_ANGLE)
-   // {
-        //res = add_rotation(res, t_theta);
-//        loggingObj->ShowMsg(QString("rotating %1")
-//                                .arg( t_theta )
-//                                .toAscii()
-//                                .data());
-    //}
-
-    res = limit_speed(res);
-
-    return res;
+    return (total_dist < 30);
 }
 
 
 void CNavigation::GenerateValues(TNavEntry *entry)
 {
     TAIEntry *ai = &sharedMem.AIdata[sharedMem.aiIdx];
-//    m_ourOrientation = ai->aiData.path[0].orientation;
-    //m_ourOrientation = entry->visionData.yellow_angle;
+    TTeamColor teamColor = sharedMem.teamColor;
 
-//    loggingObj->ShowMsg(QString("ourOrientation: %1")
-//                            .arg( m_ourOrientation)
-//                            .toAscii()
-//                            .data());
-
-
-
-    int distToTarget;
-    //dx = (int)entry->aiData.path[1].position_X - (int)entry->aiData.path[0].position_X;
-    //dy = (int)entry->aiData.path[1].position_Y - (int)entry->aiData.path[0].position_Y;
-
-    int rx,ry,target_x,target_y;
+    int x,y,target_x,target_y;
     float r_theta, target_theta;
 
-    //current robot position
-//    rx = (int)ai->aiData.path[0].position_X;
-//    ry = (int)ai->aiData.path[0].position_Y;
-    if(sharedMem.teamColor == eYellowTeam){
-        m_ourOrientation = entry->visionData.yellow_angle;
-        rx = entry->visionData.yellow_x;
-        ry = entry->visionData.yellow_y;
+    setCurrentPos(entry, x, y, m_ourOrientation,  teamColor);
+
+
+    m_ourOrientation = ai->aiData.path[0].orientation;
+
+
+    float dx;
+    float dy;
+    float theta;
+   // int distToTarget;
+
+
+
+
+    if (isNewPath(ai)){
+            targetId = 1;
+
+            target_x = (int)ai->aiData.path[targetId].position_X;
+            target_y = (int)ai->aiData.path[targetId].position_Y;
+            target_theta = ai->aiData.path[targetId].orientation;
+            //target_theta = standardize_angle(target_theta);
+        }
+    else
+        {
+            //Path is the same as last time, move to the next waypoint if needed
+
+
+
+            if (isAtTarget(x, y, m_ourOrientation, target_x, target_y, target_theta ))
+                if (targetId < ai->aiData.pathLength - 1 )
+                    targetId++;
+
+            target_x = (int)ai->aiData.path[targetId].position_X;
+            target_y = (int)ai->aiData.path[targetId].position_Y;
+            target_theta = ai->aiData.path[targetId].orientation;
+            //target_theta = standardize_angle(target_theta);
+
+        }
+
+
+    dx = (int)target_x - x;
+    dy = (int)target_y - y;
+
+ //  distToTarget = (int) sqrt((dx * dx)+(dy * dy));
+
+
+
+
+//   if(ai->aiData.doWeHaveBall == 0){
+//        int ax = (int)entry->visionData.ball_x - (int)ai->aiData.path[0].position_X;
+//        int ay =(int)entry->visionData.ball_y - (int)ai->aiData.path[0].position_Y;
+//        distToTarget = (int) sqrt((ax * ax)+(ay * ay));
+//   }
+//   else{
+//       distToTarget = 0;
+//   }
+
+
+
+    //make theta the direction to move in.
+
+
+    if ((dx > 0) && (dy >= 0)) {
+        theta = atan(dy/dx);
     }
-    else{
-        m_ourOrientation = entry->visionData.blue_angle;
-        rx = entry->visionData.blue_x;
-        ry = entry->visionData.blue_y;
+    else if ((dx < 0) && (dy >= 0)) {
+        theta = M_PI - atan((-dy)/dx);
     }
 
-    r_theta = m_ourOrientation;
+    else if ((dx < 0) && (dy < 0)) {
+        theta = atan(dy/dx) + M_PI;
+    }
 
-    //target position
-    target_x = (int)ai->aiData.path[1].position_X;
-    target_y = (int)ai->aiData.path[1].position_Y;
-    //target_theta = entry->aiData.path[entry->aiData.pathLength-1].orientation;
-    target_theta = ai->aiData.path[1].orientation;
-    target_theta = standardize_angle(target_theta);
-
-    // go to the ball instead
-    //target_x = (int)entry->visionData.ball_x;
-    //target_y = (int)entry->visionData.ball_y;
-    //target_theta = r_theta;
-
-
-    Speeds res = find_speeds(rx, ry, r_theta, target_x, target_y, target_theta);
-
-    //keep the ball
-    if(ai->aiData.doWeHaveBall == 1){
-        //if (res.left < 15) res.left = 15;
-        //if (res.right < 15) res.right = 15;
-
-         res.left =  res.left;
-         res.right =  res.right;
-         res.rear = res.rear ;
-         res.front = res.front;
+    else if ((dx > 0) && (dy < 0)) {
+        theta = (2*M_PI - atan((-dy)/dx));
+    }
+    else if ((dx == 0) && (dy >= 0)) {
+        theta = M_PI_2;
+    }
+    else if ((dx == 0) && (dy < 0)) {
+        theta = 3*M_PI_2;
+    }
+    else {
+    theta = 0;
     }
 
 
-    //dis to target
-   if(ai->aiData.doWeHaveBall == 0){
-        int ax = (int)entry->visionData.ball_x - (int)ai->aiData.path[0].position_X;
-        int ay =(int)entry->visionData.ball_y - (int)ai->aiData.path[0].position_Y;
-        distToTarget = (int) sqrt((ax * ax)+(ay * ay));
-   }
-   else{
-       distToTarget = 0;
-   }
+       //set the rotate speed
 
-
-
-//   loggingObj->ShowMsg(QString("distToBall: %1")
-//                          .arg(distToTarget)
-//                          .toAscii()
-//                          .data());
-
-
-    //Decide whever to kick or not
 
     if (_kickerCnt > 0)  _kickerCnt--;
 
-    if ((ai->aiData.shouldKick == 1) && (_kickerCnt == 0)){
+    if ((ai->aiData.shouldKick == 1) && (_kickerCnt <= 0)){
         //    send kick command!
         entry->robot.sendData.kicker =  1;
         _kickerCnt = 10;
     }
-    else {
-        entry->robot.sendData.kicker =  0;
-    }
+    m_ourOrientation=0;
+   target_theta = M_PI/4;
+   Speeds speeds = find_speeds(target_theta, m_ourOrientation);
 
-    //res.rear = 100;
-    //res.front = res.right = res.left = 100;
-
+   //if we have the ball reduce our speed by half
+   if(ai->aiData.doWeHaveBall == 1){
+    speeds = limit_speeds(speeds,2);
+   }
     //Send the speeds
 
-
-    if(ai->aiData.pathLength == 1)
-    {
-
-        entry->robot.sendData.motor_left_speed =  0;
-        entry->robot.sendData.motor_right_speed =  0;
-        entry->robot.sendData.motor_front_speed =  0;
-        entry->robot.sendData.motor_rear_speed =  0;
-
-//        loggingObj->ShowMsg(QString("current rx = %1").arg(rx).toAscii().data());
-//        loggingObj->ShowMsg(QString("current ry = %1").arg(ry).toAscii().data());
-//        loggingObj->ShowMsg(QString("current target_x = %1").arg(target_x).toAscii().data());
-//        loggingObj->ShowMsg(QString("current target_y = %1").arg(target_y).toAscii().data());
-
-//        loggingObj->ShowMsg(QString("left %1").arg(res.left).toAscii().data());
-//        loggingObj->ShowMsg(QString("right %1").arg(res.right).toAscii().data());
-//        loggingObj->ShowMsg(QString("front %1").arg(res.front).toAscii().data());
-//        loggingObj->ShowMsg(QString("rear %1").arg(res.rear).toAscii().data());
-
-
-
-        entry->robot.sendData.motor_left_dir = 0;
-        entry->robot.sendData.motor_right_dir = 0;
-
-        entry->robot.sendData.motor_front_dir = 0;
-        entry->robot.sendData.motor_rear_dir = 0;
-     }
-    else
-    {
-
 #if defined(NXT_BUILD)
-    entry->robot.sendData.motor_left_speed =  abs(res.rear);
-    entry->robot.sendData.motor_right_speed =  abs(res.front);
-    entry->robot.sendData.motor_front_speed =  abs(res.right);
-    entry->robot.sendData.motor_rear_speed =  abs(res.left);
+    entry->robot.sendData.motor_left_speed =  abs(speeds.rear);
+    entry->robot.sendData.motor_right_speed =  abs(speeds.front);
+    entry->robot.sendData.motor_front_speed =  abs(speeds.right);
+    entry->robot.sendData.motor_rear_speed =  abs(speeds.left);
 
-    entry->robot.sendData.motor_left_dir = res.rear >= 0 ? 1 : 0;
-    entry->robot.sendData.motor_right_dir = res.front >= 0 ? 0 : 1;
+    entry->robot.sendData.motor_left_dir = speeds.rear >= 0 ? 1 : 0;
+    entry->robot.sendData.motor_right_dir = speeds.front >= 0 ? 1 : 0;
 
-    entry->robot.sendData.motor_front_dir = res.right >= 0 ? 0 : 1;
-    entry->robot.sendData.motor_rear_dir = res.left >= 0 ? 1 : 0;
+    entry->robot.sendData.motor_front_dir = speeds.right >= 0 ? 1 : 0;
+    entry->robot.sendData.motor_rear_dir = speeds.left >= 0 ? 1 : 0;
 #elif defined(ARDUINO_BLD)
-    entry->robot.sendData.motor_left_speed =  abs(res.left);
-    entry->robot.sendData.motor_right_speed =  abs(res.right);
-    entry->robot.sendData.motor_front_speed =  abs(res.front);
-    entry->robot.sendData.motor_rear_speed =  abs(res.rear);
+    entry->robot.sendData.motor_left_speed =  abs(speeds.left);
+    entry->robot.sendData.motor_right_speed =  abs(speeds.right);
+    entry->robot.sendData.motor_front_speed =  abs(speeds.front);
+    entry->robot.sendData.motor_rear_speed =  abs(speeds.rear);
 
-    entry->robot.sendData.motor_left_dir = res.left >= 0 ? 1 : 0;
-    entry->robot.sendData.motor_right_dir = res.right >= 0 ? 0 : 1;
+    entry->robot.sendData.motor_left_dir = speeds.left >= 0 ? 1 : 0;
+    entry->robot.sendData.motor_right_dir = speeds.right >= 0 ? 1 : 0;
 
-    entry->robot.sendData.motor_front_dir = res.front >= 0 ? 0 : 1;
-    entry->robot.sendData.motor_rear_dir = res.rear >= 0 ? 1 : 0;
+    entry->robot.sendData.motor_front_dir = speeds.front >= 0 ? 1 : 0;
+    entry->robot.sendData.motor_rear_dir = speeds.rear >= 0 ? 1 : 0;
 #endif
 
-//    loggingObj->ShowMsg(QString("current rx = %1").arg(rx).toAscii().data());
-//    loggingObj->ShowMsg(QString("current ry = %1").arg(ry).toAscii().data());
-//    loggingObj->ShowMsg(QString("current target_x = %1").arg(target_x).toAscii().data());
-//    loggingObj->ShowMsg(QString("current target_y = %1").arg(target_y).toAscii().data());
-
-//    loggingObj->ShowMsg(QString("left %1").arg(res.left).toAscii().data());
-//    loggingObj->ShowMsg(QString("right %1").arg(res.right).toAscii().data());
-//    loggingObj->ShowMsg(QString("front %1").arg(res.front).toAscii().data());
-//    loggingObj->ShowMsg(QString("rear %1").arg(res.rear).toAscii().data());
-}
-
+    loggingObj->ShowMsg(QString("left: %1 %2 right: %3 %4 front: %5 %6 back: %7 %8")
+                            .arg(entry->robot.sendData.motor_left_dir)
+                            .arg(entry->robot.sendData.motor_left_speed)
+                            .arg(entry->robot.sendData.motor_right_dir)
+                            .arg(entry->robot.sendData.motor_right_speed)
+                            .arg(entry->robot.sendData.motor_front_dir)
+                            .arg(entry->robot.sendData.motor_front_speed)
+                            .arg(entry->robot.sendData.motor_rear_dir)
+                            .arg(entry->robot.sendData.motor_rear_speed)
+                            .toAscii()
+                            .data());
 }
 
 
 void CNavigation::GenerateStop(TNavEntry *entry)
+{
+   // TEntry *entry = &sharedMem.positioning[sharedMem.currentIdx];
+
+    entry->robot.sendData.motor_left_speed  =  0;
+    entry->robot.sendData.motor_right_speed =  0;
+    entry->robot.sendData.motor_front_speed =  0;
+    entry->robot.sendData.motor_rear_speed  =  0;
+    entry->robot.sendData.kicker            =  0;
+}
+void CNavigation::kickerP(TNavEntry *entry)
+{
+    //TEntry *entry = &sharedMem.positioning[sharedMem.currentIdx];
+
+    entry->robot.sendData.motor_left_speed  =  0;
+    entry->robot.sendData.motor_right_speed =  0;
+    entry->robot.sendData.motor_front_speed =  0;
+    entry->robot.sendData.motor_rear_speed  =  0;
+    entry->robot.sendData.kicker            =  1;
+
+
+
+
+}
+void CNavigation::PenaltyDefend(TNavEntry *entry)
 {
     entry->robot.sendData.motor_left_speed  =  0;
     entry->robot.sendData.motor_right_speed =  0;
     entry->robot.sendData.motor_front_speed =  0;
     entry->robot.sendData.motor_rear_speed  =  0;
     entry->robot.sendData.kicker            =  0;
-    entry->robot.sendData.motor_left_dir = 0;
-    entry->robot.sendData.motor_right_dir = 0;
-
-    entry->robot.sendData.motor_front_dir = 0;
-    entry->robot.sendData.motor_rear_dir = 0;
 }
-
-
-void CNavigation::PenaltyDefend(TNavEntry *entry)
-{
-        TAIEntry *ai = &sharedMem.AIdata[sharedMem.aiIdx];
-//        m_ourOrientation = ai->aiData.path[0].orientation;
-        //m_ourOrientation = entry->visionData.yellow_angle;
-
-//        loggingObj->ShowMsg(QString("ourOrientation: %1")
-//                                .arg( m_ourOrientation)
-//                                .toAscii()
-//                                .data());
-
-
-
-        int distToTarget;
-        //dx = (int)entry->aiData.path[1].position_X - (int)entry->aiData.path[0].position_X;
-        //dy = (int)entry->aiData.path[1].position_Y - (int)entry->aiData.path[0].position_Y;
-
-        int rx,ry,target_x,target_y;
-        float r_theta, target_theta;
-
-        //current robot position
-//        rx = (int)ai->aiData.path[0].position_X;
-//        ry = (int)ai->aiData.path[0].position_Y;
-        if(sharedMem.teamColor == eYellowTeam){
-            m_ourOrientation = entry->visionData.yellow_angle;
-            rx = entry->visionData.yellow_x;
-            ry = entry->visionData.yellow_y;
-        }
-        else{
-            m_ourOrientation = entry->visionData.blue_angle;
-            rx = entry->visionData.blue_x;
-            ry = entry->visionData.blue_y;
-        }
-        r_theta = m_ourOrientation;
-
-        //target position
-        target_x = (int)ai->aiData.path[1].position_X;
-        target_y = (int)ai->aiData.path[1].position_Y;
-        //target_theta = entry->aiData.path[entry->aiData.pathLength-1].orientation;
-        target_theta = ai->aiData.path[1].orientation;
-        target_theta = standardize_angle(target_theta);
-
-        // go to the ball instead
-        //target_x = (int)entry->visionData.ball_x;
-        //target_y = (int)entry->visionData.ball_y;
-        //target_theta = r_theta;
-
-
-        Speeds res = find_speeds(rx, ry, r_theta, target_x, target_y, target_theta);
-
-        //keep the ball
-        if(ai->aiData.doWeHaveBall == 1){
-            //if (res.left < 15) res.left = 15;
-            //if (res.right < 15) res.right = 15;
-
-             res.left =  res.left;
-             res.right =  res.right;
-             res.rear = res.rear ;
-             res.front = res.front;
-        }
-
-
-        //dis to target
-       if(ai->aiData.doWeHaveBall == 0){
-            int ax = (int)entry->visionData.ball_x - (int)ai->aiData.path[0].position_X;
-            int ay =(int)entry->visionData.ball_y - (int)ai->aiData.path[0].position_Y;
-            distToTarget = (int) sqrt((ax * ax)+(ay * ay));
-       }
-       else{
-           distToTarget = 0;
-       }
-
-
-
-//       loggingObj->ShowMsg(QString("distToBall: %1")
-//                              .arg(distToTarget)
-//                              .toAscii()
-//                              .data());
-
-
-        //Decide whever to kick or not
-
-        if (_kickerCnt > 0)  _kickerCnt--;
-
-        if ((ai->aiData.shouldKick == 1) && (_kickerCnt == 0)){
-            //    send kick command!
-            entry->robot.sendData.kicker =  1;
-            _kickerCnt = 10;
-        }
-        else {
-            entry->robot.sendData.kicker =  0;
-        }
-
-        //res.rear = 100;
-        //res.front = res.right = res.left = 100;
-
-        //Send the speeds
-
-
-        if(ai->aiData.pathLength == 1)
-        {
-
-            entry->robot.sendData.motor_left_speed =  0;
-            entry->robot.sendData.motor_right_speed =  0;
-            entry->robot.sendData.motor_front_speed =  0;
-            entry->robot.sendData.motor_rear_speed =  0;
-
-//            loggingObj->ShowMsg(QString("current rx = %1").arg(rx).toAscii().data());
-//            loggingObj->ShowMsg(QString("current ry = %1").arg(ry).toAscii().data());
-//            loggingObj->ShowMsg(QString("current target_x = %1").arg(target_x).toAscii().data());
-//            loggingObj->ShowMsg(QString("current target_y = %1").arg(target_y).toAscii().data());
-
-//            loggingObj->ShowMsg(QString("left %1").arg(res.left).toAscii().data());
-//            loggingObj->ShowMsg(QString("right %1").arg(res.right).toAscii().data());
-//            loggingObj->ShowMsg(QString("front %1").arg(res.front).toAscii().data());
-//            loggingObj->ShowMsg(QString("rear %1").arg(res.rear).toAscii().data());
-
-
-
-            entry->robot.sendData.motor_left_dir = 0;
-            entry->robot.sendData.motor_right_dir = 0;
-
-            entry->robot.sendData.motor_front_dir = 0;
-            entry->robot.sendData.motor_rear_dir = 0;
-         }
-        else
-        {
-    //        entry->robot.sendData.motor_left_speed =  abs(res.rear);
-    //        entry->robot.sendData.motor_right_speed =  abs(res.front);
-    //        entry->robot.sendData.motor_front_speed =  abs(res.right);
-    //        entry->robot.sendData.motor_rear_speed =  abs(res.left);
-
-    //        loggingObj->ShowMsg(QString("current rx = %1").arg(rx).toAscii().data());
-    //        loggingObj->ShowMsg(QString("current ry = %1").arg(ry).toAscii().data());
-    //        loggingObj->ShowMsg(QString("current target_x = %1").arg(target_x).toAscii().data());
-    //        loggingObj->ShowMsg(QString("current target_y = %1").arg(target_y).toAscii().data());
-
-    //        loggingObj->ShowMsg(QString("left %1").arg(res.left).toAscii().data());
-    //        loggingObj->ShowMsg(QString("right %1").arg(res.right).toAscii().data());
-    //        loggingObj->ShowMsg(QString("front %1").arg(res.front).toAscii().data());
-    //        loggingObj->ShowMsg(QString("rear %1").arg(res.rear).toAscii().data());
-
-
-
-    //        entry->robot.sendData.motor_left_dir = res.rear >= 0 ? 1 : 0;
-    //        entry->robot.sendData.motor_right_dir = res.front >= 0 ? 0 : 1;
-
-    //       entry->robot.sendData.motor_front_dir = res.right >= 0 ? 0 : 1;
-    //        entry->robot.sendData.motor_rear_dir = res.left >= 0 ? 1 : 0;
-    //}
-
-
-        entry->robot.sendData.motor_left_dir = res.left >= 0 ? 1 : 0;
-        entry->robot.sendData.motor_right_dir = res.right >= 0 ? 0 : 1;
-
-        //entry->robot.sendData.motor_front_dir = res.front >= 0 ? 0 : 1;
-        //entry->robot.sendData.motor_rear_dir = res.rear >= 0 ? 1 : 0;
-
-        entry->robot.sendData.motor_left_speed =  abs(res.left);
-        entry->robot.sendData.motor_right_speed =  abs(res.right);
-        //entry->robot.sendData.motor_front_speed =  abs(res.front);
-        //entry->robot.sendData.motor_rear_speed =  abs(res.rear);
-
-//        loggingObj->ShowMsg(QString("current rx = %1").arg(rx).toAscii().data());
-//        loggingObj->ShowMsg(QString("current ry = %1").arg(ry).toAscii().data());
-//        loggingObj->ShowMsg(QString("current target_x = %1").arg(target_x).toAscii().data());
-//        loggingObj->ShowMsg(QString("current target_y = %1").arg(target_y).toAscii().data());
-
-//        loggingObj->ShowMsg(QString("left %1").arg(res.left).toAscii().data());
-//        loggingObj->ShowMsg(QString("right %1").arg(res.right).toAscii().data());
-//        loggingObj->ShowMsg(QString("front %1").arg(res.front).toAscii().data());
-//        loggingObj->ShowMsg(QString("rear %1").arg(res.rear).toAscii().data());
-
-
-
-//        entry->robot.sendData.motor_left_dir = res.left >= 0 ? 1 : 0;
-//        entry->robot.sendData.motor_right_dir = res.right >= 0 ? 0 : 1;
-
-//        entry->robot.sendData.motor_front_dir = res.front >= 0 ? 0 : 1;
-//        entry->robot.sendData.motor_rear_dir = res.rear >= 0 ? 1 : 0;
-    }
-
-
-}
-
 
 void CNavigation::PenaltyAttack(TNavEntry *entry)
-{
-        TAIEntry *ai = &sharedMem.AIdata[sharedMem.aiIdx];
-//        m_ourOrientation = ai->aiData.path[0].orientation;
-        //m_ourOrientation = entry->visionData.yellow_angle;
-
-//        loggingObj->ShowMsg(QString("ourOrientation: %1")
-//                                .arg( m_ourOrientation)
-//                                .toAscii()
-//                                .data());
-
-
-
-        int distToTarget;
-        //dx = (int)entry->aiData.path[1].position_X - (int)entry->aiData.path[0].position_X;
-        //dy = (int)entry->aiData.path[1].position_Y - (int)entry->aiData.path[0].position_Y;
-
-        int rx,ry,target_x,target_y;
-        float r_theta, target_theta;
-
-        //current robot position
-//        rx = (int)ai->aiData.path[0].position_X;
-//        ry = (int)ai->aiData.path[0].position_Y;
-        if(sharedMem.teamColor == eYellowTeam){
-            m_ourOrientation = entry->visionData.yellow_angle;
-            rx = entry->visionData.yellow_x;
-            ry = entry->visionData.yellow_y;
-        }
-        else{
-            m_ourOrientation = entry->visionData.blue_angle;
-            rx = entry->visionData.blue_x;
-            ry = entry->visionData.blue_y;
-        }
-        r_theta = m_ourOrientation;
-
-        //target position
-        target_x = (int)ai->aiData.path[1].position_X;
-        target_y = (int)ai->aiData.path[1].position_Y;
-        //target_theta = entry->aiData.path[entry->aiData.pathLength-1].orientation;
-        target_theta = ai->aiData.path[1].orientation;
-        target_theta = standardize_angle(target_theta);
-
-        // go to the ball instead
-        //target_x = (int)entry->visionData.ball_x;
-        //target_y = (int)entry->visionData.ball_y;
-        //target_theta = r_theta;
-
-
-        Speeds res = find_speeds_rot_only(rx, ry, r_theta, target_x, target_y, target_theta);
-
-        //keep the ball
-        if(ai->aiData.doWeHaveBall == 1){
-            //if (res.left < 15) res.left = 15;
-            //if (res.right < 15) res.right = 15;
-
-             res.left =  res.left;
-             res.right =  res.right;
-             res.rear = res.rear ;
-             res.front = res.front;
-        }
-
-
-        //dis to target
-       if(ai->aiData.doWeHaveBall == 0){
-            int ax = (int)entry->visionData.ball_x - (int)ai->aiData.path[0].position_X;
-            int ay =(int)entry->visionData.ball_y - (int)ai->aiData.path[0].position_Y;
-            distToTarget = (int) sqrt((ax * ax)+(ay * ay));
-       }
-       else{
-           distToTarget = 0;
-       }
-
-
-
-//       loggingObj->ShowMsg(QString("distToBall: %1")
-//                              .arg(distToTarget)
-//                              .toAscii()
-//                              .data());
-
-
-        //Decide whever to kick or not
-
-        if (_kickerCnt > 0)  _kickerCnt--;
-
-        if ((ai->aiData.shouldKick == 1) && (_kickerCnt == 0)){
-            //    send kick command!
-            entry->robot.sendData.kicker =  1;
-            _kickerCnt = 10;
-        }
-        else {
-            entry->robot.sendData.kicker =  0;
-        }
-
-        //res.rear = 100;
-        //res.front = res.right = res.left = 100;
-
-        //Send the speeds
-
-
-        if(ai->aiData.pathLength == 1)
-        {
-
-            entry->robot.sendData.motor_left_speed =  0;
-            entry->robot.sendData.motor_right_speed =  0;
-            entry->robot.sendData.motor_front_speed =  0;
-            entry->robot.sendData.motor_rear_speed =  0;
-
-//            loggingObj->ShowMsg(QString("current rx = %1").arg(rx).toAscii().data());
-//            loggingObj->ShowMsg(QString("current ry = %1").arg(ry).toAscii().data());
-//            loggingObj->ShowMsg(QString("current target_x = %1").arg(target_x).toAscii().data());
-//            loggingObj->ShowMsg(QString("current target_y = %1").arg(target_y).toAscii().data());
-
-//            loggingObj->ShowMsg(QString("left %1").arg(res.left).toAscii().data());
-//            loggingObj->ShowMsg(QString("right %1").arg(res.right).toAscii().data());
-//            loggingObj->ShowMsg(QString("front %1").arg(res.front).toAscii().data());
-//            loggingObj->ShowMsg(QString("rear %1").arg(res.rear).toAscii().data());
-
-
-
-            entry->robot.sendData.motor_left_dir = 0;
-            entry->robot.sendData.motor_right_dir = 0;
-
-            entry->robot.sendData.motor_front_dir = 0;
-            entry->robot.sendData.motor_rear_dir = 0;
-         }
-        else
-        {
-    //        entry->robot.sendData.motor_left_speed =  abs(res.rear);
-    //        entry->robot.sendData.motor_right_speed =  abs(res.front);
-    //        entry->robot.sendData.motor_front_speed =  abs(res.right);
-    //        entry->robot.sendData.motor_rear_speed =  abs(res.left);
-
-    //        loggingObj->ShowMsg(QString("current rx = %1").arg(rx).toAscii().data());
-    //        loggingObj->ShowMsg(QString("current ry = %1").arg(ry).toAscii().data());
-    //        loggingObj->ShowMsg(QString("current target_x = %1").arg(target_x).toAscii().data());
-    //        loggingObj->ShowMsg(QString("current target_y = %1").arg(target_y).toAscii().data());
-
-    //        loggingObj->ShowMsg(QString("left %1").arg(res.left).toAscii().data());
-    //        loggingObj->ShowMsg(QString("right %1").arg(res.right).toAscii().data());
-    //        loggingObj->ShowMsg(QString("front %1").arg(res.front).toAscii().data());
-    //        loggingObj->ShowMsg(QString("rear %1").arg(res.rear).toAscii().data());
-
-
-
-    //        entry->robot.sendData.motor_left_dir = res.rear >= 0 ? 1 : 0;
-    //        entry->robot.sendData.motor_right_dir = res.front >= 0 ? 0 : 1;
-
-    //       entry->robot.sendData.motor_front_dir = res.right >= 0 ? 0 : 1;
-    //        entry->robot.sendData.motor_rear_dir = res.left >= 0 ? 1 : 0;
-    //}
-
-
-        entry->robot.sendData.motor_left_dir = res.left >= 0 ? 1 : 0;
-        entry->robot.sendData.motor_right_dir = res.right >= 0 ? 1 : 0;
-
-        entry->robot.sendData.motor_front_dir = res.front >= 0 ? 1 : 0;
-        entry->robot.sendData.motor_rear_dir = res.rear >= 0 ? 1 : 0;
-
-        entry->robot.sendData.motor_left_speed =  abs(res.left);
-        entry->robot.sendData.motor_right_speed =  abs(res.right);
-        entry->robot.sendData.motor_front_speed =  abs(res.front);
-        entry->robot.sendData.motor_rear_speed =  abs(res.rear);
-
-//        loggingObj->ShowMsg(QString("current rx = %1").arg(rx).toAscii().data());
-//        loggingObj->ShowMsg(QString("current ry = %1").arg(ry).toAscii().data());
-//        loggingObj->ShowMsg(QString("current target_x = %1").arg(target_x).toAscii().data());
-//        loggingObj->ShowMsg(QString("current target_y = %1").arg(target_y).toAscii().data());
-
-//        loggingObj->ShowMsg(QString("left %1").arg(res.left).toAscii().data());
-//        loggingObj->ShowMsg(QString("right %1").arg(res.right).toAscii().data());
-//        loggingObj->ShowMsg(QString("front %1").arg(res.front).toAscii().data());
-//        loggingObj->ShowMsg(QString("rear %1").arg(res.rear).toAscii().data());
-
-
-
-//        entry->robot.sendData.motor_left_dir = res.left >= 0 ? 1 : 0;
-//        entry->robot.sendData.motor_right_dir = res.right >= 0 ? 0 : 1;
-
-//        entry->robot.sendData.motor_front_dir = res.front >= 0 ? 0 : 1;
-//        entry->robot.sendData.motor_rear_dir = res.rear >= 0 ? 1 : 0;
-    }
-
-
-}
-
-void CNavigation::kickerP(TNavEntry *entry)
 {
     entry->robot.sendData.motor_left_speed  =  0;
     entry->robot.sendData.motor_right_speed =  0;
     entry->robot.sendData.motor_front_speed =  0;
     entry->robot.sendData.motor_rear_speed  =  0;
-    entry->robot.sendData.kicker            =  1;
+    entry->robot.sendData.kicker            =  0;
 }

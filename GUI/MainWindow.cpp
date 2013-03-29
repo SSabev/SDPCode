@@ -44,6 +44,8 @@ void MainWindow::MatchTestSlot()
 
     aiCtrl.RunAI(ai);
 
+    m_nav.GenerateValues(&sharedMem.NavData[sharedMem.navIdx]);
+
     vision->UpdateWindow();
 
     sharedMem.systemState = eStop;
