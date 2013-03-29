@@ -49,10 +49,6 @@ void AIControl::RunAI(TAIEntry* aiEntry)
 
 #endif
 
-	/*int currentFrameIndex = sharedMem.currentIdx;
-
-	TEntry* currentEntry = &sharedMem.positioning[currentFrameIndex];*/
-
 	RobotState blueRobotState(aiEntry->visionData.blue_x, aiEntry->visionData.blue_y, aiEntry->visionData.blue_angle);
 	RobotState yellowRobotState(aiEntry->visionData.yellow_x, aiEntry->visionData.yellow_y, aiEntry->visionData.yellow_angle);
 
@@ -156,16 +152,6 @@ void AIControl::RunAI(TAIEntry* aiEntry)
     {
         shouldKick = m_eagle.ShouldWeShoot(ourRobotFuture, enemyRobotFuture, ballFuture) && ourRobotFuture.HasBall();
     }
-
-	// Set if we have the ball this frame, to be used next frame.
-	/*if (doWeHaveBall)
-	{
-		m_hadBallLastFrame = true;
-	}
-	else
-	{
-		m_hadBallLastFrame = false;
-	}*/
 
 	// Using A*, generate the best path to the target.
 	m_aStar.SetSharedData(sharedMem.pitchCfg.pitchWidth, sharedMem.pitchCfg.pitchHeight, sharedMem.pitchSide);
