@@ -289,8 +289,8 @@ void CNavigation::GenerateValues(TNavEntry *entry)
         entry->robot.sendData.kicker =  1;
         _kickerCnt = 10;
     }
-    m_ourOrientation=0;
-   target_theta = M_PI/4;
+    //m_ourOrientation=0;
+   //target_theta = M_PI/4;
    Speeds speeds = find_speeds(target_theta, m_ourOrientation);
 
    //if we have the ball reduce our speed by half
