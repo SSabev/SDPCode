@@ -49,6 +49,8 @@ private:
     void StartProcess(TSystemState state);
     void StartThreads();
 
+    void CtrlButtons(bool enable);
+
     IBTComm        *m_pIBtComm;
     CVisionComm    *m_pVisionComm;
     CNavigation     m_nav;

@@ -17,11 +17,6 @@
 #error Must specify which type of communicator to use
 #endif
 
-#define TIMER_INTERVAL_MS 50
-
-#define AI_CALL_PERIOD      50
-#define NAV_CALL_PERIOD     10
-
 MainWindow::MainWindow()
 {
     SetupGUI();
@@ -179,11 +174,7 @@ void MainWindow::StartProcess(TSystemState state)
     sharedMem.systemState = state;
 
     // disable all control buttons except STOP button
-//    actionBtn1->setDisabled(true);
-//    actionBtn2->setDisabled(true);
-//    teamSetupBtn->setDisabled(true);
-//    doPenaltyBtn->setDisabled(true);
-//    defendPenaltyBtn->setDisabled(true);
+    CtrlButtons(false);
 
     // 1. Read new coordinates from vision
     m_pVisionComm->ReadData(&ai->visionData);
@@ -253,12 +244,8 @@ void MainWindow::StopMvmntSlot()
     }
     else{
         sharedMem.systemState = eStop;
-
-//        actionBtn1->setEnabled(true);
-//        actionBtn2->setEnabled(true);
-//        teamSetupBtn->setEnabled(true);
-//        doPenaltyBtn->setEnabled(true);
-//        defendPenaltyBtn->setEnabled(true);
+        // Enable the control buttons
+        CtrlButtons(true);
     }
 }
 
@@ -280,4 +267,14 @@ void MainWindow::DoPenaltySlot()
 void MainWindow::UpdatePlotter()
 {
     vision->UpdateWindow();
+}
+
+void MainWindow::CtrlButtons(bool enable)
+{
+    matchBtn->setEnabled(enable);
+    defendPenaltyBtn->setEnabled(enable);
+    doPenaltyBtn->setEnabled(enable);
+    matchTestBtn->setEnabled(enable);
+    defPenTestBtn->setEnabled(enable);
+    penTestBtn->setEnabled(enable);
 }

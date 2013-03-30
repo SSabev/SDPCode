@@ -6,9 +6,6 @@
 
 #include "ThreadedCallback.h"
 
-#define AI_CALL_PERIOD      50
-#define NAV_CALL_PERIOD     10
-
 CAICallback::CAICallback(CVisionComm *pVisionComm, AIControl *pAICtrl)
     : m_pVisionComm(pVisionComm)
     , m_pAICtrl(pAICtrl)

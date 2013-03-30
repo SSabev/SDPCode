@@ -20,124 +20,130 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QHBoxLayout" name="horizontalLayout">
     <item>
-     <widget class="QGroupBox" name="groupBox">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="title">
-       <string>Robot Controls</string>
-      </property>
-      <layout class="QVBoxLayout" name="verticalLayout_2">
-       <item>
-        <widget class="QPushButton" name="matchBtn">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="minimumSize">
-          <size>
-           <width>103</width>
-           <height>0</height>
-          </size>
-         </property>
-         <property name="text">
-          <string>Start Match</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="defendPenaltyBtn">
-         <property name="text">
-          <string>Defend Penalty</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="doPenaltyBtn">
-         <property name="text">
-          <string>Do Penalty</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="stopBtn">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="minimumSize">
-          <size>
-           <width>103</width>
-           <height>0</height>
-          </size>
-         </property>
-         <property name="text">
-          <string>Stop</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QGroupBox" name="groupBox_3">
-         <property name="title">
-          <string>Testing</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="matchTestBtn">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="minimumSize">
-          <size>
-           <width>103</width>
-           <height>0</height>
-          </size>
-         </property>
-         <property name="text">
-          <string>Match</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="defPenTestBtn">
-         <property name="text">
-          <string>Penalty Defend</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="penTestBtn">
-         <property name="text">
-          <string>Penalty</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <spacer name="verticalSpacer">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>40</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-      </layout>
-     </widget>
+     <layout class="QVBoxLayout" name="verticalLayout_4">
+      <item>
+       <widget class="QGroupBox" name="groupBox">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="title">
+         <string>Robot Controls</string>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_2">
+         <item>
+          <widget class="QPushButton" name="matchBtn">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>103</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>Start Match</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="defendPenaltyBtn">
+           <property name="text">
+            <string>Defend Penalty</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="doPenaltyBtn">
+           <property name="text">
+            <string>Do Penalty</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="stopBtn">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>103</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>Stop</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="QGroupBox" name="groupBox_3">
+        <property name="title">
+         <string>Testing</string>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_3">
+         <item>
+          <widget class="QPushButton" name="matchTestBtn">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>103</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>Match</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="defPenTestBtn">
+           <property name="text">
+            <string>Penalty Defend</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="penTestBtn">
+           <property name="text">
+            <string>Penalty</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <spacer name="verticalSpacer">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>40</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
     </item>
     <item>
      <widget class="Line" name="line">
@@ -255,6 +261,14 @@
      </widget>
     </item>
    </layout>
+   <zorder>groupBox</zorder>
+   <zorder>line</zorder>
+   <zorder>groupBox_2</zorder>
+   <zorder>line_2</zorder>
+   <zorder>LoggingWidget</zorder>
+   <zorder>groupBox_3</zorder>
+   <zorder>groupBox_3</zorder>
+   <zorder>verticalSpacer</zorder>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
