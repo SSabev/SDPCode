@@ -119,23 +119,24 @@ void CVisionComm::DataReady()
     int net;
     TVisionData data;
 
-    net = localSocket.read((char *) &data, sizeof(TVisionData));
+    while(localSocket.bytesAvailable()){
+        net = localSocket.read((char *) &data, sizeof(TVisionData));
 
-    if(net != sizeof(TVisionData)){
-        loggingObj->ShowMsg(QString("VISIONCOMM: read size differs from expected: expected %1, read %2")
-                            .arg(sizeof(TVisionData))
-                            .arg(net)
-                            .toAscii()
-                            .data());
+        if(net != sizeof(TVisionData)){
+            loggingObj->ShowMsg(QString("VISIONCOMM: read size differs from expected: expected %1, read %2")
+                                .arg(sizeof(TVisionData))
+                                .arg(net)
+                                .toAscii()
+                                .data());
+        }
     }
-    else{
-        nextIdx = (m_buffIdx + 1)&BUFF_SIZE_MASK;
-        m_visionBuff[nextIdx] = data;
 
-        m_mutex.lock();
-        m_buffIdx = nextIdx;
-        m_mutex.unlock();
-    }
+    nextIdx = (m_buffIdx + 1)&BUFF_SIZE_MASK;
+    m_visionBuff[nextIdx] = data;
+
+    m_mutex.lock();
+    m_buffIdx = nextIdx;
+    m_mutex.unlock();
 }
 
 bool CVisionComm::ReadData(TVisionData *data)
