@@ -66,6 +66,7 @@ typedef struct{
     unsigned char motor_front_dir   : 1;
 
     unsigned char kicker            : 1;
+    unsigned char spinners          : 1;
 } __attribute__ ((packed)) TRobotData;
 
 //! As specified in the Docs/BT_protocol.doc in git repo
