@@ -89,6 +89,8 @@ bool CBtComm::SendData(TRobotData *data)
 
 bool CBtComm::ReadData(TRobotState *data)
 {
+    memset(data, 0, sizeof(TRobotState));
+/** FIX THIS!!!
     int read;
 
     QMutexLocker locker(&m_mutex);
@@ -109,4 +111,5 @@ bool CBtComm::ReadData(TRobotState *data)
     }
 
     return true;
+*/
 }

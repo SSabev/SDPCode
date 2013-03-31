@@ -71,10 +71,10 @@ typedef struct{
 //! As specified in the Docs/BT_protocol.doc in git repo
 /// Size: 1 byte
 typedef struct{
-    unsigned char r_sensor    : 1;
-    unsigned char l_sensor    : 1;
-    unsigned char ball_sensor : 1;
-    unsigned char reserved    : 5;
+    unsigned char f_l_sensor    : 1;
+    unsigned char f_r_sensor    : 1;
+    unsigned char back_sensor   : 1;
+    unsigned char reserved      : 5;
 } __attribute__ ((packed)) TRobotState;
 
 // Wrapper structure for int alingnment

@@ -109,7 +109,7 @@ void CNavCallback::process()
         m_pVisionComm->ReadData(&nav->visionData);
 
         // 2. Read robot state
-        /// TODO: read data from robot if needed
+        m_pIBtComm->ReadData(&nav->robot.receiveData);
 
 #ifdef DRY_RUN
         printf("NAV cycle\n");
