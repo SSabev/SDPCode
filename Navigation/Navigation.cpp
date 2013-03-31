@@ -195,7 +195,7 @@ void CNavigation::GenerateValues(TNavEntry *entry)
     setCurrentPos(entry, x, y, m_ourOrientation,  teamColor);
 
 
-    m_ourOrientation = ai->aiData.path[0].orientation;
+    //m_ourOrientation = ai->aiData.path[0].orientation;
 
 
     float dx;
