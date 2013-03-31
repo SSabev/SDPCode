@@ -159,13 +159,13 @@ std::list<RobotState> AStar::GeneratePath(RobotState startingState, RobotState d
 
 				// If this is the last point, we want to face the target direction.
 				// Otherwise, just face towards the next point.
-				if (i >= nodesOnPath.size()-1)
-				{
-					angleToNextPoint = destinationState.Orientation();
-				}
-				else if (i==0)
+				if (i==0)
 				{
 					angleToNextPoint = startingState.Orientation();
+				}
+				else if (i >= nodesOnPath.size()-1)
+				{
+					angleToNextPoint = destinationState.Orientation();
 				}
 				else
 				{

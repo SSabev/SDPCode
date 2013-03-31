@@ -136,11 +136,6 @@ void AIControl::RunAI(TAIEntry* aiEntry)
 	RobotState targetState = m_eagle.IdentifyTarget(ourRobotFuture, enemyRobotFuture, ballFuture);
 
 	// Check if we have the ball and should kick from our current state.
-	/*if (m_eagle.DoWeHaveBall(ourRobotFuture, ballFuture))
-	{
-		doWeHaveBall = true;
-	}*/
-
 	bool shouldKick;
     
     if (sharedMem.systemState == ePenaltyAttack)
@@ -164,6 +159,13 @@ void AIControl::RunAI(TAIEntry* aiEntry)
 	
 		loggingObj->ShowMsg(logMessage.c_str());
 		return;
+	}
+
+	// If we're turning but not changing position, A* won't account for this. 
+	// Need to manually add another point in this situation. Could be done more cleanly than this.
+	if ((ourRobotFuture.Position() == targetState.Position()) && (ourRobotFuture.Orientation() != targetState.Orientation()))
+	{
+		aStarPath.push_back(targetState);
 	}
 
 	std::list<RobotState> smoothedPath; 

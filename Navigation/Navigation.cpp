@@ -195,7 +195,7 @@ void CNavigation::GenerateValues(TNavEntry *entry)
     setCurrentPos(entry, x, y, m_ourOrientation,  teamColor);
 
 
-    m_ourOrientation = ai->aiData.path[0].orientation;
+    //m_ourOrientation = ai->aiData.path[0].orientation;
 
 
     float dx;
@@ -297,6 +297,13 @@ void CNavigation::GenerateValues(TNavEntry *entry)
    if(ai->aiData.doWeHaveBall == 1){
     speeds = limit_speeds(speeds,2);
    }
+
+   loggingObj->ShowMsg(QString("robot angle %1 target angle %2")
+                           .arg(m_ourOrientation)
+                                .arg(ai->aiData.path[targetId].orientation)
+                           .toAscii()
+                           .data());
+
     //Send the speeds
 
 #if defined(NXT_BUILD)
