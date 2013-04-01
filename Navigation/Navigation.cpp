@@ -55,13 +55,13 @@ Speeds add_rotation(Speeds speeds, float theta){
     int rotatespeed;
     if(theta<0) theta = M_PI*2 + theta;
 
-    if ((theta > 0.2) && (theta <= M_PI)){
+    if ((theta > 0.4) && (theta <= M_PI)){
 
 
         rotatespeed = (int)((float)-ROT_SPEED*theta/M_PI);
 
     }
-    else if ((theta > M_PI) && (theta <= (2*M_PI-0.2))){
+    else if ((theta > M_PI) && (theta <= (2*M_PI-0.4))){
         rotatespeed = (int)((float)ROT_SPEED*theta/M_PI);
 
     }
@@ -139,9 +139,9 @@ Speeds find_speeds_deffend_left_right(float theta, float m_ourOrientation ){
            }
 
 
-      speeds.left   =   -motorSpeed[0]/100*MAX_SPEED;
+      speeds.left   =  0;// -motorSpeed[0]/100*MAX_SPEED;
       speeds.right  =   -motorSpeed[2]/100*MAX_SPEED;
-      speeds.front  =   -motorSpeed[3]/100*MAX_SPEED;
+      speeds.front  =  0;// -motorSpeed[3]/100*MAX_SPEED;
       speeds.rear   =   -motorSpeed[1]/100*MAX_SPEED;
 
       //speeds = add_rotation(speeds,theta- m_ourOrientation);
