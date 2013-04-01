@@ -123,11 +123,6 @@ RobotState Eagle::IdentifyTarget(RobotState &ourRobotState, RobotState &enemyRob
 	else
 	{
 		// If we're here, assume we're in open play.
-		ballPos.Clamp(Vector2(0,0), Vector2(m_pitchSizeX-1, m_pitchSizeY-1));
-
-		ourRobotState.SetHasBall(DoesRobotHaveBall(ourRobotState, ballPos));
-		enemyRobotState.SetHasBall(DoesRobotHaveBall(enemyRobotState, ballPos));
-
 		if (!ourRobotState.HasBall())
 		{
 			// Check if the enemy robot has the ball.
