@@ -130,14 +130,16 @@ class Vision:
         self.pipe.send(InitSignal(self.preprocessor.pitch_size[0], self.preprocessor.pitch_size[1]))
 
     def addCoordinates(self, entity, coordinates):
-        self._pastCoordinates[entity].pop(0)
-        (x, y) = coordinates;
+	self._pastCoordinates[entity].pop(0)
+        self._pastCoordinates[entity].append(coordinates)
+	
+        #(x, y) = coordinates;
         
         # if the frame is bad(-1) then add the most recent coordinate instead
-        if (x != -1):
-            self._pastCoordinates[entity].append(coordinates)
-        else:
-            self._pastCoordinates[entity].append(self._pastCoordinates[entity][-1])
+        #if (x != -1):
+        #    self._pastCoordinates[entity].append(coordinates)
+        #else:
+        #    self._pastCoordinates[entity].append(self._pastCoordinates[entity][-1])
 
     def smoothCoordinates(self, entity):
         x = sum(map(lambda (x, _): x, self._pastCoordinates[entity])) / self._pastSize
@@ -146,13 +148,13 @@ class Vision:
 
     def addAngle(self, entity, angle):
         self._pastAngles[entity].pop(0)
-        
+        self._pastAngles[entity].append(angle)
         # if the frame is bad(-1) then add the most recent angle instead
         # good angle is always in (0,2pi), bad angle is -1, careful with real number
-        if (angle > -0.5):
-            self._pastAngles[entity].append(angle)
-        else:
-            self._pastAngles[entity].append(self._pastAngles[entity][-1])
+        #if (angle > -0.5):
+        #    self._pastAngles[entity].append(angle)
+        #else:
+        #    self._pastAngles[entity].append(self._pastAngles[entity][-1])
 
 
     def smoothAngle(self, entity):

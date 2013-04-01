@@ -56,13 +56,13 @@ Speeds add_rotation(Speeds speeds, float theta){
     int rotatespeed;
     if(theta<0) theta = M_PI*2 + theta;
 
-    if ((theta > 0.4) && (theta <= M_PI)){
+    if ((theta > 0.2) && (theta <= M_PI)){
 
 
         rotatespeed = (int)((float)-ROT_SPEED*theta/M_PI);
 
     }
-    else if ((theta > M_PI) && (theta <= (2*M_PI-0.4))){
+    else if ((theta > M_PI) && (theta <= (2*M_PI-0.2))){
         rotatespeed = (int)((float)ROT_SPEED*theta/M_PI);
 
     }
@@ -176,13 +176,13 @@ Speeds find_speeds_attack(float theta, float m_ourOrientation ){
         int rotatespeed;
         if(ttheta<0) ttheta = M_PI*2 + ttheta;
 
-        if ((ttheta > 0.4) && (ttheta <= M_PI)){
+        if ((ttheta > 0.2) && (ttheta <= M_PI)){
 
 
             rotatespeed = (int)((float)-ROT_PENALTY_SPEED);
 
         }
-        else if ((ttheta > M_PI) && (ttheta <= (2*M_PI-0.4))){
+        else if ((ttheta > M_PI) && (ttheta <= (2*M_PI-0.2))){
             rotatespeed = (int)((float)ROT_PENALTY_SPEED);
 
         }
@@ -436,11 +436,11 @@ void CNavigation::GenerateValues(TNavEntry *entry)
     {
 
         speeds = find_speeds_attack(target_theta, m_ourOrientation);
-        if(_kickerCnt <= 0)
-        {
-            entry->robot.sendData.kicker            =  1;
-            _kickerCnt = 20;
-        }
+//        if(_kickerCnt <= 0)
+//        {
+//            entry->robot.sendData.kicker            =  1;
+//            _kickerCnt = 20;
+//        }
     }
     else if((sharedMem.systemState == ePenaltyDefend ))
     {
