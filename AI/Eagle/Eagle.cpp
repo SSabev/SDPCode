@@ -109,7 +109,9 @@ RobotState Eagle::IdentifyTarget(RobotState &ourRobotState, RobotState &enemyRob
 		targetState.SetOrientation(ourRobotState.Orientation());
 
 		// X-axis position should be the same, y-axis should be a position extrapolated in the direction of the enemy robot.
-		float extrapolationGradient = tan(enemyRobotState.Orientation());
+		//float extrapolationGradient = tan(enemyRobotState.Orientation());
+		// I'm experimenting with extrapolating on a line between the robot and ball instead.
+		float extrapolationGradient = enemyRobotPos.Gradient(&ballPos);
 
 		int extrapolatedY = enemyRobotPos.Y() + ((ourRobotPos.X() - enemyRobotPos.X()) * extrapolationGradient); 
 
@@ -121,11 +123,6 @@ RobotState Eagle::IdentifyTarget(RobotState &ourRobotState, RobotState &enemyRob
 	else
 	{
 		// If we're here, assume we're in open play.
-		ballPos.Clamp(Vector2(0,0), Vector2(m_pitchSizeX-1, m_pitchSizeY-1));
-
-		ourRobotState.SetHasBall(DoesRobotHaveBall(ourRobotState, ballPos));
-		enemyRobotState.SetHasBall(DoesRobotHaveBall(enemyRobotState, ballPos));
-
 		if (!ourRobotState.HasBall())
 		{
 			// Check if the enemy robot has the ball.
