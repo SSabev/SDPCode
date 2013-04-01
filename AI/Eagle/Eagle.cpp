@@ -228,16 +228,16 @@ bool Eagle::DoesRobotHaveBall(RobotState robotState, Vector2 ballPos)
     float angleThresh;
 	float distanceThresh;
 
-	if (robotState.HasBall())
-	{
-		angleThresh = M_PI_2;
-		distanceThresh = 90.0f;
-	}
-	else
-	{
-		angleThresh = M_PI_4;
-		distanceThresh = 55.0f;
-	}
+    if (robotState.HasBall())
+    {
+        angleThresh = M_PI_2;
+        distanceThresh = 70.0f;
+    }
+    else
+    {
+        angleThresh = M_PI_4;
+        distanceThresh = 45.0f;
+    }
 	
 	float angleToBall = fmod(robotPos.GetAngleTo(&ballPos), (2*M_PI));
 	float robotOrientation = fmod(robotState.Orientation(), (2*M_PI));
