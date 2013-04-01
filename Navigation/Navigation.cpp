@@ -9,7 +9,7 @@
 #define _USE_MATH_DEFINES
 
 #define MOVE_SPEED     (20)
-#define ROT_SPEED	(1)
+#define ROT_SPEED	(25)
 #define MAX_SPEED	(100)
 
 int abs(int val){
@@ -18,7 +18,7 @@ int abs(int val){
 }
 
 
-unsigned char _kickerCnt = 0;
+int _kickerCnt = 0;
 
 
 CNavigation::CNavigation()
@@ -41,7 +41,7 @@ int max_abs(int x, int y){
     return max (abs(x), abs(y));
 }
 
-Speeds limit_speeds(Speeds speeds,int coeficient){
+Speeds limit_speeds(Speeds speeds,float coeficient){
     int max_speed = max ( max_abs(speeds.left,speeds.right), max_abs(speeds.front, speeds.rear));
     speeds.left   = ((float)speeds.left/max_speed*MAX_SPEED)/coeficient;
     speeds.right  = ((float)speeds.right/max_speed*MAX_SPEED)/coeficient;
@@ -53,33 +53,37 @@ Speeds limit_speeds(Speeds speeds,int coeficient){
 
 Speeds add_rotation(Speeds speeds, float theta){
     int rotatespeed;
-    if ((theta > 0.3) && (theta <= M_PI)){
-        rotatespeed = -ROT_SPEED;
+    if(theta<0) theta = M_PI*2 + theta;
+
+    if ((theta > 0.2) && (theta <= M_PI)){
+
+
+        rotatespeed = (int)((float)-ROT_SPEED*theta/M_PI);
 
     }
-    else if ((theta > M_PI) && (theta <= (2*M_PI-0.3))){
-        rotatespeed = ROT_SPEED;
+    else if ((theta > M_PI) && (theta <= (2*M_PI-0.2))){
+        rotatespeed = (int)((float)ROT_SPEED*theta/M_PI);
 
     }
     else {
         rotatespeed = 0;
     }
 
-    speeds.left   =   speeds.left + rotatespeed;
-    speeds.right  =   speeds.right + rotatespeed;
-    speeds.front  =   speeds.front + rotatespeed;
-    speeds.rear   =   speeds.rear + rotatespeed;
+    speeds.left   =   speeds.left - rotatespeed;
+    speeds.right  =   speeds.right - rotatespeed;
+    speeds.front  =   speeds.front - rotatespeed;
+    speeds.rear   =   speeds.rear - rotatespeed;
 
     return speeds;
 
 }
 
-
-Speeds find_speeds(float theta, float m_ourOrientation ){
+Speeds find_speeds_deffend_left_right(float theta, float m_ourOrientation ){
     Speeds speeds;
     int speed1, speed2;
     int  motorSpeed[4];
-     int angle = (theta- m_ourOrientation)*180/M_PI;
+     int angle = (int)((theta- m_ourOrientation)*180/M_PI);
+     if(angle<0) angle = 360 +angle;
     //angle =0;
         if (angle <= 90) {
             if (angle > (90 - angle)) {
@@ -139,6 +143,175 @@ Speeds find_speeds(float theta, float m_ourOrientation ){
       speeds.right  =   -motorSpeed[2]/100*MAX_SPEED;
       speeds.front  =   -motorSpeed[3]/100*MAX_SPEED;
       speeds.rear   =   -motorSpeed[1]/100*MAX_SPEED;
+
+      //speeds = add_rotation(speeds,theta- m_ourOrientation);
+
+      speeds = limit_speeds(speeds,1);
+
+
+    return speeds;
+}
+
+Speeds find_speeds_attack(float theta, float m_ourOrientation ){
+    Speeds speeds;
+    int speed1, speed2;
+    int  motorSpeed[4];
+     int angle = (int)((theta- m_ourOrientation)*180/M_PI);
+     if(angle<0) angle = 360 +angle;
+    //angle =0;
+        if (angle <= 90) {
+            if (angle > (90 - angle)) {
+                speed1 = 100;
+                speed2 = ((90 - angle) * 100) / angle;
+            } else {
+                speed2 = 100;
+                speed1 = ((angle) * 100) / (90 - angle);
+            }
+            motorSpeed[0] = speed2;
+            motorSpeed[1] = speed1;
+            motorSpeed[2] = (speed2 * (-1));
+            motorSpeed[3] = (speed1 * (-1));
+        } else if (angle > 90 && angle <= 180) {
+            angle = angle - 90;
+            if (angle > (90 - angle)) {
+                speed1 = 100;
+                speed2 = ((90 - angle) * 100) / angle;
+            } else {
+                speed2 = 100;
+                speed1 = ((angle) * 100) / (90 - angle);
+            }
+            motorSpeed[0] = (speed1 * (-1));
+            motorSpeed[1] = (speed2);
+            motorSpeed[2] = speed1;
+            motorSpeed[3] = (speed2 * (-1));
+        } else if (angle > 180 && angle <= 270) {
+            angle = angle - 180;
+            if (angle > (90 - angle)) {
+                speed1 = 100;
+                speed2 = ((90 - angle) * 100) / angle;
+            } else {
+                speed2 = 100;
+                speed1 = ((angle) * 100) / (90 - angle);
+            }
+            motorSpeed[0] =  speed2 * (-1);
+            motorSpeed[1] = (speed1 * (-1));
+            motorSpeed[2] = speed2;
+            motorSpeed[3] = speed1;
+        } else {
+            angle = angle - 270;
+            if (angle > (90 - angle)) {
+                speed1 = 100;
+                speed2 = ((90 - angle) * 100) / angle;
+            } else {
+                speed2 = 100;
+                speed1 = ((angle) * 100) / (90 - angle);
+            }
+            motorSpeed[0] =  speed1;
+            motorSpeed[1] = (speed2 * (-1));
+            motorSpeed[2] = ((speed1) * (-1));
+            motorSpeed[3] = speed2;
+           }
+
+
+//      speeds.left   =   -motorSpeed[0]/100*MAX_SPEED;
+//      speeds.right  =   -motorSpeed[2]/100*MAX_SPEED;
+//      speeds.front  =   -motorSpeed[3]/100*MAX_SPEED;
+//      speeds.rear   =   -motorSpeed[1]/100*MAX_SPEED;
+
+        speeds.left   =   0;
+        speeds.right  =   0;
+        speeds.front  =   0;
+        speeds.rear   =   0;
+
+//        loggingObj->ShowMsg(QString("rotate robot angle %1")
+//                                .arg(theta- m_ourOrientation)
+//                                .toAscii()
+//                                .data());
+
+      speeds = add_rotation(speeds,theta- m_ourOrientation);
+
+      //speeds = limit_speeds(speeds,1);
+
+
+    return speeds;
+}
+
+Speeds find_speeds(float theta, float m_ourOrientation ){
+    Speeds speeds;
+    int speed1, speed2;
+    int  motorSpeed[4];
+     int angle = (int)((theta- m_ourOrientation)*180/M_PI);
+     if(angle<0) angle = 360 +angle;
+    //angle =0;
+        if (angle <= 90) {
+            if (angle > (90 - angle)) {
+                speed1 = 100;
+                speed2 = ((90 - angle) * 100) / angle;
+            } else {
+                speed2 = 100;
+                speed1 = ((angle) * 100) / (90 - angle);
+            }
+            motorSpeed[0] = speed2;
+            motorSpeed[1] = speed1;
+            motorSpeed[2] = (speed2 * (-1));
+            motorSpeed[3] = (speed1 * (-1));
+        } else if (angle > 90 && angle <= 180) {
+            angle = angle - 90;
+            if (angle > (90 - angle)) {
+                speed1 = 100;
+                speed2 = ((90 - angle) * 100) / angle;
+            } else {
+                speed2 = 100;
+                speed1 = ((angle) * 100) / (90 - angle);
+            }
+            motorSpeed[0] = (speed1 * (-1));
+            motorSpeed[1] = (speed2);
+            motorSpeed[2] = speed1;
+            motorSpeed[3] = (speed2 * (-1));
+        } else if (angle > 180 && angle <= 270) {
+            angle = angle - 180;
+            if (angle > (90 - angle)) {
+                speed1 = 100;
+                speed2 = ((90 - angle) * 100) / angle;
+            } else {
+                speed2 = 100;
+                speed1 = ((angle) * 100) / (90 - angle);
+            }
+            motorSpeed[0] =  speed2 * (-1);
+            motorSpeed[1] = (speed1 * (-1));
+            motorSpeed[2] = speed2;
+            motorSpeed[3] = speed1;
+        } else {
+            angle = angle - 270;
+            if (angle > (90 - angle)) {
+                speed1 = 100;
+                speed2 = ((90 - angle) * 100) / angle;
+            } else {
+                speed2 = 100;
+                speed1 = ((angle) * 100) / (90 - angle);
+            }
+            motorSpeed[0] =  speed1;
+            motorSpeed[1] = (speed2 * (-1));
+            motorSpeed[2] = ((speed1) * (-1));
+            motorSpeed[3] = speed2;
+           }
+
+
+      speeds.left   =   -motorSpeed[0]/100*MAX_SPEED;
+      speeds.right  =   -motorSpeed[2]/100*MAX_SPEED;
+      speeds.front  =   -motorSpeed[3]/100*MAX_SPEED;
+      speeds.rear   =   -motorSpeed[1]/100*MAX_SPEED;
+
+//        speeds.left   =   0;
+//        speeds.right  =   0;
+//        speeds.front  =   0;
+//        speeds.rear   =   0;
+
+//        loggingObj->ShowMsg(QString("rotate robot angle %1 rotate angle %2")
+//                                .arg(theta- m_ourOrientation)
+//                                     .arg(theta)
+//                                .toAscii()
+//                                .data());
 
       speeds = add_rotation(speeds,theta- m_ourOrientation);
 
@@ -220,7 +393,7 @@ void CNavigation::GenerateValues(TNavEntry *entry)
 
 
 
-            if (isAtTarget(x, y, m_ourOrientation, target_x, target_y, target_theta ))
+           while(isAtTarget(x, y, m_ourOrientation, target_x, target_y, target_theta ))
                 if (targetId < ai->aiData.pathLength - 1 )
                     targetId++;
 
@@ -284,25 +457,41 @@ void CNavigation::GenerateValues(TNavEntry *entry)
 
     if (_kickerCnt > 0)  _kickerCnt--;
 
-    if ((ai->aiData.shouldKick == 1) && (_kickerCnt <= 0)){
+    if ((ai->aiData.shouldKick == 1) && (_kickerCnt < 0)){
         //    send kick command!
         entry->robot.sendData.kicker =  1;
-        _kickerCnt = 10;
+        _kickerCnt = 20;
     }
-    //m_ourOrientation=0;
-   //target_theta = M_PI/4;
-   Speeds speeds = find_speeds(target_theta, m_ourOrientation);
+    else entry->robot.sendData.kicker =  0;
+
+    Speeds speeds;
+
+    if (sharedMem.systemState == ePenaltyAttack&& (_kickerCnt <= 0))
+    {
+
+        //speeds = find_speeds_attack(target_theta, m_ourOrientation);
+        entry->robot.sendData.kicker            =  1;
+
+    }
+    else if((sharedMem.systemState == ePenaltyDefend ))
+    {
+        speeds = find_speeds_deffend_left_right(target_theta, m_ourOrientation);
+    }
+    else
+    {
+        speeds = find_speeds(target_theta, m_ourOrientation);
 
    //if we have the ball reduce our speed by half
-   if(ai->aiData.doWeHaveBall == 1){
-    speeds = limit_speeds(speeds,2);
-   }
+//   if(ai->aiData.doWeHaveBall == 1){
+//    speeds = limit_speeds(speeds,2);
+//   }
+    }
 
-   loggingObj->ShowMsg(QString("robot angle %1 target angle %2")
-                           .arg(m_ourOrientation)
-                                .arg(ai->aiData.path[targetId].orientation)
-                           .toAscii()
-                           .data());
+//   loggingObj->ShowMsg(QString("robot angle %1 target angle %2")
+//                           .arg(m_ourOrientation)
+//                                .arg(target_theta)
+//                           .toAscii()
+//                           .data());
 
     //Send the speeds
 
@@ -324,9 +513,9 @@ void CNavigation::GenerateValues(TNavEntry *entry)
     entry->robot.sendData.motor_rear_speed =  abs(speeds.rear);
 
     entry->robot.sendData.motor_left_dir = speeds.left >= 0 ? 1 : 0;
-    entry->robot.sendData.motor_right_dir = speeds.right >= 0 ? 1 : 0;
+    entry->robot.sendData.motor_right_dir = speeds.right >= 0 ? 0 : 1;
 
-    entry->robot.sendData.motor_front_dir = speeds.front >= 0 ? 1 : 0;
+    entry->robot.sendData.motor_front_dir = speeds.front >= 0 ? 0 : 1;
     entry->robot.sendData.motor_rear_dir = speeds.rear >= 0 ? 1 : 0;
 #endif
 
@@ -340,7 +529,7 @@ void CNavigation::GenerateValues(TNavEntry *entry)
                             .arg(entry->robot.sendData.motor_rear_dir)
                             .arg(entry->robot.sendData.motor_rear_speed)
                             .toAscii()
-                            .data());
+                           .data());
 }
 
 
@@ -353,6 +542,12 @@ void CNavigation::GenerateStop(TNavEntry *entry)
     entry->robot.sendData.motor_front_speed =  0;
     entry->robot.sendData.motor_rear_speed  =  0;
     entry->robot.sendData.kicker            =  0;
+
+    entry->robot.sendData.motor_left_dir = 0;
+    entry->robot.sendData.motor_right_dir = 0;
+    entry->robot.sendData.motor_front_dir = 0;
+    entry->robot.sendData.motor_rear_dir = 0;
+
 }
 void CNavigation::kickerP(TNavEntry *entry)
 {
