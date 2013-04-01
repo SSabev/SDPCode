@@ -9,9 +9,9 @@
 #define _USE_MATH_DEFINES
 
 #define MOVE_SPEED     (20)
-#define ROT_SPEED	(25)
+#define ROT_SPEED	(20)
 #define ROT_PENALTY_SPEED	(45)
-#define MAX_SPEED	(120)
+#define MAX_SPEED	(110)
 
 int abs(int val){
     if(val < 0) return -val;
@@ -153,7 +153,7 @@ Speeds find_speeds_deffend_left_right(float theta, float m_ourOrientation ){
 
       //speeds = add_rotation(speeds,theta- m_ourOrientation);
 
-      speeds = limit_speeds(speeds,1);
+      speeds = limit_speeds(speeds,1.5);
 
 
     return speeds;
@@ -198,12 +198,7 @@ Speeds find_speeds_attack(float theta, float m_ourOrientation ){
         return speeds;
 
 
-      //speeds = add_rotation(speeds,theta- m_ourOrientation);
 
-      //speeds = limit_speeds(speeds,1);
-
-
-    //return speeds;
 }
 
 Speeds find_speeds(float theta,float target_theta, float m_ourOrientation ){
@@ -430,7 +425,7 @@ void CNavigation::GenerateValues(TNavEntry *entry)
     if ((ai->aiData.shouldKick == 1) && (_kickerCnt <= 0)){
         //    send kick command!
         entry->robot.sendData.kicker =  1;
-        _kickerCnt = 15;
+        _kickerCnt = 30;
     }
 
     else entry->robot.sendData.kicker =  0;
@@ -498,7 +493,7 @@ void CNavigation::GenerateValues(TNavEntry *entry)
     entry->robot.sendData.motor_rear_dir = speeds.rear >= 0 ? 1 : 0;
 #endif
 
-    loggingObj->ShowMsg(QString("left: %1 %2 right: %3 %4 front: %5 %6 back: %7 %8 kick %9 %10")
+    loggingObj->ShowMsg(QString("left: %1 %2 right: %3 %4 front: %5 %6 back: %7 %8 kick %9")
                             .arg(entry->robot.sendData.motor_left_dir)
                             .arg(entry->robot.sendData.motor_left_speed)
                             .arg(entry->robot.sendData.motor_right_dir)
@@ -508,7 +503,7 @@ void CNavigation::GenerateValues(TNavEntry *entry)
                             .arg(entry->robot.sendData.motor_rear_dir)
                             .arg(entry->robot.sendData.motor_rear_speed)
                         .arg(entry->robot.sendData.kicker)
-                        .arg( ai->aiData.shouldKick)
+                        //.arg( ai->aiData.shouldKick)
 
                             .toAscii()
                            .data());
