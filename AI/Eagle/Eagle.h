@@ -30,8 +30,8 @@ private:
 
 	Intersection m_intersection;
 
-	bool m_isKickingStateSet;
-	RobotState m_kickingState;
+	bool m_isKickingPosSet;
+	Vector2 m_kickingPos;
 };
 
 #endif
