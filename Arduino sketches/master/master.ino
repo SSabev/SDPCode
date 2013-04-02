@@ -41,10 +41,6 @@ byte kicker_operation = KICKER_IDLE;
 
 
 void setup(  ) {
-    Wire.begin();
-    Serial.begin(9600);
-    Serial.println("Hello!");
-    time = millis();
     pinMode(frontM0, OUTPUT);
     pinMode(frontM1, OUTPUT);
     pinMode(backM0, OUTPUT);
@@ -52,6 +48,12 @@ void setup(  ) {
     pinMode(spinner, OUTPUT);
     pinMode(kicker_a, OUTPUT);
     pinMode(kicker_b, OUTPUT);
+
+    Wire.begin();
+    Serial.begin(9600);
+    Serial.println("Hello!");
+    time = millis();
+
     digitalWrite(spinner, HIGH);
     attachInterrupt(1, RPMPulse, CHANGE);
     attachInterrupt(0, RPMPulse2, CHANGE);
@@ -71,7 +73,6 @@ void loop() {
     int i = 0;          // Counter for control package validation
     delay(5);           // Timeout for serial buffer consistency
     if (Serial.available() > 0){
-        Serial.println("Have data");
         while (i<5){
             ctrlVals[i] = Serial.read();
             i++;
@@ -86,12 +87,11 @@ void loop() {
         ctrlVals[KICKER_INDEX] = 0;
     }
 
-//    Serial.println("Kicker section");
     
     if (((ctrlVals[KICKER_INDEX] & KICKER_MASK)!= 0) && (kicker_operation == KICKER_IDLE)) {
         Serial.println("Phase 1");
-        //      digitalWrite(kicker_a, HIGH);
-        //      digitalWrite(kicker_b, LOW);
+        digitalWrite(kicker_a, HIGH);
+        digitalWrite(kicker_b, LOW);
 
         kicker_operation = CHARGE_KICKER;
         kicker_time = millis();
@@ -99,30 +99,28 @@ void loop() {
     }
     else if ((kicker_operation == CHARGE_KICKER) && (millis() - kicker_time >= CHARGE_TIME)) {
         Serial.println("Phase 2");
-        //      digitalWrite(kicker_a, LOW);
-        //      digitalWrite(kicker_b, HIGH);
-        // 150
+        digitalWrite(kicker_a, LOW);
+        digitalWrite(kicker_b, HIGH);
+
         kicker_operation = DO_KICK;
         kicker_time = millis();
     }
     else if ((kicker_operation == DO_KICK) && (millis() - kicker_time >= KICK_TIME)) {
         Serial.println("Phase 3");
-        //      digitalWrite(kicker_a, HIGH);
-        //      digitalWrite(kicker_b, LOW);
-        //delay(100);
+        digitalWrite(kicker_a, HIGH);
+        digitalWrite(kicker_b, LOW);
 
         kicker_operation = RETRACT_KICKER;
         kicker_time = millis();
     }
     else if ((kicker_operation == RETRACT_KICKER) && (millis() - kicker_time >= RETRACT_TIME)) {
         Serial.println("Final Phase");
-        //      digitalWrite(kicker_a, LOW);
-        //      digitalWrite(kicker_b, LOW);
+        digitalWrite(kicker_a, LOW);
+        digitalWrite(kicker_b, LOW);
 
         kicker_operation = KICKER_IDLE;
     }
 
-//    Serial.println("Kicker done");
 
     if (millis() - time > TIMECHECK){
         int temp_speed_a = revolutions_a * 250/TIMECHECK; // calculate Degrees per Second and divide by 4, to equate to desired_speed
@@ -138,10 +136,8 @@ void loop() {
         } else if (temp_speed_b < desired_speed_b) {
             current_speed_b++;
         }
-//        Serial.println("Fix done");
 
         setSpeeds();
-//        Serial.println("Set speeds done");
 
         //Serial.print("t: ");
         //Serial.print(temp_speed_a);
