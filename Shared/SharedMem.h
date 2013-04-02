@@ -76,7 +76,8 @@ typedef struct{
     unsigned char f_l_sensor    : 1;
     unsigned char f_r_sensor    : 1;
     unsigned char back_sensor   : 1;
-    unsigned char reserved      : 5;
+    unsigned char have_ball     : 1;
+    unsigned char reserved      : 4;
 } __attribute__ ((packed)) TRobotState;
 
 // Wrapper structure for int alingnment
