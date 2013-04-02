@@ -25,7 +25,7 @@ void Eagle::SetSharedData(TSystemState state, int pitchSizeX, int pitchSizeY, TP
 /*!
 * Identify the target state that we wish the robot to be in. This will be the target which the A* algorithm plots towards.
 */
-RobotState Eagle::IdentifyTarget(RobotState &ourRobotState, RobotState &enemyRobotState, Vector2 ballPos)
+RobotState Eagle::IdentifyTarget(RobotState &ourRobotState, RobotState &enemyRobotState, Vector2 ballPos, bool &isMovingToBall)
 {
 	RobotState targetState;
 
@@ -45,6 +45,7 @@ RobotState Eagle::IdentifyTarget(RobotState &ourRobotState, RobotState &enemyRob
     }
     
     ballPos.Clamp(Vector2(0,0), Vector2(m_pitchSizeX-1, m_pitchSizeY-1));
+	isMovingToBall = false;
 
     ourRobotState.SetHasBall(DoesRobotHaveBall(ourRobotState, ballPos));
     enemyRobotState.SetHasBall(DoesRobotHaveBall(enemyRobotState, ballPos));
@@ -142,6 +143,7 @@ RobotState Eagle::IdentifyTarget(RobotState &ourRobotState, RobotState &enemyRob
 			else
 			{
 				// If we don't have the ball, the aim should be to move to the ball.
+				isMovingToBall = true;
 				targetState.SetPosition(ballPos);
 				
 				if (m_pitchSide == eLeftSide)

@@ -12,6 +12,7 @@
 
 #include <list>
 #include <iostream>
+#include <cmath>
 
 AStarUnitTests::AStarUnitTests()
 {
@@ -56,15 +57,30 @@ void AStarUnitTests::AStarPlot()
 
 		// We're not dealing with the enemy robot position currently.
 		foresee.SetPitchDimensions(600, 300);
-		RobotState ourRobotFuture = foresee.ExtrapolateRobotState(ourRobotPrevious);
+		/*RobotState ourRobotFuture = foresee.ExtrapolateRobotState(ourRobotPrevious);
 		RobotState enemyRobotFuture = foresee.ExtrapolateRobotState(enemyRobotPrevious);
-		Vector2 ballFuture = foresee.ExtrapolatePosition(ballPrevious);
+		Vector2 ballFuture = foresee.ExtrapolatePosition(ballPrevious);*/
 
-		eagle.SetSharedData(eMatch,600,300,eLeftSide);
-		RobotState targetState = eagle.IdentifyTarget(ourRobotFuture,enemyRobotFuture,ballFuture);
+		RobotState ourRobotFuture(450, 150, 0);
+		RobotState enemyRobotFuture(580, 200, M_PI/2);
+		Vector2 ballFuture(500, 150);
+
+		eagle.SetSharedData(ePenaltyAttack,600,300,eLeftSide);
+		bool isMovingToBall = false;
+		RobotState targetState = eagle.IdentifyTarget(ourRobotFuture,enemyRobotFuture,ballFuture,isMovingToBall);
 
 		aStar.SetSharedData(600, 300, eLeftSide);
 		std::list<RobotState> aStarPath = aStar.GeneratePath(ourRobotFuture, targetState, false, ballFuture, enemyRobotFuture);
+
+			// If we're turning but not changing position, A* won't account for this. 
+	// Need to manually add another point in this situation. Could be done more cleanly than this.
+	if ((ourRobotFuture.Position() == targetState.Position()) && (ourRobotFuture.Orientation() != targetState.Orientation()))
+	{
+		aStarPath.push_back(targetState);
+	}
+
+		RobotState front = aStarPath.front();
+		RobotState back = aStarPath.back();
 
 		std::list<RobotState> smoothedPath = impala.SmoothPath(aStarPath, 99);
 
