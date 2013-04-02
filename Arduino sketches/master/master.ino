@@ -36,7 +36,7 @@ int TIMECHECK = 20;
 
 int THRESHOLD = 10;
 
-int kicker_time;
+long kicker_time;
 byte kicker_operation = KICKER_IDLE;
 
 
@@ -73,8 +73,10 @@ void loop() {
     int i = 0;          // Counter for control package validation
     delay(5);           // Timeout for serial buffer consistency
     if (Serial.available() > 0){
+        Serial.println("Data avail");
         while (i<5){
             ctrlVals[i] = Serial.read();
+            Serial.println(ctrlVals[i], HEX);
             i++;
         }
         processVals(ctrlVals);
@@ -95,6 +97,7 @@ void loop() {
 
         kicker_operation = CHARGE_KICKER;
         kicker_time = millis();
+        Serial.println(kicker_time);
 
     }
     else if ((kicker_operation == CHARGE_KICKER) && (millis() - kicker_time >= CHARGE_TIME)) {
@@ -104,6 +107,7 @@ void loop() {
 
         kicker_operation = DO_KICK;
         kicker_time = millis();
+        Serial.println(kicker_time);
     }
     else if ((kicker_operation == DO_KICK) && (millis() - kicker_time >= KICK_TIME)) {
         Serial.println("Phase 3");
@@ -112,6 +116,7 @@ void loop() {
 
         kicker_operation = RETRACT_KICKER;
         kicker_time = millis();
+        Serial.println(kicker_time);
     }
     else if ((kicker_operation == RETRACT_KICKER) && (millis() - kicker_time >= RETRACT_TIME)) {
         Serial.println("Final Phase");
@@ -119,6 +124,7 @@ void loop() {
         digitalWrite(kicker_b, LOW);
 
         kicker_operation = KICKER_IDLE;
+        Serial.println(millis());
     }
 
 
@@ -223,3 +229,4 @@ void setSpeeds (){
         analogWrite(backM0, current_speed_b);
     }
 }
+
