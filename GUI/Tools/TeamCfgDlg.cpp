@@ -19,6 +19,7 @@ CTeamCfgDlg::CTeamCfgDlg(QWidget *parent)
 
     widthBx->setValue(sharedMem.pitchCfg.pitchWidth);
     heightBx->setValue(sharedMem.pitchCfg.pitchHeight);
+    speedScaleSB->setValue(sharedMem.speed_scale);
 
     connect(okBtn, SIGNAL(clicked()), this, SLOT(OkSlot()));
     connect(cancelBtn, SIGNAL(clicked()), this, SLOT(CancelSlot()));
@@ -38,6 +39,7 @@ void CTeamCfgDlg::OkSlot()
 
     sharedMem.pitchCfg.pitchWidth = widthBx->value();
     sharedMem.pitchCfg.pitchHeight = heightBx->value();
+    sharedMem.speed_scale = speedScaleSB->value();
 
     accept();
 }

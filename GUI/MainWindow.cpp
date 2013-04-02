@@ -98,6 +98,7 @@ void MainWindow::InitSytem()
     memset(&sharedMem, 0, sizeof(TShMem));
     // set current state as IDLE
     sharedMem.systemState = eIDLE;
+    sharedMem.speed_scale = 1.0;
 
 #ifdef ARDUINO_BLD
     CArduinoComm *btComm = new CArduinoComm(this);

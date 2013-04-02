@@ -139,6 +139,8 @@ typedef struct
     TPitchCfg     pitchCfg;
 
     TSystemStatus systemStatus;
+
+    float         speed_scale;
 } TShMem;
 
 extern TShMem sharedMem;
