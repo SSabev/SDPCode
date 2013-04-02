@@ -55,6 +55,7 @@ void setup(  ) {
     digitalWrite(spinner, HIGH);
     attachInterrupt(1, RPMPulse, CHANGE);
     attachInterrupt(0, RPMPulse2, CHANGE);
+    kicker_operation = KICKER_IDLE;
 }
 
 void RPMPulse() {
@@ -80,6 +81,9 @@ void loop() {
         Wire.write(ctrlVals[0]);
         Wire.write(ctrlVals[1]);
         Wire.endTransmission();
+    }
+    else{
+        ctrlVals[KICKER_INDEX] = 0;
     }
 
 //    Serial.println("Kicker section");
