@@ -47,8 +47,6 @@ private slots:
     void ConnLost();
     void SocketError();
 
-    void on_sendValsBtn_clicked();
-
 private:
     EStatus m_status;
 
