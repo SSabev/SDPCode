@@ -119,6 +119,8 @@ void loop() {
       kicker_operation = KICKER_IDLE;
     }
   }
+  Serial.println("Kicker done");
+
   if (millis() - time > TIMECHECK){
     int temp_speed_a = revolutions_a * 250/TIMECHECK; // calculate Degrees per Second and divide by 4, to equate to desired_speed
     int temp_speed_b = revolutions_b * 250/TIMECHECK;
@@ -133,9 +135,10 @@ void loop() {
     } else if (temp_speed_b < desired_speed_b) {
       current_speed_b++;
     }
-    
+    Serial.println("Fix done");
+
     setSpeeds();
-    
+    Serial.println("Set speeds done");
     
     //Serial.print("t: ");
     //Serial.print(temp_speed_a);
