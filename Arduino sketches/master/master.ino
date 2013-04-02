@@ -82,7 +82,7 @@ void loop() {
         Wire.endTransmission();
     }
 
-    Serial.println("Kicker section");
+//    Serial.println("Kicker section");
     
     if (((ctrlVals[KICKER_INDEX] & KICKER_MASK)!= 0) && (kicker_operation == KICKER_IDLE)) {
         Serial.println("Phase 1");
@@ -118,7 +118,7 @@ void loop() {
         kicker_operation = KICKER_IDLE;
     }
 
-    Serial.println("Kicker done");
+//    Serial.println("Kicker done");
 
     if (millis() - time > TIMECHECK){
         int temp_speed_a = revolutions_a * 250/TIMECHECK; // calculate Degrees per Second and divide by 4, to equate to desired_speed
@@ -134,10 +134,10 @@ void loop() {
         } else if (temp_speed_b < desired_speed_b) {
             current_speed_b++;
         }
-        Serial.println("Fix done");
+//        Serial.println("Fix done");
 
         setSpeeds();
-        Serial.println("Set speeds done");
+//        Serial.println("Set speeds done");
 
         //Serial.print("t: ");
         //Serial.print(temp_speed_a);
