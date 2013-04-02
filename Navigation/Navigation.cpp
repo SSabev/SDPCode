@@ -8,8 +8,8 @@
 
 #define _USE_MATH_DEFINES
 
-#define MOVE_SPEED     (20)
-#define ROT_SPEED	(20)
+#define MOVE_SPEED    (20)
+#define ROT_SPEED	(10)
 #define ROT_PENALTY_SPEED	(45)
 #define MAX_SPEED	(110)
 
@@ -201,71 +201,53 @@ Speeds find_speeds_attack(float theta, float m_ourOrientation ){
 
 }
 
-Speeds find_speeds(float theta,float target_theta, float m_ourOrientation ){
+Speeds find_speeds(float theta,float target_theta, float m_ourOrientation, int stop_check){
     Speeds speeds;
-    int speed1, speed2;
-    int  motorSpeed[4];
-     int angle = (int)((theta- m_ourOrientation)*180/M_PI);
-     if(angle<0) angle = 360 +angle;
-    //angle =0;
-        if (angle <= 90) {
-            if (angle > (90 - angle)) {
-                speed1 = 100;
-                speed2 = ((90 - angle) * 100) / angle;
-            } else {
-                speed2 = 100;
-                speed1 = ((angle) * 100) / (90 - angle);
-            }
-            motorSpeed[0] = speed2;
-            motorSpeed[1] = speed1;
-            motorSpeed[2] = (speed2 * (-1));
-            motorSpeed[3] = (speed1 * (-1));
-        } else if (angle > 90 && angle <= 180) {
-            angle = angle - 90;
-            if (angle > (90 - angle)) {
-                speed1 = 100;
-                speed2 = ((90 - angle) * 100) / angle;
-            } else {
-                speed2 = 100;
-                speed1 = ((angle) * 100) / (90 - angle);
-            }
-            motorSpeed[0] = (speed1 * (-1));
-            motorSpeed[1] = (speed2);
-            motorSpeed[2] = speed1;
-            motorSpeed[3] = (speed2 * (-1));
-        } else if (angle > 180 && angle <= 270) {
-            angle = angle - 180;
-            if (angle > (90 - angle)) {
-                speed1 = 100;
-                speed2 = ((90 - angle) * 100) / angle;
-            } else {
-                speed2 = 100;
-                speed1 = ((angle) * 100) / (90 - angle);
-            }
-            motorSpeed[0] =  speed2 * (-1);
-            motorSpeed[1] = (speed1 * (-1));
-            motorSpeed[2] = speed2;
-            motorSpeed[3] = speed1;
-        } else {
-            angle = angle - 270;
-            if (angle > (90 - angle)) {
-                speed1 = 100;
-                speed2 = ((90 - angle) * 100) / angle;
-            } else {
-                speed2 = 100;
-                speed1 = ((angle) * 100) / (90 - angle);
-            }
-            motorSpeed[0] =  speed1;
-            motorSpeed[1] = (speed2 * (-1));
-            motorSpeed[2] = ((speed1) * (-1));
-            motorSpeed[3] = speed2;
-           }
+    int forwardspeed;
+    int rightspeed;
+    int robotspeed;
+    int rotatespeed;
+
+    robotspeed = MAX_SPEED;
+    rotatespeed = ROT_SPEED;
+
+    forwardspeed = cos(theta - m_ourOrientation) * robotspeed;
+    rightspeed = sin(theta - m_ourOrientation) * robotspeed;
+
+    if (stop_check == 1) {
+        forwardspeed = 0;
+        rightspeed = 0;
+        rotatespeed = 25;
+
+    }
 
 
-      speeds.left   =   -motorSpeed[0]/100*MAX_SPEED;
-      speeds.right  =   -motorSpeed[2]/100*MAX_SPEED;
-      speeds.front  =   -motorSpeed[3]/100*MAX_SPEED;
-      speeds.rear   =   -motorSpeed[1]/100*MAX_SPEED;
+    //set the rotate speed
+
+    float rotate_dir;
+    rotate_dir = target_theta - m_ourOrientation;
+
+    if (rotate_dir < 0) {
+        rotate_dir = rotate_dir + 2*M_PI;
+    }
+
+    if ((rotate_dir > 0.2) && (rotate_dir <= M_PI)){
+        rotatespeed = -rotatespeed;
+    }
+    else if ((rotate_dir > M_PI) && (rotate_dir <= (2*M_PI-0.2))){
+        rotatespeed = rotatespeed;
+    }
+    else {
+        rotatespeed = 0;
+    }
+
+
+
+    //set the motor speeds
+    speeds.left = -forwardspeed - rotatespeed;
+    speeds.front = rightspeed - rotatespeed;
+    speeds.right = forwardspeed - rotatespeed;
+    speeds.rear = -rightspeed - rotatespeed;
 
 //        speeds.left   =   0;
 //        speeds.right  =   0;
@@ -278,9 +260,6 @@ Speeds find_speeds(float theta,float target_theta, float m_ourOrientation ){
 //                                .toAscii()
 //                                .data());
 
-      speeds = add_rotation(speeds,target_theta- m_ourOrientation);
-
-      speeds = limit_speeds(speeds,1);
 
 
     return speeds;
@@ -339,7 +318,9 @@ void CNavigation::GenerateValues(TNavEntry *entry)
     float dx;
     float dy;
     float theta;
-   // int distToTarget;
+    int distToTarget;
+    int stop_check;
+    int get_ball = ai->aiData.isMovingToBall;
 
 
 
@@ -369,11 +350,36 @@ void CNavigation::GenerateValues(TNavEntry *entry)
 
         }
 
+    float fred1 = (int)ai->aiData.path[ai->aiData.pathLength - 1].position_X - x;
+    float fred2 = (int)ai->aiData.path[ai->aiData.pathLength - 1].position_Y - y;
+
+
+    float rotate_dir;
+    rotate_dir = target_theta - m_ourOrientation;
+    if (rotate_dir < 0) {
+        rotate_dir = rotate_dir + 2*M_PI;
+    }
+
+    distToTarget = (int) sqrt((fred1 * fred1)+(fred2 * fred2));
+
+    if (distToTarget < 75 && get_ball == 1 && (rotate_dir > 0.3 || rotate_dir < (2*M_PI - 0.3))) {
+        stop_check = 1;
+    }
+     else if (distToTarget < 20 ) {
+        stop_check = 1;
+    }
+    else {
+        stop_check = 0;
+    }
+
+    if (distToTarget < 75 && get_ball == 1 && (rotate_dir < 0.3 || rotate_dir > (2*M_PI - 0.3))) {
+            target_x =  target_x + cos(theta - m_ourOrientation) * 100;
+            target_y = target_y - sin(theta - m_ourOrientation) * 100;
+            stop_check = 0;
+     }
 
     dx = (int)target_x - x;
     dy = (int)target_y - y;
-
- //  distToTarget = (int) sqrt((dx * dx)+(dy * dy));
 
 
 
@@ -424,8 +430,12 @@ void CNavigation::GenerateValues(TNavEntry *entry)
 
     if ((ai->aiData.shouldKick == 1) && (_kickerCnt <= 0)){
         //    send kick command!
-        entry->robot.sendData.kicker =  1;
+    //    entry->robot.sendData.kicker =  1;
         _kickerCnt = 30;
+        loggingObj->ShowMsg(QString("KICK!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!: %1")
+                                .arg(entry->robot.sendData.motor_left_dir)
+                            .toAscii()
+                           .data());
     }
 
     else entry->robot.sendData.kicker =  0;
@@ -448,7 +458,7 @@ void CNavigation::GenerateValues(TNavEntry *entry)
     }
     else
     {
-        speeds = find_speeds(theta,target_theta, m_ourOrientation);
+        speeds = find_speeds(theta,target_theta, m_ourOrientation, stop_check);
 
     //m_ourOrientation=0;
    //target_theta = M_PI/4;
@@ -498,11 +508,11 @@ void CNavigation::GenerateValues(TNavEntry *entry)
                             .arg(entry->robot.sendData.motor_left_speed)
                             .arg(entry->robot.sendData.motor_right_dir)
                             .arg(entry->robot.sendData.motor_right_speed)
-                            .arg(entry->robot.sendData.motor_front_dir)
-                            .arg(entry->robot.sendData.motor_front_speed)
-                            .arg(entry->robot.sendData.motor_rear_dir)
-                            .arg(entry->robot.sendData.motor_rear_speed)
-                        .arg(entry->robot.sendData.kicker)
+                        .arg(entry->robot.sendData.motor_front_dir)
+                        .arg(entry->robot.sendData.motor_front_speed)
+                        .arg(entry->robot.sendData.motor_rear_dir)
+                        .arg(entry->robot.sendData.motor_rear_speed)
+                    .arg(entry->robot.sendData.kicker)
                         //.arg( ai->aiData.shouldKick)
 
                             .toAscii()
