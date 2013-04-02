@@ -41,10 +41,6 @@ byte kicker_operation = KICKER_IDLE;
 
 
 void setup(  ) {
-    Wire.begin();
-    Serial.begin(9600);
-    Serial.println("Hello!");
-    time = millis();
     pinMode(frontM0, OUTPUT);
     pinMode(frontM1, OUTPUT);
     pinMode(backM0, OUTPUT);
@@ -52,6 +48,12 @@ void setup(  ) {
     pinMode(spinner, OUTPUT);
     pinMode(kicker_a, OUTPUT);
     pinMode(kicker_b, OUTPUT);
+
+    Wire.begin();
+    Serial.begin(9600);
+    Serial.println("Hello!");
+    time = millis();
+
     digitalWrite(spinner, HIGH);
     attachInterrupt(1, RPMPulse, CHANGE);
     attachInterrupt(0, RPMPulse2, CHANGE);
