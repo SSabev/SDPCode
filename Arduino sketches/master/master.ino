@@ -4,8 +4,11 @@
 #define KICKER_MASK    1
 
 #define CHARGE_KICKER  1
+#define CHARGE_TIME    50
 #define DO_KICK        2
+#define KICK_TIME      150
 #define RETRACT_KICKER 3
+#define RETRACT_TIME   100
 #define KICKER_IDLE    0
 
 int frontM0 = 11;    // Left motor black wire
@@ -33,7 +36,7 @@ int TIMECHECK = 20;
 
 int THRESHOLD = 10;
 
-int target_time;
+int kicker_time;
 byte kicker_operation = KICKER_IDLE;
   
 
@@ -63,6 +66,7 @@ void RPMPulse2() {
 }
 
 void loop() {
+    Serial.println("loop start");
   if (Serial.available()){
     byte ctrlVals[5];    // Array to store control values
     int i = 0;          // Counter for control package validation
@@ -79,7 +83,7 @@ void loop() {
       Wire.write(ctrlVals[1]);
       Wire.endTransmission();
     }
-   
+   Serial.println("Kicker section");
     
     if (((ctrlVals[KICKER_INDEX] & KICKER_MASK)!= 0) && (kicker_operation == KICKER_IDLE)) {
       Serial.println("Phase 1");
@@ -87,27 +91,27 @@ void loop() {
 //      digitalWrite(kicker_b, LOW);
       
       kicker_operation = CHARGE_KICKER;
-      target_time = millis() + 50;
+      kicker_time = millis();
       
     }
-    else if ((kicker_operation == CHARGE_KICKER) && (target_time <= millis())) {
+    else if ((kicker_operation == CHARGE_KICKER) && (millis() - kicker_time >= CHARGE_TIME)) {
       Serial.println("Phase 2");
 //      digitalWrite(kicker_a, LOW);
 //      digitalWrite(kicker_b, HIGH);
       // 150
       kicker_operation = DO_KICK;
-      target_time = millis() + 150;
+      kicker_time = millis();
     }
-    else if ((kicker_operation == DO_KICK) && (target_time <= millis())) {
+    else if ((kicker_operation == DO_KICK) && (millis() - kicker_time >= KICK_TIME)) {
       Serial.println("Phase 3");
 //      digitalWrite(kicker_a, HIGH);
 //      digitalWrite(kicker_b, LOW);
       //delay(100);
       
       kicker_operation = RETRACT_KICKER;
-      target_time = millis() + 100;
+      kicker_time = millis();
     }
-    else if ((kicker_operation == RETRACT_KICKER) && (target_time <= millis())) {
+    else if ((kicker_operation == RETRACT_KICKER) && (millis() - kicker_time >= RETRACT_TIME)) {
       Serial.println("Final Phase");
 //      digitalWrite(kicker_a, LOW);
 //      digitalWrite(kicker_b, LOW);
