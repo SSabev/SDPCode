@@ -67,7 +67,8 @@ void loop() {
     byte ctrlVals[5];    // Array to store control values
     int i = 0;          // Counter for control package validation
     delay(5);           // Timeout for serial buffer consistency
-    if (Serial.available()){
+    if (Serial.available() > 0){
+        Serial.println("Have data");
       while (i<5){
         ctrlVals[i] = Serial.read();
         i++;
@@ -82,8 +83,8 @@ void loop() {
     
     if (((ctrlVals[KICKER_INDEX] & KICKER_MASK)!= 0) && (kicker_operation == KICKER_IDLE)) {
       Serial.println("Phase 1");
-      digitalWrite(kicker_a, HIGH);
-      digitalWrite(kicker_b, LOW);
+//      digitalWrite(kicker_a, HIGH);
+//      digitalWrite(kicker_b, LOW);
       
       kicker_operation = CHARGE_KICKER;
       target_time = millis() + 50;
@@ -91,25 +92,25 @@ void loop() {
     }
     else if ((kicker_operation == CHARGE_KICKER) && (target_time <= millis())) {
       Serial.println("Phase 2");
-      digitalWrite(kicker_a, LOW);
-      digitalWrite(kicker_b, HIGH);
+//      digitalWrite(kicker_a, LOW);
+//      digitalWrite(kicker_b, HIGH);
       // 150
       kicker_operation = DO_KICK;
       target_time = millis() + 150;
     }
     else if ((kicker_operation == DO_KICK) && (target_time <= millis())) {
       Serial.println("Phase 3");
-      digitalWrite(kicker_a, HIGH);
-      digitalWrite(kicker_b, LOW);
+//      digitalWrite(kicker_a, HIGH);
+//      digitalWrite(kicker_b, LOW);
       //delay(100);
       
       kicker_operation = RETRACT_KICKER;
       target_time = millis() + 100;
     }
     else if ((kicker_operation == RETRACT_KICKER) && (target_time <= millis())) {
-      Serial.println("Phase 4");
-      digitalWrite(kicker_a, LOW);
-      digitalWrite(kicker_b, LOW);
+      Serial.println("Final Phase");
+//      digitalWrite(kicker_a, LOW);
+//      digitalWrite(kicker_b, LOW);
       
       kicker_operation = KICKER_IDLE;
     }
