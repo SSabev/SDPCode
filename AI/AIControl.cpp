@@ -130,10 +130,12 @@ void AIControl::RunAI(TAIEntry* aiEntry)
 	m_lastKnownBallPosition = ballFuture;
 	m_lastKnownRobotState = ourRobotFuture;
 
+	bool isMovingToBall = false;
+
 	// Given the positions of the robots and ball, identify the ideal position 
 	// and orientation for us to reach.
 	m_eagle.SetSharedData(sharedMem.systemState, sharedMem.pitchCfg.pitchWidth, sharedMem.pitchCfg.pitchHeight, sharedMem.pitchSide);
-	RobotState targetState = m_eagle.IdentifyTarget(ourRobotFuture, enemyRobotFuture, ballFuture);
+	RobotState targetState = m_eagle.IdentifyTarget(ourRobotFuture, enemyRobotFuture, ballFuture, isMovingToBall);
 
 	// Check if we have the ball and should kick from our current state.
 	bool shouldKick;
@@ -186,6 +188,7 @@ void AIControl::RunAI(TAIEntry* aiEntry)
 	aiEntry->aiData.isFailedFrame = 0;
 	aiEntry->aiData.shouldKick = shouldKick;
 	aiEntry->aiData.doWeHaveBall = ourRobotFuture.HasBall();
+	aiEntry->aiData.isMovingToBall = isMovingToBall;
 
     //DEBUG
     if (ourRobotFuture.HasBall())
