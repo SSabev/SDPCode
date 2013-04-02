@@ -87,7 +87,7 @@ void loop() {
 
     
     if (((ctrlVals[KICKER_INDEX] & KICKER_MASK)!= 0) && (kicker_operation == KICKER_IDLE)) {
-//        Serial.println("Phase 1");
+        Serial.println("Phase 1");
         digitalWrite(kicker_a, HIGH);
         digitalWrite(kicker_b, LOW);
 
@@ -96,7 +96,7 @@ void loop() {
 
     }
     else if ((kicker_operation == CHARGE_KICKER) && (millis() - kicker_time >= CHARGE_TIME)) {
-//        Serial.println("Phase 2");
+        Serial.println("Phase 2");
         digitalWrite(kicker_a, LOW);
         digitalWrite(kicker_b, HIGH);
 
@@ -104,7 +104,7 @@ void loop() {
         kicker_time = millis();
     }
     else if ((kicker_operation == DO_KICK) && (millis() - kicker_time >= KICK_TIME)) {
-//        Serial.println("Phase 3");
+        Serial.println("Phase 3");
         digitalWrite(kicker_a, HIGH);
         digitalWrite(kicker_b, LOW);
 
@@ -112,7 +112,7 @@ void loop() {
         kicker_time = millis();
     }
     else if ((kicker_operation == RETRACT_KICKER) && (millis() - kicker_time >= RETRACT_TIME)) {
-//        Serial.println("Final Phase");
+        Serial.println("Final Phase");
         digitalWrite(kicker_a, LOW);
         digitalWrite(kicker_b, LOW);
 
