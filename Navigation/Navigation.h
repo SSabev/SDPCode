@@ -26,6 +26,7 @@ private:
 
     bool isNewPath(TAIEntry *ai);
     void savePathState(TAIEntry *ai);
+    void setCurrentPos(TNavEntry *entry, int &x, int &y, float &theta, TTeamColor teamColor);
 
     TTarget m_target;
 
@@ -34,6 +35,11 @@ private:
     float m_ourOrientation;
     int targetId; // ID of the next taret point provided by AI
     int lastPathLen, lastCurrentX, lastCurrentY; // for checking wheather AI has generated a new path
+
+    bool m_isPrevStateSet;
+    float m_prevX;
+    float m_prevY;
+    float m_prevOrientation;
 };
 
 #endif // NAVIGATION_H
