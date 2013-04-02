@@ -9,7 +9,7 @@ Eagle::Eagle()
 {
 	m_intersection = Intersection();
 
-	m_isKickingStateSet = false;
+	m_isKickingPosSet = false;
 }
 
 /*!
@@ -55,7 +55,7 @@ RobotState Eagle::IdentifyTarget(RobotState &ourRobotState, RobotState &enemyRob
 
     if (m_state == ePenaltyAttack)
 	{
-		m_isKickingStateSet = false;
+		m_isKickingPosSet = false;
 
          // When taking a penalty, we want to find a free position to kick to.
         // Position should stay the same - we only want to re-orientate.
@@ -110,7 +110,7 @@ RobotState Eagle::IdentifyTarget(RobotState &ourRobotState, RobotState &enemyRob
 	}
     else if (m_state == ePenaltyDefend)
 	{
-		m_isKickingStateSet = false;
+		m_isKickingPosSet = false;
 	
 		// When defending, we're permitted to move up and down the goalline.
 		// Orientation should stay the same.
@@ -133,7 +133,7 @@ RobotState Eagle::IdentifyTarget(RobotState &ourRobotState, RobotState &enemyRob
 		// If we're here, assume we're in open play.
 		if (!ourRobotState.HasBall())
 		{
-			m_isKickingStateSet = false;
+			m_isKickingPosSet = false;
 
 			// Check if the enemy robot has the ball.
 			if (enemyRobotState.HasBall())
@@ -167,13 +167,13 @@ RobotState Eagle::IdentifyTarget(RobotState &ourRobotState, RobotState &enemyRob
 		}
 		else
 		{
-			// Check if the previously calculated target path is appropriate or if we need to recalc.
-			if ((m_kickingState.Position().Distance(&ourRobotPos) < 30) || (m_kickingState.Position().Distance(&enemyRobotPos) < 40))
+			// Check if the previously calculated target pos is appropriate or if we need to recalc.
+			if ((m_kickingPos.Distance(&ourRobotPos) < 30) || (m_kickingPos.Distance(&enemyRobotPos) < 40))
 			{
-				m_isKickingStateSet = false;
+				m_isKickingPosSet = false;
 			}
 
-			if (!m_isKickingStateSet)
+			if (!m_isKickingPosSet)
 			{
 				// If we have the ball, let's move to a more appropriate place.
 				// This is done regardless of whether we're shooting or not.
@@ -229,11 +229,57 @@ RobotState Eagle::IdentifyTarget(RobotState &ourRobotState, RobotState &enemyRob
 				}
 
 				proposedPosition.Clamp(Vector2(0,0), Vector2(m_pitchSizeX-1, m_pitchSizeY-1));
-				m_kickingState.SetPosition(proposedPosition);
-				m_kickingState.SetOrientation(proposedPosition.GetAngleTo(&enemyGoalCentre));
+				m_kickingPos = proposedPosition;
+				//m_kickingState.SetOrientation(proposedPosition.GetAngleTo(&enemyGoalCentre));
 
-				targetState = m_kickingState;
-				m_isKickingStateSet = true;
+				targetState.SetPosition(m_kickingPos);
+				
+				// We'll do this by checking for intersections between us and three positions on the goal line.
+				Vector2 targetPositions[3];
+
+				targetPositions[0] = enemyGoalCentre;
+				targetPositions[1] = enemyGoalCentre - Vector2(0,50);
+				targetPositions[2] = enemyGoalCentre + Vector2(0,50);
+
+				int arrayLength = sizeof(targetPositions)/sizeof(Vector2);
+
+				Vector2 optimalShootingTarget;
+				float bestDistanceFromEnemy = 0;
+
+				// Iterate through the positions, finding the best one, based on if it's unblocked and how far it is from the enemy robot.
+				for (int i=0; i < arrayLength; i++)
+				{
+					// Check if the target is unblocked.
+					bool isBlocked = m_intersection.LineCircleIntersection(proposedPosition, targetPositions[i], enemyRobotPos, ROBOT_RADIUS);
+
+					if (isBlocked)
+					{
+						continue;
+					}
+
+					float distanceSqdToEnemy = enemyRobotPos.DistanceSquared(&targetPositions[i]);
+
+					// Check if this beats our previous best distance.
+					if (distanceSqdToEnemy > bestDistanceFromEnemy)
+					{
+						bestDistanceFromEnemy = distanceSqdToEnemy;
+						optimalShootingTarget = targetPositions[i];
+					}
+
+					// Check that we do actually have a target set.
+					if (optimalShootingTarget.IsSet())
+					{
+						float angleToTarget = proposedPosition.GetAngleTo(&optimalShootingTarget);
+
+						targetState.SetOrientation(angleToTarget);
+					}
+					else
+					{
+						targetState.SetOrientation(ourRobotState.Orientation());
+					}
+				}
+
+				m_isKickingPosSet = true;
 			}
 		}
 
