@@ -168,7 +168,7 @@ RobotState Eagle::IdentifyTarget(RobotState &ourRobotState, RobotState &enemyRob
 		else
 		{
 			// Check if the previously calculated target path is appropriate or if we need to recalc.
-			if ((m_kickingState.Position().Distance(&ourRobotPos) < 30) || (m_kickingState.Position().Distance(&enemyRobotPos) < 30))
+			if ((m_kickingState.Position().Distance(&ourRobotPos) < 30) || (m_kickingState.Position().Distance(&enemyRobotPos) < 40))
 			{
 				m_isKickingStateSet = false;
 			}
