@@ -67,7 +67,7 @@ void AStarUnitTests::AStarPlot()
 
 		eagle.SetSharedData(ePenaltyAttack,600,300,eLeftSide);
 		bool isMovingToBall = false;
-		RobotState targetState = eagle.IdentifyTarget(ourRobotFuture,enemyRobotFuture,ballFuture,isMovingToBall);
+		RobotState targetState = eagle.IdentifyTarget(ourRobotFuture,enemyRobotFuture,ballFuture,false, isMovingToBall);
 
 		aStar.SetSharedData(600, 300, eLeftSide);
 		std::list<RobotState> aStarPath = aStar.GeneratePath(ourRobotFuture, targetState, false, ballFuture, enemyRobotFuture);

@@ -16,7 +16,7 @@ public:
 	Eagle();
 	
 	void SetSharedData(TSystemState state, int pitchSizeX, int pitchSizeY, TPitchSide pitchSide);
-	RobotState IdentifyTarget(RobotState &ourRobotState, RobotState &enemyRobotState, Vector2 ballPos, bool &isMovingToBall);
+	RobotState IdentifyTarget(RobotState &ourRobotState, RobotState &enemyRobotState, Vector2 ballPos, bool doWeHaveBall, bool &isMovingToBall);
 	bool ShouldWeShoot(RobotState ourRobotState, RobotState enemyRobotState, Vector2 ballPos);
 	bool DoesRobotHaveBall(RobotState robotState, Vector2 ballPos); 
 
