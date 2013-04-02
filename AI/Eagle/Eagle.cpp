@@ -50,7 +50,8 @@ RobotState Eagle::IdentifyTarget(RobotState &ourRobotState, RobotState &enemyRob
 	isMovingToBall = false;
 
 	// doWeHaveBall is a value which comes from the robot's rotational sensors.
-    ourRobotState.SetHasBall(doWeHaveBall);
+    //ourRobotState.SetHasBall(doWeHaveBall);
+	ourRobotState.SetHasBall(DoesRobotHaveBall(ourRobotState, ballPos));
     enemyRobotState.SetHasBall(DoesRobotHaveBall(enemyRobotState, ballPos));
 
     if (m_state == ePenaltyAttack)
