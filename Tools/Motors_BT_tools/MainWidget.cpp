@@ -28,6 +28,7 @@ typedef struct{
     unsigned char motor_front_dir   : 1;
 
     unsigned char kicker            : 1;
+    unsigned char spinners          : 1;
 } __attribute__ ((packed)) TRobotData;
 
 TRobotData _robotData;
@@ -214,6 +215,9 @@ void CMainWidget::SendZero()
     _robotData.motor_rear_dir = 0;
     _robotData.motor_left_dir = 0;
     _robotData.motor_right_dir = 0;
+
+    _robotData.kicker = 0;
+    _robotData.spinners = 0;
 
     status = ::send (m_Socket, (void *) &_robotData, sizeof(_robotData), 0);
 
