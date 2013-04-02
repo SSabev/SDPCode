@@ -6,8 +6,9 @@
 
 #include "ThreadedCallback.h"
 
-CAICallback::CAICallback(CVisionComm *pVisionComm, AIControl *pAICtrl)
+CAICallback::CAICallback(CVisionComm *pVisionComm, IBTComm *pIBtComm, AIControl *pAICtrl)
     : m_pVisionComm(pVisionComm)
+    , m_pIBtComm(pIBtComm)
     , m_pAICtrl(pAICtrl)
 {
 
@@ -35,14 +36,14 @@ void CAICallback::process()
 
         if(!m_pVisionComm->IsConnected()){
             loggingObj->ShowCriticalError("AI Callback: NO CONNECTION TO VISION");
-            return;
+            continue;
         }
 
         // 1. Read new coordinates from vision
         m_pVisionComm->ReadData(&ai->visionData);
 
         // 2. Read robot state
-        /// TODO: read data from robot if needed
+        m_pIBtComm->ReadData(&ai->robotState);
 
 #ifdef DRY_RUN
         printf("AI cycle\n");

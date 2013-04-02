@@ -17,7 +17,7 @@ class CAICallback
     Q_OBJECT
 
 public:
-    CAICallback(CVisionComm *pVisionComm, AIControl *pAICtrl);
+    CAICallback(CVisionComm *pVisionComm, IBTComm *pIBtComm, AIControl *pAICtrl);
 
 public slots:
     void process();
@@ -29,6 +29,7 @@ signals:
 private:
     CVisionComm *m_pVisionComm;
     AIControl   *m_pAICtrl;
+    IBTComm     *m_pIBtComm;
 };
 
 

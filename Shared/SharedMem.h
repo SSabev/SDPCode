@@ -107,6 +107,8 @@ typedef struct
 {
     TVisionData     visionData;
     TAIData         aiData;
+    TRobotState     robotState;    /// 1 byte
+    char            reserved[3];   /// 3 bytes - for int alignment
 } __attribute__ ((packed))  TAIEntry;
 
 typedef struct

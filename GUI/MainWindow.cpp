@@ -203,7 +203,7 @@ void MainWindow::StartThreads()
 {
     // AI thread
     m_pAIThread = new QThread;
-    CAICallback *AIcb = new CAICallback(m_pVisionComm, &aiCtrl);
+    CAICallback *AIcb = new CAICallback(m_pVisionComm, m_pIBtComm, &aiCtrl);
     AIcb->moveToThread(m_pAIThread);
 
     connect(AIcb, SIGNAL(finished()), m_pAIThread, SLOT(quit()));
