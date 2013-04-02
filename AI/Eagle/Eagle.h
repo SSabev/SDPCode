@@ -29,6 +29,9 @@ private:
 	int m_pitchSizeY;
 
 	Intersection m_intersection;
+
+	bool m_isKickingStateSet;
+	RobotState m_kickingState;
 };
 
 #endif

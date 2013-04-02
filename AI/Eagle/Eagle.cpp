@@ -8,6 +8,8 @@
 Eagle::Eagle()
 {
 	m_intersection = Intersection();
+
+	m_isKickingStateSet = false;
 }
 
 /*!
@@ -53,6 +55,8 @@ RobotState Eagle::IdentifyTarget(RobotState &ourRobotState, RobotState &enemyRob
 
     if (m_state == ePenaltyAttack)
 	{
+		m_isKickingStateSet = false;
+
          // When taking a penalty, we want to find a free position to kick to.
         // Position should stay the same - we only want to re-orientate.
         targetState.SetPosition(ourRobotPos);
@@ -106,6 +110,8 @@ RobotState Eagle::IdentifyTarget(RobotState &ourRobotState, RobotState &enemyRob
 	}
     else if (m_state == ePenaltyDefend)
 	{
+		m_isKickingStateSet = false;
+	
 		// When defending, we're permitted to move up and down the goalline.
 		// Orientation should stay the same.
 		targetState.SetOrientation(ourRobotState.Orientation());
@@ -127,6 +133,8 @@ RobotState Eagle::IdentifyTarget(RobotState &ourRobotState, RobotState &enemyRob
 		// If we're here, assume we're in open play.
 		if (!ourRobotState.HasBall())
 		{
+			m_isKickingStateSet = false;
+
 			// Check if the enemy robot has the ball.
 			if (enemyRobotState.HasBall())
             {
@@ -159,62 +167,74 @@ RobotState Eagle::IdentifyTarget(RobotState &ourRobotState, RobotState &enemyRob
 		}
 		else
 		{
-			// If we have the ball, let's move to a more appropriate place.
-			// This is done regardless of whether we're shooting or not.
-			/*
-				This should depend on:
-				1. The opposite half of the pitch to the enemy robot.
-				2. Within the kicking threshold.
-				3. Fairly central, but outside of the enemy robot's radius
-				4. Orientated towards the goal
-			*/
-			bool isEnemyOnBottomSide;
-		
-			// Determine which half of the pitch the enemy robot is on.
-			if (enemyRobotState.Position().Y() < m_pitchSizeY/2)
+			// Check if the previously calculated target path is appropriate or if we need to recalc.
+			if ((m_kickingState.Position().Distance(&ourRobotPos) < 30) || (m_kickingState.Position().Distance(&enemyRobotPos) < 40))
 			{
-				isEnemyOnBottomSide = true;
-			}
-			else
-			{
-				isEnemyOnBottomSide = false;
+				m_isKickingStateSet = false;
 			}
 
-			// Determine where the kicking threshold is for this side of the pitch.
-			float kickingPosition;
-
-			if (m_pitchSide == eLeftSide)
+			if (!m_isKickingStateSet)
 			{
-				kickingPosition = m_pitchSizeX - ((KICKING_THRESHOLD/2)*m_pitchSizeX);
-			}
-			else
-			{
-				kickingPosition = (KICKING_THRESHOLD/2)*m_pitchSizeX;
-			}
-
-			// Check if the position is within two robot radii of the enemy.
-			Vector2 proposedPosition = Vector2(kickingPosition,m_pitchSizeY/2);
-
-			// Check if the proposed position is too close to the enemy robot to be used.
-			if (proposedPosition.Distance(&enemyRobotPos) < 2*ROBOT_RADIUS)
-			{
-				float adjustedYPosition;
-
-				if (isEnemyOnBottomSide)
+				// If we have the ball, let's move to a more appropriate place.
+				// This is done regardless of whether we're shooting or not.
+				/*
+					This should depend on:
+					1. The opposite half of the pitch to the enemy robot.
+					2. Within the kicking threshold.
+					3. Fairly central, but outside of the enemy robot's radius
+					4. Orientated towards the goal
+				*/
+				bool isEnemyOnBottomSide;
+			
+				// Determine which half of the pitch the enemy robot is on.
+				if (enemyRobotState.Position().Y() < m_pitchSizeY/2)
 				{
-					adjustedYPosition = proposedPosition.Y() + 2*ROBOT_RADIUS;
+					isEnemyOnBottomSide = true;
 				}
 				else
 				{
-					adjustedYPosition = proposedPosition.Y() - 2*ROBOT_RADIUS;
+					isEnemyOnBottomSide = false;
 				}
 
-				proposedPosition = Vector2( proposedPosition.X(), adjustedYPosition);
-			}
+				// Determine where the kicking threshold is for this side of the pitch.
+				float kickingPosition;
 
-			proposedPosition.Clamp(Vector2(0,0), Vector2(m_pitchSizeX-1, m_pitchSizeY-1));
-			targetState.SetPosition(proposedPosition);
-            targetState.SetOrientation(proposedPosition.GetAngleTo(&enemyGoalCentre));
+				if (m_pitchSide == eLeftSide)
+				{
+					kickingPosition = m_pitchSizeX - ((KICKING_THRESHOLD/2)*m_pitchSizeX);
+				}
+				else
+				{
+					kickingPosition = (KICKING_THRESHOLD/2)*m_pitchSizeX;
+				}
+
+				// Check if the position is within two robot radii of the enemy.
+				Vector2 proposedPosition = Vector2(kickingPosition,m_pitchSizeY/2);
+
+				// Check if the proposed position is too close to the enemy robot to be used.
+				if (proposedPosition.Distance(&enemyRobotPos) < 2*ROBOT_RADIUS)
+				{
+					float adjustedYPosition;
+
+					if (isEnemyOnBottomSide)
+					{
+						adjustedYPosition = proposedPosition.Y() + 2*ROBOT_RADIUS;
+					}
+					else
+					{
+						adjustedYPosition = proposedPosition.Y() - 2*ROBOT_RADIUS;
+					}
+
+					proposedPosition = Vector2( proposedPosition.X(), adjustedYPosition);
+				}
+
+				proposedPosition.Clamp(Vector2(0,0), Vector2(m_pitchSizeX-1, m_pitchSizeY-1));
+				m_kickingState.SetPosition(proposedPosition);
+				m_kickingState.SetOrientation(proposedPosition.GetAngleTo(&enemyGoalCentre));
+
+				targetState = m_kickingState;
+				m_isKickingStateSet = true;
+			}
 		}
 
 		targetState.SetPosition((int)targetState.Position().X(), (int)targetState.Position().Y());
