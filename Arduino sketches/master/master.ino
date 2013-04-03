@@ -1,7 +1,8 @@
 #include <Wire.h>
 
-#define KICKER_INDEX   4
+#define UTILITY_INDEX  4
 #define KICKER_MASK    1
+#define SPINNER_MASK   2
 
 #define CHARGE_KICKER  1
 #define CHARGE_TIME    50
@@ -90,11 +91,11 @@ void loop() {
         Wire.endTransmission();
     }
     else{
-        ctrlVals[KICKER_INDEX] = 0;
+        ctrlVals[UTILITY_INDEX] = 0;
     }
 
       
-    if (((ctrlVals[KICKER_INDEX] & KICKER_MASK)!= 0) && (kicker_operation == KICKER_IDLE)) {
+    if (((ctrlVals[UTILITY_INDEX] & KICKER_MASK)!= 0) && (kicker_operation == KICKER_IDLE)) {
           digitalWrite(kicker_a, HIGH);
           digitalWrite(kicker_b, LOW);
   
@@ -104,6 +105,7 @@ void loop() {
       else if ((kicker_operation == CHARGE_KICKER) && (millis() - kicker_time >= CHARGE_TIME)) {
           digitalWrite(kicker_a, LOW);
           digitalWrite(kicker_b, HIGH);
+          digitalWrite(spinner, LOW); // disable the spinners
   
           kicker_operation = DO_KICK;
           kicker_time = millis();
@@ -111,6 +113,10 @@ void loop() {
       else if ((kicker_operation == DO_KICK) && (millis() - kicker_time >= KICK_TIME)) {
           digitalWrite(kicker_a, HIGH);
           digitalWrite(kicker_b, LOW);
+          // enable the spinners if required
+          if (ctrlVals[UTILITY_INDEX] & SPINNER_MASK){
+              digitalWrite(spinner, HIGH);
+          }
   
           kicker_operation = RETRACT_KICKER;
           kicker_time = millis();
@@ -120,7 +126,18 @@ void loop() {
           digitalWrite(kicker_b, LOW);
   
           kicker_operation = KICKER_IDLE;
-      }   
+      }
+      else{
+          // for a normal operation: fix the spinner
+          if (ctrlVals[UTILITY_INDEX] & SPINNER_MASK){
+              // enable the spinners
+              digitalWrite(spinner, HIGH);
+          }
+          else{
+              // disable the spinners
+              digitalWrite(spinner, LOW);
+          }
+      }
 
 
     if (millis() - time > TIMECHECK){
