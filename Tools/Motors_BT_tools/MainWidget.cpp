@@ -190,6 +190,7 @@ void CMainWidget::SendVals()
     _robotData.motor_rear_dir = rearChBx->isChecked() ? 1 : 0;
     _robotData.motor_left_dir = leftChBx->isChecked() ? 1 : 0;
     _robotData.motor_right_dir = rightChBx->isChecked() ? 1 : 0;
+    _robotData.spinners = spinnersChBx->isChecked() ? 1 : 0;
 
     status = ::send (m_Socket, (void *) &_robotData, sizeof(_robotData), 0);
 
@@ -245,6 +246,8 @@ void CMainWidget::KickSlot()
     _robotData.motor_rear_dir = 0;
     _robotData.motor_left_dir = 0;
     _robotData.motor_right_dir = 0;
+
+    _robotData.spinners = spinnersChBx->isChecked() ? 1 : 0;
 
     _robotData.kicker = 1;
 

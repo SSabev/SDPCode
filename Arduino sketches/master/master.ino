@@ -39,6 +39,7 @@ int THRESHOLD = 10;
 
 long kicker_time;
 byte kicker_operation = KICKER_IDLE;
+byte b_spinners;
 
 
 void setup(  ) {
@@ -55,10 +56,11 @@ void setup(  ) {
     Serial.println("Hello!");
     time = millis();
 
-    digitalWrite(spinner, HIGH);
+    //digitalWrite(spinner, HIGH);
     attachInterrupt(1, RPMPulse, CHANGE);
     attachInterrupt(0, RPMPulse2, CHANGE);
     kicker_operation = KICKER_IDLE;
+    b_spinners = 0;
 }
 
 void RPMPulse() {
@@ -84,11 +86,13 @@ void loop() {
               delay(1);
             }
         }
-        processVals(ctrlVals);
         Wire.beginTransmission(4);
         Wire.write(ctrlVals[0]);
         Wire.write(ctrlVals[1]);
         Wire.endTransmission();
+        processVals(ctrlVals);
+        
+        b_spinners = (ctrlVals[UTILITY_INDEX] & SPINNER_MASK) >> 1;
     }
     else{
         ctrlVals[UTILITY_INDEX] = 0;
@@ -101,16 +105,16 @@ void loop() {
   
           kicker_operation = CHARGE_KICKER;
           kicker_time = millis();
-      }
-      else if ((kicker_operation == CHARGE_KICKER) && (millis() - kicker_time >= CHARGE_TIME)) {
+    }
+    else if ((kicker_operation == CHARGE_KICKER) && (millis() - kicker_time >= CHARGE_TIME)) {
           digitalWrite(kicker_a, LOW);
           digitalWrite(kicker_b, HIGH);
           digitalWrite(spinner, LOW); // disable the spinners
   
           kicker_operation = DO_KICK;
           kicker_time = millis();
-      }
-      else if ((kicker_operation == DO_KICK) && (millis() - kicker_time >= KICK_TIME)) {
+    }
+    else if ((kicker_operation == DO_KICK) && (millis() - kicker_time >= KICK_TIME)) {
           digitalWrite(kicker_a, HIGH);
           digitalWrite(kicker_b, LOW);
           // enable the spinners if required
@@ -120,16 +124,16 @@ void loop() {
   
           kicker_operation = RETRACT_KICKER;
           kicker_time = millis();
-      }
-      else if ((kicker_operation == RETRACT_KICKER) && (millis() - kicker_time >= RETRACT_TIME)) {
+    }
+    else if ((kicker_operation == RETRACT_KICKER) && (millis() - kicker_time >= RETRACT_TIME)) {
           digitalWrite(kicker_a, LOW);
           digitalWrite(kicker_b, LOW);
   
           kicker_operation = KICKER_IDLE;
-      }
-      else{
+    }
+    else{
           // for a normal operation: fix the spinner
-          if (ctrlVals[UTILITY_INDEX] & SPINNER_MASK){
+          if (b_spinners){
               // enable the spinners
               digitalWrite(spinner, HIGH);
           }
@@ -137,7 +141,7 @@ void loop() {
               // disable the spinners
               digitalWrite(spinner, LOW);
           }
-      }
+    }
 
 
     if (millis() - time > TIMECHECK){
@@ -158,22 +162,6 @@ void loop() {
         if (i == 5) {
             setSpeeds();
         }
-
-        //Serial.print("t: ");
-        //Serial.print(temp_speed_a);
-        //    Serial.print(" c: ");
-        //    Serial.print(current_speed_a);
-        //    Serial.print(" d: ");
-        //    Serial.println(desired_speed_a);
-        //
-        //Serial.print("t: ");
-        //    Serial.print(temp_speed_b);
-        //Serial.print(" c: ");
-        //    Serial.print(current_speed_b);
-        //    Serial.print(" d: ");
-        //    Serial.println(desired_speed_b);
-        //
-        //    Serial.println();
 
         revolutions_a = 0;
         revolutions_b = 0;
