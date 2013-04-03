@@ -33,7 +33,7 @@ int THRESHOLD = 10;
 
 boolean spinning0 = false;
 boolean spinning1 = false;
-const int spinTresh = 100;
+const int spinTresh = 500;
 
 boolean touching = false;
 
@@ -114,12 +114,17 @@ void receiveEvent(int howMany){
 }
 
 void requestEvent() {
-    if (analogRead(legoSensor0) > spinTresh){
+  int a = analogRead(legoSensor0);
+  int b = analogRead(legoSensor1);
+  Serial.print(a);
+  Serial.print(" ");
+  Serial.println(b);
+    if (a > spinTresh){
         spinning0 = true; 
     } else {
         spinning0 = false;  
     }
-    if (analogRead(legoSensor1) > spinTresh){
+    if (b > spinTresh){
         spinning1 = true; 
     } else {
         spinning1 = false;  
