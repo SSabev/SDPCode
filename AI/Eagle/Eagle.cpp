@@ -198,19 +198,29 @@ RobotState Eagle::IdentifyTarget(RobotState &ourRobotState, RobotState &enemyRob
 				}
 
 				// Determine where the kicking threshold is for this side of the pitch.
-				float kickingPosition;
-
+		                float kickingPositionX;
+		                float kickingPositionY;
+		
 				if (m_pitchSide == eLeftSide)
 				{
-					kickingPosition = m_pitchSizeX - ((KICKING_THRESHOLD/2)*m_pitchSizeX);
+                   			 kickingPositionX = m_pitchSizeX - ((KICKING_THRESHOLD/2)*m_pitchSizeX);
 				}
 				else
 				{
-					kickingPosition = (KICKING_THRESHOLD/2)*m_pitchSizeX;
+                    			kickingPositionX = (KICKING_THRESHOLD/2)*m_pitchSizeX;
 				}
-
-				// Check if the position is within two robot radii of the enemy.
-				Vector2 proposedPosition = Vector2(kickingPosition,m_pitchSizeY/2);
+		
+		                if (isEnemyOnBottomSide)
+		                {
+		                    kickingPositionY = m_pitchSizeY/2 + 80;
+		                }
+		                else
+		                {
+		                    kickingPositionY = m_pitchSizeY/2 - 80;
+		                }
+		
+						// Check if the position is within two robot radii of the enemy.
+		                Vector2 proposedPosition = Vector2(kickingPositionX,kickingPositionY);
 
 				// Check if the proposed position is too close to the enemy robot to be used.
 				if (proposedPosition.Distance(&enemyRobotPos) < 2*ROBOT_RADIUS)
