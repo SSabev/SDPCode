@@ -12,13 +12,14 @@
 #define RETRACT_TIME   100
 #define KICKER_IDLE    0
 
-int frontM0 = 11;    // Left motor black wire
-int frontM1 = 10;    // Left motor white wire
-int backM0 = 5;    // Right motor black wire
-int backM1 = 6;    // Right motor white wire
-int spinner = 9;
-int kicker_a = 12;
-int kicker_b = 13;
+
+const int frontM0 = 11;    // Left motor black wire
+const int frontM1 = 10;    // Left motor white wire
+const int backM0 = 5;    // Right motor black wire
+const int backM1 = 6;    // Right motor white wire
+const int spinner = 9;
+const int kicker_a = 12;
+const int kicker_b = 13;
 
 int revolutions_a = 0;
 int revolutions_b = 0;
@@ -53,7 +54,7 @@ void setup(  ) {
 
     Wire.begin();
     Serial.begin(9600);
-    Serial.println("Hello!");
+    Serial.print(B0);
     time = millis();
 
     //digitalWrite(spinner, HIGH);
@@ -83,18 +84,24 @@ void loop() {
                 i++;
             }
             else{
-              delay(1);
+                delay(1);
             }
         }
+        byte feedback;
+        
         Wire.beginTransmission(4);
         Wire.write(ctrlVals[0]);
         Wire.write(ctrlVals[1]);
         Wire.endTransmission();
+        Wire.requestFrom(4, 1, true);
+        if (Wire.available()) {
+            feedback = Wire.read();
+            Serial.print(feedback);
+        }
         processVals(ctrlVals);
         
         b_spinners = (ctrlVals[UTILITY_INDEX] & SPINNER_MASK) >> 1;
-    }
-    else{
+    } else {
         ctrlVals[UTILITY_INDEX] = 0;
     }
 
@@ -195,7 +202,6 @@ void setSpeeds (){
         }
         if (delta_a > THRESHOLD) {
             current_speed_a = desired_speed_a;
-            //Serial.println("R_a");
         }
     }
     
@@ -210,7 +216,6 @@ void setSpeeds (){
         }
         if (delta_b > THRESHOLD) {
             current_speed_b = desired_speed_b;
-            //Serial.println("R_b");
         }
     }
     

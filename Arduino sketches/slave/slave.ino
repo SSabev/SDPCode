@@ -1,10 +1,19 @@
 #include <Wire.h>
 
+#define high_raw 730
+#define low_raw 530
+
 // NOTE: swapped these two around, because of the final board's design
-int leftM0 = 10;    // Left motor black wire
-int leftM1 = 11;    // Left motor white wire
-int rightM0 = 6;    // Right motor black wire
-int rightM1 = 5;    // Right motor white wire
+const int leftM0 = 10;    // Left motor black wire
+const int leftM1 = 11;    // Left motor white wire
+const int rightM0 = 6;    // Right motor black wire
+const int rightM1 = 5;    // Right motor white wire
+
+const int legoSensorPin0 = 15;
+const int legoSensor0 = A1;
+const int legoSensorPin1 = 16;
+const int legoSensor1 = A2;
+const int touchSensors = 9;
 
 int revolutions_a = 0;
 int revolutions_b = 0;
@@ -23,10 +32,19 @@ int TIMECHECK = 20;
 
 int THRESHOLD = 10;
 
+int total_raw0 = 0; // Spinner0 sensor sum
+boolean spinning0 = false;
+int total_raw1 = 0; // Spinner1 sensor sum
+boolean spinning1 = false;
+int spinner_counter = 0;
+boolean touching = false;
+
+
 void setup()
 {
     Wire.begin(4);
     Wire.onReceive(receiveEvent);    // join i2c bus with address #4
+    Wire.onRequest(requestEvent);
     Serial.begin(9600);
     Serial.println("Hello!");    // start serial for output
     
@@ -38,6 +56,12 @@ void setup()
     pinMode(rightM1, OUTPUT);
     attachInterrupt(1, RPMPulse, CHANGE);
     attachInterrupt(0, RPMPulse2, CHANGE);
+        
+    pinMode(legoSensorPin0, OUTPUT); //rotation sensor0 setup
+    digitalWrite(legoSensorPin0, HIGH);
+    pinMode(legoSensorPin1, OUTPUT); //rotation sensor1 setup
+    digitalWrite(legoSensorPin1, HIGH);
+    pinMode(touchSensors, INPUT_PULLUP);
 }
 
 void loop()
@@ -59,22 +83,6 @@ void loop()
     
     setSpeeds();
     
-    //Serial.print("t: ");
-    //Serial.print(temp_speed_a);
-    //Serial.print(" c: ");
-    //Serial.print(current_speed_a);
-    //Serial.print(" d: ");
-    //Serial.println(desired_speed_a);
-    
-    //Serial.print("t: ");
-    //Serial.print(temp_speed_b);
-    //Serial.print(" c: ");
-    //Serial.print(current_speed_b);
-    //Serial.print(" d: ");
-    //Serial.println(desired_speed_b);
-    
-    //Serial.println();
-    
     revolutions_a = 0;
     revolutions_b = 0;
     time = millis();
@@ -95,13 +103,71 @@ void RPMPulse2()
 // function that executes whenever data is received from master
 // this function is registered as an event, see setup()
 void receiveEvent(int howMany){
-    byte left, right;
+    byte left, right;    
+    
     while(Wire.available()) // loop through all but the last
     {
         left = Wire.read(); // receive byte as a character
         right = Wire.read();
     }
     processVals(left, right);
+    
+}
+
+void requestEvent() {
+    if (spinner_counter < 20){
+        total_raw0 = total_raw0 + ReadLegoSensor(0);
+        total_raw1 = total_raw1 + ReadLegoSensor(1);
+        spinner_counter++;
+    } else {
+        if (total_raw0 > 20 * low_raw && total_raw0 < 20 * high_raw){
+            spinning0 = true; 
+        } else {
+            spinning0 = false;
+        } 
+        if (total_raw1 > 20 * low_raw && total_raw1 < 20 * high_raw){
+            spinning1 = true; 
+        } else {
+            spinning1 = false;
+        }
+        total_raw0 = 0;
+        total_raw1 = 0;
+        spinner_counter = 0;
+    }
+    
+    if (digitalRead(touchSensors) == LOW){
+        touching = true;
+    } else {
+        touching = false;
+    }
+    
+    byte feedback = B0;
+    if (!spinning0 || !spinning1) {
+         feedback = B1000;
+    }
+    if (touching) {
+         feedback = feedback || B0101;
+    }
+    
+    Wire.write(feedback);
+}
+
+int ReadLegoSensor(int sensor){
+    int legoSensorPin;
+    int legoSensor;
+    if (sensor == 0) {
+      legoSensorPin = legoSensorPin0;
+      legoSensor = legoSensor0
+    } else {
+      legoSensorPin = legoSensorPin1;
+      legoSensor = legoSensor1
+    }
+    pinMode(legoSensorPin, INPUT_PULLUP); //set pin as input
+    delayMicroseconds(20);
+    int value=analogRead(legoSensor); //read the input
+    pinMode(legoSensorPin, OUTPUT); //set pin as output
+    digitalWrite(legoSensorPin, HIGH); //set output 
+    return value; //return the raw value
 }
 
 void processVals(byte left, byte right){
