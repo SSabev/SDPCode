@@ -50,7 +50,8 @@ RobotState Eagle::IdentifyTarget(RobotState &ourRobotState, RobotState &enemyRob
 	isMovingToBall = false;
 
 	// doWeHaveBall is a value which comes from the robot's rotational sensors.
-    ourRobotState.SetHasBall(doWeHaveBall);
+    //ourRobotState.SetHasBall(doWeHaveBall);
+	ourRobotState.SetHasBall(DoesRobotHaveBall(ourRobotState, ballPos));
     enemyRobotState.SetHasBall(DoesRobotHaveBall(enemyRobotState, ballPos));
 
     if (m_state == ePenaltyAttack)
@@ -168,7 +169,7 @@ RobotState Eagle::IdentifyTarget(RobotState &ourRobotState, RobotState &enemyRob
 		else
 		{
 			// Check if the previously calculated target pos is appropriate or if we need to recalc.
-			if ((m_kickingPos.Distance(&ourRobotPos) < 30) || (m_kickingPos.Distance(&enemyRobotPos) < 40))
+			if ((m_isKickingPosSet) && ((m_kickingPos.Distance(&ourRobotPos) < 30) || (m_kickingPos.Distance(&enemyRobotPos) < 40)))
 			{
 				m_isKickingPosSet = false;
 			}
@@ -230,56 +231,55 @@ RobotState Eagle::IdentifyTarget(RobotState &ourRobotState, RobotState &enemyRob
 
 				proposedPosition.Clamp(Vector2(0,0), Vector2(m_pitchSizeX-1, m_pitchSizeY-1));
 				m_kickingPos = proposedPosition;
-				//m_kickingState.SetOrientation(proposedPosition.GetAngleTo(&enemyGoalCentre));
-
-				targetState.SetPosition(m_kickingPos);
-				
-				// We'll do this by checking for intersections between us and three positions on the goal line.
-				Vector2 targetPositions[3];
-
-				targetPositions[0] = enemyGoalCentre;
-				targetPositions[1] = enemyGoalCentre - Vector2(0,50);
-				targetPositions[2] = enemyGoalCentre + Vector2(0,50);
-
-				int arrayLength = sizeof(targetPositions)/sizeof(Vector2);
-
-				Vector2 optimalShootingTarget;
-				float bestDistanceFromEnemy = 0;
-
-				// Iterate through the positions, finding the best one, based on if it's unblocked and how far it is from the enemy robot.
-				for (int i=0; i < arrayLength; i++)
-				{
-					// Check if the target is unblocked.
-					bool isBlocked = m_intersection.LineCircleIntersection(proposedPosition, targetPositions[i], enemyRobotPos, ROBOT_RADIUS);
-
-					if (isBlocked)
-					{
-						continue;
-					}
-
-					float distanceSqdToEnemy = enemyRobotPos.DistanceSquared(&targetPositions[i]);
-
-					// Check if this beats our previous best distance.
-					if (distanceSqdToEnemy > bestDistanceFromEnemy)
-					{
-						bestDistanceFromEnemy = distanceSqdToEnemy;
-						optimalShootingTarget = targetPositions[i];
-					}
-
-					// Check that we do actually have a target set.
-					if (optimalShootingTarget.IsSet())
-					{
-						float angleToTarget = proposedPosition.GetAngleTo(&optimalShootingTarget);
-
-						targetState.SetOrientation(angleToTarget);
-					}
-					else
-					{
-						targetState.SetOrientation(ourRobotState.Orientation());
-					}
-				}
 
 				m_isKickingPosSet = true;
+			}
+		
+			targetState.SetPosition(m_kickingPos);
+			
+			// We'll do this by checking for intersections between us and three positions on the goal line.
+			Vector2 targetPositions[3];
+
+			targetPositions[0] = enemyGoalCentre;
+			targetPositions[1] = enemyGoalCentre - Vector2(0,50);
+			targetPositions[2] = enemyGoalCentre + Vector2(0,50);
+
+			int arrayLength = sizeof(targetPositions)/sizeof(Vector2);
+
+			Vector2 optimalShootingTarget;
+			float bestDistanceFromEnemy = 0;
+
+			// Iterate through the positions, finding the best one, based on if it's unblocked and how far it is from the enemy robot.
+			for (int i=0; i < arrayLength; i++)
+			{
+				// Check if the target is unblocked.
+				bool isBlocked = m_intersection.LineCircleIntersection(m_kickingPos, targetPositions[i], enemyRobotPos, ROBOT_RADIUS);
+
+				if (isBlocked)
+				{
+					continue;
+				}
+
+				float distanceSqdToEnemy = enemyRobotPos.DistanceSquared(&targetPositions[i]);
+
+				// Check if this beats our previous best distance.
+				if (distanceSqdToEnemy > bestDistanceFromEnemy)
+				{
+					bestDistanceFromEnemy = distanceSqdToEnemy;
+					optimalShootingTarget = targetPositions[i];
+				}
+
+				// Check that we do actually have a target set.
+				if (optimalShootingTarget.IsSet())
+				{
+					float angleToTarget = m_kickingPos.GetAngleTo(&optimalShootingTarget);
+
+					targetState.SetOrientation(angleToTarget);
+				}
+				else
+				{
+					targetState.SetOrientation(ourRobotState.Orientation());
+				}
 			}
 		}
 
