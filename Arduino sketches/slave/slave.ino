@@ -9,10 +9,8 @@ const int leftM1 = 11;    // Left motor white wire
 const int rightM0 = 6;    // Right motor black wire
 const int rightM1 = 5;    // Right motor white wire
 
-const int legoSensorPin0 = 15;
 const int legoSensor0 = A1;
-const int legoSensorPin1 = 16;
-const int legoSensor1 = A2;
+const int legoSensor1 = A3;
 const int touchSensors = 9;
 
 int revolutions_a = 0;
@@ -32,11 +30,11 @@ int TIMECHECK = 20;
 
 int THRESHOLD = 10;
 
-int total_raw0 = 0; // Spinner0 sensor sum
+
 boolean spinning0 = false;
-int total_raw1 = 0; // Spinner1 sensor sum
 boolean spinning1 = false;
-int spinner_counter = 0;
+const int spinTresh = 100;
+
 boolean touching = false;
 
 
@@ -57,11 +55,12 @@ void setup()
     attachInterrupt(1, RPMPulse, CHANGE);
     attachInterrupt(0, RPMPulse2, CHANGE);
         
-    pinMode(legoSensorPin0, OUTPUT); //rotation sensor0 setup
-    digitalWrite(legoSensorPin0, HIGH);
-    pinMode(legoSensorPin1, OUTPUT); //rotation sensor1 setup
-    digitalWrite(legoSensorPin1, HIGH);
+    pinMode(legoSensor0, INPUT); //rotation sensor0 setup
+    pinMode(legoSensor1, INPUT); //rotation sensor1 setup
     pinMode(touchSensors, INPUT_PULLUP);
+    
+    pinMode(7, INPUT); //Touch sensors were wired here and are shortened
+    pinMode(8, INPUT);
 }
 
 void loop()
@@ -115,24 +114,15 @@ void receiveEvent(int howMany){
 }
 
 void requestEvent() {
-    if (spinner_counter < 20){
-        total_raw0 = total_raw0 + ReadLegoSensor(0);
-        total_raw1 = total_raw1 + ReadLegoSensor(1);
-        spinner_counter++;
+    if (analogRead(legoSensor0) > spinTresh){
+        spinning0 = true; 
     } else {
-        if (total_raw0 > 20 * low_raw && total_raw0 < 20 * high_raw){
-            spinning0 = true; 
-        } else {
-            spinning0 = false;
-        } 
-        if (total_raw1 > 20 * low_raw && total_raw1 < 20 * high_raw){
-            spinning1 = true; 
-        } else {
-            spinning1 = false;
-        }
-        total_raw0 = 0;
-        total_raw1 = 0;
-        spinner_counter = 0;
+        spinning0 = false;  
+    }
+    if (analogRead(legoSensor1) > spinTresh){
+        spinning1 = true; 
+    } else {
+        spinning1 = false;  
     }
     
     if (digitalRead(touchSensors) == LOW){
@@ -146,29 +136,12 @@ void requestEvent() {
          feedback = B1000;
     }
     if (touching) {
-         feedback = feedback || B0101;
+         feedback = feedback | B101;
     }
     
     Wire.write(feedback);
 }
 
-int ReadLegoSensor(int sensor){
-    int legoSensorPin;
-    int legoSensor;
-    if (sensor == 0) {
-      legoSensorPin = legoSensorPin0;
-      legoSensor = legoSensor0
-    } else {
-      legoSensorPin = legoSensorPin1;
-      legoSensor = legoSensor1
-    }
-    pinMode(legoSensorPin, INPUT_PULLUP); //set pin as input
-    delayMicroseconds(20);
-    int value=analogRead(legoSensor); //read the input
-    pinMode(legoSensorPin, OUTPUT); //set pin as output
-    digitalWrite(legoSensorPin, HIGH); //set output 
-    return value; //return the raw value
-}
 
 void processVals(byte left, byte right){
     direction_left =  bitRead(left, 7);
